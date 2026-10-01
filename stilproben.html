@@ -304,6 +304,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 <div class="room" id="r-logos">
   <div class="lab-head">
     <div>
+      <h1>bbk logo-labor</h1>
     </div>
     <div class="lab-ctl">
       <span>körnung</span><div class="seg" role="group" aria-label="Körnung"><button data-grain="0" aria-pressed="false">aus</button><button data-grain="1" aria-pressed="true">leicht</button><button data-grain="2" aria-pressed="false">stark</button></div>
@@ -312,10 +313,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <span>farben</span><div class="colctl"></div>
     </div>
   </div>
-  <section class="dl-box" aria-label="Downloads">
-  <h2 class="lab-h" style="margin-top:0">downloads</h2>
-  <div class="dl-top"><button class="kb-btn" id="dl-all" type="button">alles laden (zip)</button><button class="kb-btn ghost" id="dl-pal" type="button">farbpalette laden</button>
-    <label class="mo-lbl" style="margin:0">größe <select id="dl-size" style="background:#000;color:var(--bone);border:1px solid #555;font:12px var(--f-min);padding:5px"><option value="1000">1000 px</option><option value="2000" selected>2000 px</option><option value="3000">3000 px</option></select></label>
+  <section class="dl-box" aria-label="Downloads" style="margin-top:0">
+  <div class="dl-top"><button class="kb-btn" id="dl-all" type="button">alles ↓</button><button class="kb-btn ghost" id="dl-pal" type="button">farben ↓</button>
+    <label class="mo-lbl" style="margin:0"><select id="dl-size" style="background:#000;color:var(--bone);border:1px solid #555;font:12px var(--f-min);padding:5px"><option value="1000">1000 px</option><option value="2000" selected>2000 px</option><option value="3000">3000 px</option></select></label>
     <span id="dl-status" aria-live="polite"></span></div>
   <div class="dl-inks"><span class="mo-lbl" style="margin:0">farben</span><span id="dl-inks"></span></div>
   <h2 class="lab-h">farben</h2>
@@ -337,6 +337,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 
 <!-- ================= KOMBINIERER ================= -->
 <div class="room" id="r-kombi">
+  <h1>bbk kombinierer</h1>
   <div class="kb-main">
     <div class="kombi"><div class="tile kb-stage"><div class="kb-lock quer" id="kb-lock"><div class="kb-mk"></div><div class="kb-wm"></div></div></div><div id="kb-name"></div></div>
     <aside class="kb-ctl">
@@ -350,7 +351,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row colctl"></div>
       <div class="row"><button class="kb-btn" id="kb-rnd">zufall</button><button class="kb-btn" id="kb-fav">merken</button><button class="kb-btn ghost" id="kb-copy">liste kopieren</button></div>
       <textarea id="kb-copytxt" hidden aria-label="Favoritenliste zum Kopieren"></textarea>
-      <div class="kb-dlrow"><button class="kb-btn" id="kb-png" type="button">kombi als png ↓</button><button class="kb-btn ghost" id="kb-pal" type="button">farbpalette ↓</button></div>
+      <div class="kb-dlrow"><button class="kb-btn" id="kb-png" type="button">png ↓</button><button class="kb-btn ghost" id="kb-pal" type="button">farben ↓</button></div>
       <p class="kb-empty" id="kb-dlstat" aria-live="polite" style="font-size:11px"></p>
     </aside>
   </div>
@@ -361,6 +362,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 
 <!-- ================= BEWEGT ================= -->
 <div class="room" id="r-motion">
+  <h1>bbk bewegt</h1>
   <div class="mo-main">
     <div class="mo-view"><canvas id="mo-cv" width="1080" height="1350" aria-label="Vorschau des bewegten Posts"></canvas><div id="mo-status" aria-live="polite"></div></div>
     <aside class="kb-ctl mo-ctl">
@@ -393,7 +395,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row"><div class="seg" role="group" aria-label="Papier"><button data-mo-paper="1" aria-pressed="true">vergilbt</button><button data-mo-paper="0" aria-pressed="false">rein</button></div></div>
       <div class="row colctl"></div>
       <label class="mo-noreel" for="mo-len">länge<select id="mo-len"><option value="3">3 sekunden</option><option value="6" selected>6 sekunden</option><option value="10">10 sekunden</option><option value="15">15 sekunden</option></select></label>
-      <div class="row"><button class="kb-btn" id="mo-rec">video laden</button><button class="kb-btn ghost" id="mo-png">standbild</button><button class="kb-btn ghost" id="mo-rnd">zufall</button></div>
+      <div class="row"><button class="kb-btn" id="mo-rec">video ↓</button><button class="kb-btn ghost" id="mo-png">png ↓</button><button class="kb-btn ghost" id="mo-rnd">zufall</button></div>
       <p class="mo-note" id="mo-fmtnote"></p>
     </aside>
   </div>
