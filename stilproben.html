@@ -149,12 +149,18 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-chips button[aria-pressed="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .mo-ctl output{color:var(--bone)}
 .mo-note{margin:0;font-size:11px;color:var(--mute)}
-#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
+#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
 .mo-sc{display:grid;grid-template-columns:minmax(0,1.3fr) 58px minmax(0,1fr) auto;gap:5px;align-items:center;margin-bottom:6px}
 .mo-sc select,.mo-sc input{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px 5px;font:11px var(--f-min)}
 .mo-sc button{background:none;border:1px solid #555;color:var(--mute);cursor:pointer;padding:5px 8px}
 .mo-sc .n{grid-column:1/-1;font-size:10px;color:var(--mute);margin:-2px 0 2px}
 .mo-up{display:inline-block}
+.mo-art{display:grid;grid-template-columns:auto minmax(0,1fr) auto 40px auto;gap:5px;align-items:center;margin-bottom:6px}
+.mo-art input[type=text]{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px;font:11px var(--f-min)}
+.mo-art img,.mo-art .nophoto{width:40px;height:40px;object-fit:cover;border:1px solid #555;display:block}
+.mo-art button{background:none;border:1px solid #555;color:var(--mute);cursor:pointer;padding:5px 8px}
+.mo-art .kb-btn{padding:6px 8px;font-size:11px}
+.mo-art input[type=radio]{accent-color:var(--bone)}
 .kb-btn:disabled{opacity:.5;cursor:wait}
 
 /* ---------- website desktop ----------
@@ -377,6 +383,16 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="mo-post"><label for="mo-info">line-up / ort<input type="text" id="mo-info"></label></div>
       <div class="mo-post"><label for="mo-extra">zusatz<input type="text" id="mo-extra"></label></div>
       <div class="mo-post"><label for="mo-font">schrift für den titel<select id="mo-font"></select></label></div>
+      <div class="mo-post"><span class="mo-lbl">artists</span><div id="mo-artists"></div>
+        <div class="row"><button class="kb-btn ghost" id="mo-addart" type="button">+ artist</button><button class="kb-btn ghost mo-reelonly" id="mo-art2reel" type="button">artists → szenen</button></div></div>
+      <div class="mo-post"><span class="mo-lbl">foto</span><div class="mo-chips" id="mo-look" role="group" aria-label="Foto-Look"></div></div>
+      <div class="mo-post"><label for="mo-ppal">fotofarben<select id="mo-ppal"></select></label></div>
+      <div class="mo-post"><label for="mo-con">kontrast <output id="mo-con-o"></output><input type="range" id="mo-con" min="50" max="250" value="140"></label></div>
+      <div class="mo-post"><label for="mo-bri">helligkeit <output id="mo-bri-o"></output><input type="range" id="mo-bri" min="-50" max="50" value="0"></label></div>
+      <div class="mo-post"><span class="mo-lbl">name</span><div class="mo-chips" id="mo-ns" role="group" aria-label="Namens-Stil"></div></div>
+      <div class="mo-post"><label for="mo-nfont">schrift name<select id="mo-nfont"></select></label></div>
+      <div class="mo-post row"><label class="mo-lbl" style="display:flex;gap:6px;align-items:center;margin:0">textfarbe <input type="color" id="mo-lt" value="#e4531c" style="width:34px;height:26px;padding:0;border:1px solid #555;background:none"></label>
+        <div class="seg" role="group" aria-label="Mischmodus"><button data-mo-blend="normal" aria-pressed="true">normal</button><button data-mo-blend="differenz" aria-pressed="false">differenz</button></div></div>
       <label for="mo-mark">zeichen<select id="mo-mark"></select></label>
       <label for="mo-word">schriftzug<select id="mo-word"></select></label>
       <label for="mo-partner">partner-logo<select id="mo-partner"></select></label>
@@ -1170,7 +1186,14 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const MO_FX = [['ruhig', 'nur zittern'], ['wackeln', 'wackeln'], ['puls', 'puls'], ['echo', 'echo'], ['dreher', 'dreher'], ['strobe', 'stroboskop'], ['glitch', 'glitch'], ['raster', '1-bit'], ['kacheln', 'kacheln']];
   const MO_BACK = [['-', 'keiner'], ['nebel', 'nebel'], ['schlieren', 'schlieren'], ['leck', 'lichtleck'], ['kontur', 'höhenlinien'], ['moire', 'moiré'], ['fluss', 'fluss'], ['morph', 'morph'], ['gitter', 'gitter'], ['spirale', 'spirale'],
     ['tunnel', 'tunnel'], ['wellen', 'schallwellen'], ['punkte', 'punktwelle'], ['scan', 'scanlinien']];
-  const MO_LAY = [['plakat', 'plakat'], ['ticker', 'ticker'], ['raster', 'raster'], ['zaehler', 'zähler']];
+  const MO_LAY = [['artist', 'artist'], ['lineup', 'lineup'], ['plakat', 'plakat'], ['ticker', 'ticker'], ['raster', 'raster'], ['zaehler', 'zähler']];
+  // lineup posts: artists with a photo each; the photo gets a look + a colour pair, the name runs huge across the frame
+  const ARTISTS = EVENTS[0].l.split(/[·,×]/).map(t => t.trim()).filter(Boolean).map((name, i) => ({ id: 'a' + i, name, img: null }));
+  const PHOTO = { ai: 0, look: 'foto', pal: 'sw', con: 140, bri: 0, ns: 'gezogen', nfont: 'archivo', lt: '#e4531c', blend: 'normal' };
+  const P_LOOKS = [['foto', 'foto'], ['kopierer', 'kopierer'], ['raster', 'raster'], ['bit', '1-bit'], ['glow', 'glow']];
+  const P_PALS = { sw: ['schwarz / weiß', '#0b0b0b', '#f2f2f2'], rw: ['rot / weiß', '#c3221b', '#f4eee2'], sr: ['schwarz / rot', '#0b0b0b', '#e3271d'],
+    bw: ['blau / weiß', '#1b2f8a', '#f2f0ea'], lg: ['lila / gelb', '#3b1a5c', '#f5d33d'], pv: ['papier', '#12110f', '#ebe3cb'], own: ['eigene farben', null, null] };
+  const N_STYLES = [['gezogen', 'gezogen'], ['block', 'block'], ['quer', 'quer'], ['hoch', 'hoch'], ['wiederholt', 'wiederholt']];
   const TFONTS = { archivo: { n: 'archivo breit', f: "'Archivo'", w: 900, st: 'extra-expanded' }, martian: { n: 'martian mono', f: "'Martian Mono'", w: 800 }, ...FONTS };
   const MONO = { f: "'Martian Mono'", w: 700 }, MONO_L = { f: "'Martian Mono'", w: 400 };
   const sr = (a, b) => hash(a * 12.9898 + 1.3, b * 78.233 + .7);
@@ -1298,6 +1321,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     items.forEach(it => { if (it.cross) { const r = it.s / 2, j = (sr(f % 4, 77) - .5) * r * .15; gx.strokeStyle = '#f0f0f0'; gx.lineWidth = Math.max(2, it.s * .16); gx.lineCap = 'round';
         gx.beginPath(); gx.moveTo(it.x - r + j, it.y - r); gx.lineTo(it.x + r, it.y + r - j); gx.moveTo(it.x + r - j, it.y - r); gx.lineTo(it.x - r, it.y + r + j); gx.stroke(); return; }
       gx.drawImage(it.a.frames[f % it.a.frames.length], it.x, it.y, it.w, it.h); });
+    if (PHOTO_FRAME && PHOTO.lt.toLowerCase() !== '#f2f2f2') { if (lt.width !== W || lt.height !== H) { lt.width = W; lt.height = H; } ltx.clearRect(0, 0, W, H); ltx.drawImage(gcv, 0, 0);
+      gx.globalCompositeOperation = 'multiply'; gx.fillStyle = PHOTO.lt; gx.fillRect(0, 0, W, H); gx.globalCompositeOperation = 'destination-in'; gx.drawImage(lt, 0, 0); gx.globalCompositeOperation = 'source-over'; }
     if (!rectsTaken) { rectsTaken = true; RECTS = items.filter(it => !it.cross).map(it => ({ id: it.a.id, x: box.x + it.x, y: box.y + it.y, w: it.w, h: it.h })); }
     const a = MO.amt / 100, cx = box.x + box.w / 2, cy = box.y + box.h / 2, c = mx;
     const at = (dx, dy, sx, sy, rot, alpha = 1) => { c.save(); c.globalAlpha = alpha; c.translate(cx + dx, cy + dy); c.rotate(rot); c.scale(sx, sy); c.drawImage(gcv, -W / 2, -H / 2); c.restore(); };
@@ -1449,6 +1474,83 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const reelScenes = () => REEL.map(sc => ({ ...sc, n: Math.max(3, Math.round(sc.d * MO.fps)) }));
   const frameCount = () => MO.mode === 'reel' ? reelScenes().reduce((a, sc) => a + sc.n, 0) : Math.max(8, Math.round(MO.len * MO.fps / 8) * 8);
   const LOGO_KINDS = ['logo', 'schriftzug', 'zeichen', 'kollabo', 'partner'];
+  // photo: cover-cropped, graded (contrast / brightness), turned into a look and mapped onto the colour pair.
+  // 4 variants (slight shift, fresh noise) cycle with the flip-book frames. cached per settings.
+  const PCACHE = new Map(); let PHOTO_FRAME = false;
+  const [scv2, scx2] = mk();   // scratch for the pulled name
+  const rgbOf = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
+  function photoPal() { const q = P_PALS[PHOTO.pal] || P_PALS.sw; return PHOTO.pal === 'own' ? [COL.ground, COL.ink] : [q[1], q[2]]; }
+  function photoCanvas(a, W, H, v) {
+    const [dk, lt] = photoPal(), key = [a.id, a.v || 0, W, H, PHOTO.look, dk, lt, PHOTO.con, PHOTO.bri, v].join('|');
+    if (PCACHE.has(key)) return PCACHE.get(key);
+    const [c, x] = mk(); c.width = W; c.height = H;
+    const iw = a.img.width, ih = a.img.height, sc = Math.max(W / iw, H / ih) * 1.02, jx = (sr(v, 1) - .5) * 8, jy = (sr(v, 2) - .5) * 8;
+    x.drawImage(a.img, (W - iw * sc) / 2 + jx, (H - ih * sc) / 2 + jy, iw * sc, ih * sc);
+    const img = x.getImageData(0, 0, W, H), d = img.data, n = W * H, L = new Float32Array(n), k = PHOTO.con / 100, b = PHOTO.bri / 100;
+    for (let i = 0; i < n; i++) L[i] = Math.min(1, Math.max(0, ((d[i * 4] * .3 + d[i * 4 + 1] * .59 + d[i * 4 + 2] * .11) / 255 - .5) * k + .5 + b));
+    const A = rgbOf(dk), B = rgbOf(lt), put = (i, t) => { d[i * 4] = A[0] + (B[0] - A[0]) * t; d[i * 4 + 1] = A[1] + (B[1] - A[1]) * t; d[i * 4 + 2] = A[2] + (B[2] - A[2]) * t; d[i * 4 + 3] = 255; };
+    if (PHOTO.look === 'raster') {
+      x.fillStyle = dk; x.fillRect(0, 0, W, H); x.fillStyle = lt; const g = 12, o = v % 2 ? g / 2 : 0;
+      for (let y = 0; y < H; y += g) for (let xx = (y / g) % 2 ? g / 2 : 0; xx < W; xx += g) { const t = L[Math.min(H - 1, y + o | 0) * W + Math.min(W - 1, xx | 0)];
+        if (t > .03) { x.beginPath(); x.arc(xx, y, Math.sqrt(t) * g * .64, 0, Math.PI * 2); x.fill(); } }
+    } else {
+      for (let y = 0, i = 0; y < H; y++) for (let xx = 0; xx < W; xx++, i++) {
+        let t = L[i];
+        if (PHOTO.look === 'kopierer') t = Math.min(1, Math.max(0, (t + (Math.random() - .5) * .28 - .5) * 5 + .5));
+        else if (PHOTO.look === 'bit') t = t > (BAYER[((y / 3 | 0) & 3) * 4 + ((xx / 3 | 0) & 3)] + .5) / 16 ? 1 : 0;
+        put(i, t);
+      }
+      x.putImageData(img, 0, 0);
+      if (PHOTO.look === 'glow') {   // highlights bloom in the light colour
+        const [hc, hx] = mk(); hc.width = W; hc.height = H; const hi = hx.createImageData(W, H);
+        for (let i = 0; i < n; i++) { const t = Math.max(0, (L[i] - .68) / .32); hi.data[i * 4] = B[0]; hi.data[i * 4 + 1] = B[1]; hi.data[i * 4 + 2] = B[2]; hi.data[i * 4 + 3] = t * 255; }
+        hx.putImageData(hi, 0, 0); x.save(); x.globalCompositeOperation = 'lighter'; x.filter = 'blur(22px)'; x.globalAlpha = .9; x.drawImage(hc, 0, 0); x.filter = 'blur(6px)'; x.drawImage(hc, 0, 0); x.restore();
+      }
+    }
+    PCACHE.set(key, c); if (PCACHE.size > 24) PCACHE.delete(PCACHE.keys().next().value);
+    return c;
+  }
+  // the name, big: block = every word stretched to full width, quer = one line, hoch = up the side, wiederholt = rows over everything
+  function bigName(name, f, N, W, H, M, area) {
+    const NF = TFONTS[PHOTO.nfont] || TFONTS.archivo, words = name.split(/\s+/).filter(Boolean);
+    if (!words.length) return;
+    if (PHOTO.ns === 'gezogen') {
+      const px = fitPx(tx, name, NF, W - 2 * M, H * .3), base = area.y + area.h - px * .1;
+      if (scv2.width !== W || scv2.height !== H) { scv2.width = W; scv2.height = H; } else scx2.clearRect(0, 0, W, H);
+      scx2.fillStyle = PHOTO.lt; jtext(scx2, name, W / 2, base, px, NF, 'center', f);
+      setFont(scx2, NF, px); const ch = [...name], tot = scx2.measureText(name).width, ws = ch.map(q => scx2.measureText(q).width), k = tot / (ws.reduce((a, b) => a + b, 0) || 1);
+      const span = i => { let x0 = W / 2 - tot / 2; for (let j = 0; j < i; j++) x0 += ws[j] * k; return [x0, ws[i] * k]; };
+      const pick = (re, fb) => { for (let i = ch.length - 1; i >= 0; i--) if (re.test(ch[i])) return i; return fb; };
+      const edge = (x0, w, fromTop) => { const sx = Math.max(0, Math.round(x0)), sw = Math.max(1, Math.round(w)), d = scx2.getImageData(sx, 0, sw, H).data;
+        const rows = fromTop ? [...Array(H).keys()] : [...Array(H).keys()].reverse();
+        for (const y of rows) { let hit = 0; for (let xx = 0; xx < sw; xx++) if (d[(y * sw + xx) * 4 + 3] > 140) hit++; if (hit > sw * .25) return y; } return -1; };
+      // widest solid run of the letter on one row: that is the stem / stroke to pull
+      const runAt = (x0, w, y) => { const sx = Math.max(0, Math.round(x0)), sw = Math.max(1, Math.round(w)), d = scx2.getImageData(sx, Math.round(y), sw, 1).data; let best = [0, 0], cur = -1;
+        for (let i = 0; i <= sw; i++) { const on = i < sw && d[i * 4 + 3] > 140; if (on && cur < 0) cur = i; if (!on && cur >= 0) { if (i - cur > best[1] - best[0]) best = [cur, i]; cur = -1; } }
+        return best[1] > best[0] ? [sx + best[0], best[1] - best[0]] : null; };
+      // up: the stem of an ascender, stretched from just under its top to the top edge
+      const ui = pick(/[tlkbdhfiTLKBDHFIÄÖÜ]/, Math.floor(ch.length / 2)), [ux, uw] = span(ui), uyTop = edge(ux, uw, true);
+      const ur = uyTop > 0 ? runAt(ux - uw * .1, uw * 1.2, uyTop + px * .07) : null;
+      if (ur) { const yy = Math.round(uyTop + px * .07); scx2.drawImage(scv2, ur[0], yy, ur[1], 2, ur[0], 0, ur[1], yy + 1); }
+      // down: a drip under a round letter, a third of its width, to near the bottom
+      const di = pick(/[aoeuscgAOEUSCG]/, 0), [dx, dw] = span(di), dyBot = edge(dx + dw * .35, dw * .3, false);
+      const dr = dyBot > 0 && di !== ui ? runAt(dx, dw, dyBot - 3) : null;
+      if (dr) { const cw = Math.max(2, dr[1] * .35), cx = dr[0] + (dr[1] - cw) / 2, len = (H - dyBot) * (.55 + .25 * sr(f % 4, 9));
+        scx2.drawImage(scv2, Math.round(cx), dyBot - 4, Math.round(cw), 2, Math.round(cx), dyBot - 3, Math.round(cw), Math.round(len)); }
+      tx.drawImage(scv2, 0, 0);
+    } else if (PHOTO.ns === 'quer') { const px = fitPx(tx, name, NF, W - 2 * M, H * .5); jtext(tx, name, W / 2, area.y + area.h * .5 + px * .35, px, NF, 'center', f); }
+    else if (PHOTO.ns === 'hoch') { const px = fitPx(tx, name, NF, H - 2 * M, W * .6);
+      tx.save(); tx.translate(M + px * .8, H - M); tx.rotate(-Math.PI / 2); jtext(tx, name, 0, 0, px, NF, 'left', f); tx.restore(); }
+    else if (PHOTO.ns === 'wiederholt') { const px = Math.min(H / 6, fitPx(tx, name, NF, W * .9, H)), lh = px * .92; tx.lineWidth = Math.max(2, px * .025);
+      setFont(tx, NF, px); const uw = tx.measureText(name + '  ').width || 1, loops = Math.max(1, Math.round(N * 6 / uw));
+      for (let r = 0, y = px * .82; y < H + px; r++, y += lh) { let x0 = -(((f % N) / N * loops * uw) % uw); if (r % 2) x0 = -uw - x0;
+        for (; x0 < W; x0 += uw) jtext(tx, name + '  ', x0, y, px, NF, 'left', f, r % 2 === 1); } }
+    else { const lines = words.length > 3 ? [words.slice(0, Math.ceil(words.length / 2)).join(' '), words.slice(Math.ceil(words.length / 2)).join(' ')] : words;
+      let sizes = lines.map(l => fitPx(tx, l, NF, W - 2 * M, 9999)), tot = sizes.reduce((a, q) => a + q * .86, 0);
+      if (tot > area.h) { const k = area.h / tot; sizes = sizes.map(q => q * k); tot = area.h; }
+      let y = area.y + area.h - tot; lines.forEach((l, i) => { y += sizes[i] * .86; jtext(tx, l, W / 2, y - sizes[i] * .06, sizes[i], NF, 'center', f); }); }
+  }
+  function flushBlend(f) { if (PHOTO.blend === 'differenz') { mx.save(); mx.globalCompositeOperation = 'difference'; flush(f); mx.restore(); } else flush(f); }
   let moWait = false;
   const [dcv, dcx] = mk();   // scratch copy for the duotone pass
   // content of one scene onto mx (no background, no print finish). f and N are local to the scene.
@@ -1471,6 +1573,24 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     } else if (kind === 'titel') {
       const tp = fitPx(tx, title, TF, W - 2 * M, story ? 230 : 200); jtext(tx, title, W / 2, H * .5 + tp * .3, tp, TF, 'center', f);
       if (date) jtext(tx, date, W / 2, H * .5 + tp * .3 + 90, 56, MONO, 'center', f);
+    } else if (kind === 'artist' || kind.startsWith('artist:') || kind === 'lineup') {
+      const ai = kind.startsWith('artist:') ? +kind.slice(7) : PHOTO.ai, a = ARTISTS[ai] || ARTISTS[0];
+      PHOTO_FRAME = true; tx.fillStyle = PHOTO.lt; tx.strokeStyle = PHOTO.lt;
+      const ph = a && a.img ? photoCanvas(a, W, H, f % 4) : null;
+      if (ph) { mx.globalAlpha = kind === 'lineup' ? .42 : 1; mx.drawImage(ph, 0, 0); mx.globalAlpha = 1; }
+      else { mx.fillStyle = photoPal()[0]; mx.fillRect(0, 0, W, H); }
+      const logoH = H * (story ? .1 : .12), foot = story ? 150 : 110;
+      logoBlock({ x: M, y: M * .7, w: W - 2 * M, h: logoH }, f);
+      if (kind === 'lineup') {
+        const names = ARTISTS.map(q => q.name).filter(Boolean), NF = TFONTS[PHOTO.nfont] || TFONTS.archivo, top = M * .7 + logoH + 40, bot = H - foot - 20;
+        let sizes = names.map(nm => fitPx(tx, nm, NF, W - 2 * M, 260)), tot = sizes.reduce((q, z) => q + z * .9, 0);
+        if (tot > bot - top) { const k = (bot - top) / tot; sizes = sizes.map(z => z * k); tot = bot - top; }
+        const hi = Math.floor(f / Math.max(2, Math.round(MO.fps * .75))) % Math.max(1, names.length); let y = top + (bot - top - tot) / 2;
+        tx.lineWidth = 2.5; names.forEach((nm, i) => { y += sizes[i] * .9; jtext(tx, nm, W / 2, y - sizes[i] * .08, sizes[i], NF, 'center', f, i !== hi); });
+      } else bigName(a ? a.name : '', f, N, W, H, M, { y: M * .7 + logoH + 30, h: H - foot - (M * .7 + logoH + 30) - 20 });
+      flushBlend(f); tx.fillStyle = PHOTO.lt;
+      jtext(tx, [date, title].filter(Boolean).join('  ·  '), M, H - foot + 54, 30, MONO, 'left', f);
+      if (extra) jtext(tx, extra, W - M, H - foot + 54, 30, MONO_L, 'right', f);
     } else if (kind === 'daten') {
       const dp = fitPx(tx, date || '00.00.00', MONO, W - 2 * M, story ? 230 : 190); let y = H * (story ? .4 : .36) + dp * .4;
       jtext(tx, date, W / 2, y, dp, MONO, 'center', f); y += 50;
@@ -1590,7 +1710,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     compose(A.t, p, rA, rB, F);
   }
   function drawMotion(F) {
-    setSize(); flash = false; moWait = false;
+    setSize(); flash = false; moWait = false; PHOTO_FRAME = false;
     const W = CV.width, H = CV.height, N = frameCount(), f = F;
     mx = CVX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H);
     drawBack(F, N);
@@ -1598,11 +1718,11 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     // print look: speckles, paper blotches, invert for light, then the yellowed-paper tint (same matrix as #paper)
     if (MO.grain) { mx.globalCompositeOperation = 'lighter'; mx.drawImage(NOISE.specks[f % 4], 0, 0); }
     if (MO.paper) { mx.globalCompositeOperation = 'lighter'; mx.globalAlpha = .09; mx.drawImage(NOISE.clouds, 0, 0); mx.globalAlpha = 1; }
-    const duo = COL.on && CV !== wcv;   // the website wallpaper keeps its own look
-    if (duo ? flash : !MO.dark !== flash) { mx.globalCompositeOperation = 'difference'; mx.fillStyle = '#fff'; mx.fillRect(0, 0, W, H); }
+    const duo = COL.on && CV !== wcv && !PHOTO_FRAME;   // the website wallpaper and photo frames keep their own look
+    if (duo || PHOTO_FRAME ? flash : !MO.dark !== flash) { mx.globalCompositeOperation = 'difference'; mx.fillStyle = '#fff'; mx.fillRect(0, 0, W, H); }
     if (duo) { if (dcv.width !== W || dcv.height !== H) { dcv.width = W; dcv.height = H; } dcx.clearRect(0, 0, W, H); dcx.drawImage(CV, 0, 0);
       mx.save(); mx.globalCompositeOperation = 'copy'; mx.filter = 'url(#duo)'; mx.drawImage(dcv, 0, 0); mx.restore(); }
-    else if (MO.paper) { mx.globalCompositeOperation = 'multiply'; mx.fillStyle = 'rgb(221,211,182)'; mx.fillRect(0, 0, W, H);
+    else if (MO.paper && !PHOTO_FRAME) { mx.globalCompositeOperation = 'multiply'; mx.fillStyle = 'rgb(221,211,182)'; mx.fillRect(0, 0, W, H);
       mx.globalCompositeOperation = 'lighter'; mx.fillStyle = 'rgb(18,17,16)'; mx.fillRect(0, 0, W, H); }
     mx.globalCompositeOperation = 'source-over';
   }
@@ -1623,6 +1743,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   seg('data-mo-bg', v => { MO.dark = v === '0'; });
   seg('data-mo-grain', v => { MO.grain = v === '1'; });
   seg('data-mo-paper', v => { MO.paper = v === '1'; });
+  seg('data-mo-blend', v => { PHOTO.blend = v; });
   $('#mo-mark').onchange = e => { MO.m = e.target.value; };
   $('#mo-word').onchange = e => { MO.w = e.target.value; };
   const loadFont = k => { const F = TFONTS[k]; document.fonts.load(fontStr(F, 100)).catch(() => {}); };
@@ -1671,7 +1792,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // reel scene list
   const scOpt = (list, cur) => list.map(([k, n]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${n}</option>`).join('');
   function drawScenes() {
-    $('#mo-scenes').innerHTML = REEL.map((sc, i) => `<div class="mo-sc" data-i="${i}"><select data-f="k" aria-label="inhalt szene ${i + 1}">${scOpt(SC_K, sc.k)}</select>
+    $('#mo-scenes').innerHTML = REEL.map((sc, i) => `<div class="mo-sc" data-i="${i}"><select data-f="k" aria-label="inhalt szene ${i + 1}">${scOpt(SC_K.concat(ARTISTS.map((a, j) => ['artist:' + j, 'artist: ' + (a.name || j + 1)]), [['lineup', 'lineup']]), sc.k)}</select>
       <input type="number" data-f="d" min="1" max="12" step=".5" value="${sc.d}" aria-label="sekunden szene ${i + 1}">
       <select data-f="t" aria-label="übergang nach szene ${i + 1}">${scOpt(SC_T, sc.t)}</select><button data-x aria-label="szene ${i + 1} entfernen"${REEL.length < 2 ? ' disabled' : ''}>×</button>
       </div>`).join('');
@@ -1859,6 +1980,42 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       const f = await paletteFiles(); Object.entries(f).forEach(([n, d]) => zip.file('farbpalette/' + n, d));
       zip.file('LIESMICH.txt', 'bbk kollektiv · logos\n\ndateiname = farbe aus der palette: knochen und kreide für dunkle flächen, tinte und nacht für helle flächen.\n_koernig = mit kopierer-körnung.\nalle pngs haben transparenten hintergrund. farbwerte: farbpalette/palette.txt\n\n' + FONTS_USED + '\n');
     }, 'bbk-logos-komplett.zip'); };
+
+  // artists + photo look
+  const pchips = (box, list, key) => { box.innerHTML = list.map(([k, n]) => `<button data-k="${k}" aria-pressed="${k === PHOTO[key]}" type="button">${n}</button>`).join('');
+    box.onclick = e => { const b = e.target.closest('button'); if (!b) return; PHOTO[key] = b.dataset.k; $$('button', box).forEach(x => x.setAttribute('aria-pressed', String(x === b))); }; };
+  pchips($('#mo-look'), P_LOOKS, 'look'); pchips($('#mo-ns'), N_STYLES, 'ns');
+  $('#mo-ppal').innerHTML = Object.entries(P_PALS).map(([k, [n]]) => `<option value="${k}"${k === PHOTO.pal ? ' selected' : ''}>${n}</option>`).join('');
+  $('#mo-ppal').onchange = e => { PHOTO.pal = e.target.value; };
+  $('#mo-nfont').innerHTML = Object.entries(TFONTS).map(([k, F]) => `<option value="${k}"${k === PHOTO.nfont ? ' selected' : ''}>${esc(F.n)}</option>`).join('');
+  $('#mo-nfont').onchange = e => { PHOTO.nfont = e.target.value; loadFont(PHOTO.nfont); };
+  [['con', 'con'], ['bri', 'bri']].forEach(([id, k]) => { const el = $('#mo-' + id), o = $(`#mo-${id}-o`); o.textContent = el.value; el.oninput = () => { o.textContent = el.value; PHOTO[k] = +el.value; }; });
+  $('#mo-lt').oninput = e => { PHOTO.lt = e.target.value; };
+  function drawArtists() {
+    $('#mo-artists').innerHTML = ARTISTS.map((a, i) => `<div class="mo-art" data-i="${i}"><input type="radio" name="mo-ai" aria-label="aktiv" ${i === PHOTO.ai ? 'checked' : ''}>
+      <input type="text" value="${esc(a.name)}" aria-label="name ${i + 1}">
+      <label class="kb-btn ghost">foto<input type="file" accept="image/*" hidden></label>${a.img ? `<img src="${a.thumb}" alt="">` : '<span class="nophoto"></span>'}
+      <button type="button" data-x aria-label="entfernen">×</button></div>`).join('');
+    if (MO.mode === 'reel') drawScenes();
+  }
+  const artBox = $('#mo-artists');
+  artBox.addEventListener('input', e => { const row = e.target.closest('.mo-art'); if (!row) return; const a = ARTISTS[+row.dataset.i];
+    if (e.target.type === 'text') a.name = e.target.value; if (e.target.type === 'radio') PHOTO.ai = +row.dataset.i; });
+  artBox.addEventListener('change', async e => { if (e.target.type !== 'file') return; const file = e.target.files && e.target.files[0], a = ARTISTS[+e.target.closest('.mo-art').dataset.i]; if (!file) return;
+    try { const url = URL.createObjectURL(file), img = new Image(); img.src = url; await img.decode();
+      const sc = Math.min(1, 2200 / Math.max(img.naturalWidth, img.naturalHeight)), [c, x] = mk(); c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
+      x.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      const [t, tx2] = mk(); t.width = 80; t.height = 80; const ts = Math.max(80 / c.width, 80 / c.height); tx2.drawImage(c, (80 - c.width * ts) / 2, (80 - c.height * ts) / 2, c.width * ts, c.height * ts);
+      a.img = c; a.thumb = t.toDataURL('image/jpeg', .7); a.v = (a.v || 0) + 1; PHOTO.ai = ARTISTS.indexOf(a); drawArtists();
+    } catch (err) { mstat.textContent = 'bild nicht lesbar.'; } });
+  artBox.addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; ARTISTS.splice(+b.closest('.mo-art').dataset.i, 1);
+    if (!ARTISTS.length) ARTISTS.push({ id: 'a' + Date.now(), name: '', img: null }); PHOTO.ai = Math.min(PHOTO.ai, ARTISTS.length - 1); drawArtists(); });
+  $('#mo-addart').onclick = () => { ARTISTS.push({ id: 'a' + Date.now(), name: 'artist ' + (ARTISTS.length + 1), img: null }); drawArtists(); };
+  $('#mo-art2reel').onclick = () => { const tr = ['glitch', 'blende', 'wischen', 'blitz', 'iris'];
+    REEL.length = 0; REEL.push({ k: 'logo', d: 2, t: 'schrumpf' });
+    ARTISTS.forEach((a, j) => REEL.push({ k: 'artist:' + j, d: 2.5, t: tr[j % tr.length] }));
+    REEL.push({ k: 'lineup', d: 4, t: 'blende' }); drawScenes(); };
+  drawArtists(); loadFont(PHOTO.nfont);
 
   // loop + export
   let mt0 = performance.now(), mLast = -1, recOn = false;
