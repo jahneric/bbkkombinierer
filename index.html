@@ -162,7 +162,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-chips button[aria-pressed="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .mo-ctl output{color:var(--bone)}
 .mo-note{margin:0;font-size:11px;color:var(--mute)}
-#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
+#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
 .mo-sc{display:grid;grid-template-columns:minmax(0,1.3fr) 58px minmax(0,1fr) auto;gap:5px;align-items:center;margin-bottom:6px}
 .mo-sc select,.mo-sc input{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px 5px;font:11px var(--f-min)}
 .mo-sc button{background:none;border:1px solid #555;color:var(--mute);cursor:pointer;padding:5px 8px}
@@ -385,8 +385,19 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <div class="mo-main">
     <div class="mo-view"><canvas id="mo-cv" width="1080" height="1350" aria-label="Vorschau des bewegten Posts"></canvas><div id="mo-status" aria-live="polite"></div></div>
     <aside class="kb-ctl mo-ctl">
-      <div class="row"><div class="seg" role="group" aria-label="Modus"><button data-mo-mode="logo" aria-pressed="true">logo-effekt</button><button data-mo-mode="post" aria-pressed="false">event-post</button><button data-mo-mode="reel" aria-pressed="false">reel</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Modus"><button data-mo-mode="logo" aria-pressed="true">logo-effekt</button><button data-mo-mode="post" aria-pressed="false">event-post</button><button data-mo-mode="lineup" aria-pressed="false">lineup</button><button data-mo-mode="reel" aria-pressed="false">reel</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Format"><button data-mo-fmt="post" aria-pressed="true">post 4:5</button><button data-mo-fmt="story" aria-pressed="false">story / reel 9:16</button></div></div>
+      <div class="mo-lu mo-luonly"><div class="seg" role="group" aria-label="Ansicht"><button data-mo-view="artist" aria-pressed="true">einzeln</button><button data-mo-view="lineup" aria-pressed="false">alle</button></div></div>
+      <div class="mo-lu"><span class="mo-lbl">artists</span><div id="mo-artists"></div>
+        <div class="row"><button class="kb-btn ghost" id="mo-addart" type="button">+ artist</button><button class="kb-btn ghost mo-reelonly" id="mo-art2reel" type="button">artists → szenen</button></div></div>
+      <div class="mo-lu"><span class="mo-lbl">foto</span><div class="mo-chips" id="mo-look" role="group" aria-label="Foto-Look"></div></div>
+      <div class="mo-lu"><label for="mo-ppal">fotofarben<select id="mo-ppal"></select></label></div>
+      <div class="mo-lu"><label for="mo-con">kontrast <output id="mo-con-o"></output><input type="range" id="mo-con" min="50" max="250" value="140"></label></div>
+      <div class="mo-lu"><label for="mo-bri">helligkeit <output id="mo-bri-o"></output><input type="range" id="mo-bri" min="-50" max="50" value="0"></label></div>
+      <div class="mo-lu"><span class="mo-lbl">name</span><div class="mo-chips" id="mo-ns" role="group" aria-label="Namens-Stil"></div></div>
+      <div class="mo-lu"><label for="mo-nfont">schrift name<select id="mo-nfont"></select></label></div>
+      <div class="mo-lu row"><label class="mo-lbl" style="display:flex;gap:6px;align-items:center;margin:0">textfarbe <input type="color" id="mo-lt" value="#e4531c" style="width:34px;height:26px;padding:0;border:1px solid #555;background:none"></label>
+        <div class="seg" role="group" aria-label="Mischmodus"><button data-mo-blend="normal" aria-pressed="true">normal</button><button data-mo-blend="differenz" aria-pressed="false">differenz</button></div></div>
       <div class="mo-reel"><span class="mo-lbl">szenen</span><div id="mo-scenes"></div>
         <div class="row"><button class="kb-btn ghost" id="mo-add">+ szene</button></div></div>
       <div class="mo-post mo-noreel"><span class="mo-lbl">layout</span><div class="mo-chips" id="mo-lay" role="group" aria-label="Layout"></div></div>
@@ -396,16 +407,6 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="mo-post"><label for="mo-info">line-up / ort<input type="text" id="mo-info"></label></div>
       <div class="mo-post"><label for="mo-extra">zusatz<input type="text" id="mo-extra"></label></div>
       <div class="mo-post"><label for="mo-font">schrift für den titel<select id="mo-font"></select></label></div>
-      <div class="mo-post"><span class="mo-lbl">artists</span><div id="mo-artists"></div>
-        <div class="row"><button class="kb-btn ghost" id="mo-addart" type="button">+ artist</button><button class="kb-btn ghost mo-reelonly" id="mo-art2reel" type="button">artists → szenen</button></div></div>
-      <div class="mo-post"><span class="mo-lbl">foto</span><div class="mo-chips" id="mo-look" role="group" aria-label="Foto-Look"></div></div>
-      <div class="mo-post"><label for="mo-ppal">fotofarben<select id="mo-ppal"></select></label></div>
-      <div class="mo-post"><label for="mo-con">kontrast <output id="mo-con-o"></output><input type="range" id="mo-con" min="50" max="250" value="140"></label></div>
-      <div class="mo-post"><label for="mo-bri">helligkeit <output id="mo-bri-o"></output><input type="range" id="mo-bri" min="-50" max="50" value="0"></label></div>
-      <div class="mo-post"><span class="mo-lbl">name</span><div class="mo-chips" id="mo-ns" role="group" aria-label="Namens-Stil"></div></div>
-      <div class="mo-post"><label for="mo-nfont">schrift name<select id="mo-nfont"></select></label></div>
-      <div class="mo-post row"><label class="mo-lbl" style="display:flex;gap:6px;align-items:center;margin:0">textfarbe <input type="color" id="mo-lt" value="#e4531c" style="width:34px;height:26px;padding:0;border:1px solid #555;background:none"></label>
-        <div class="seg" role="group" aria-label="Mischmodus"><button data-mo-blend="normal" aria-pressed="true">normal</button><button data-mo-blend="differenz" aria-pressed="false">differenz</button></div></div>
       <label for="mo-mark">zeichen<select id="mo-mark"></select></label>
       <label for="mo-word">schriftzug<select id="mo-word"></select></label>
       <label for="mo-partner">partner-logo<select id="mo-partner"></select></label>
@@ -1199,10 +1200,10 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const MO_FX = [['ruhig', 'nur zittern'], ['wackeln', 'wackeln'], ['puls', 'puls'], ['echo', 'echo'], ['dreher', 'dreher'], ['strobe', 'stroboskop'], ['glitch', 'glitch'], ['raster', '1-bit'], ['kacheln', 'kacheln']];
   const MO_BACK = [['-', 'keiner'], ['nebel', 'nebel'], ['schlieren', 'schlieren'], ['leck', 'lichtleck'], ['kontur', 'höhenlinien'], ['moire', 'moiré'], ['fluss', 'fluss'], ['morph', 'morph'], ['gitter', 'gitter'], ['spirale', 'spirale'],
     ['tunnel', 'tunnel'], ['wellen', 'schallwellen'], ['punkte', 'punktwelle'], ['scan', 'scanlinien']];
-  const MO_LAY = [['artist', 'artist'], ['lineup', 'lineup'], ['plakat', 'plakat'], ['ticker', 'ticker'], ['raster', 'raster'], ['zaehler', 'zähler']];
+  const MO_LAY = [['plakat', 'plakat'], ['ticker', 'ticker'], ['raster', 'raster'], ['zaehler', 'zähler']];
   // lineup posts: artists with a photo each; the photo gets a look + a colour pair, the name runs huge across the frame
   const ARTISTS = EVENTS[0].l.split(/[·,×]/).map(t => t.trim()).filter(Boolean).map((name, i) => ({ id: 'a' + i, name, img: null }));
-  const PHOTO = { ai: 0, look: 'foto', pal: 'sw', con: 140, bri: 0, ns: 'gezogen', nfont: 'archivo', lt: '#e4531c', blend: 'normal' };
+  const PHOTO = { view: 'artist', ai: 0, look: 'foto', pal: 'sw', con: 140, bri: 0, ns: 'gezogen', nfont: 'archivo', lt: '#e4531c', blend: 'normal' };
   const P_LOOKS = [['foto', 'foto'], ['kopierer', 'kopierer'], ['raster', 'raster'], ['bit', '1-bit'], ['glow', 'glow']];
   const P_PALS = { sw: ['schwarz / weiß', '#0b0b0b', '#f2f2f2'], rw: ['rot / weiß', '#c3221b', '#f4eee2'], sr: ['schwarz / rot', '#0b0b0b', '#e3271d'],
     bw: ['blau / weiß', '#1b2f8a', '#f2f0ea'], lg: ['lila / gelb', '#3b1a5c', '#f5d33d'], pv: ['papier', '#12110f', '#ebe3cb'], own: ['eigene farben', null, null] };
@@ -1727,7 +1728,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     const W = CV.width, H = CV.height, N = frameCount(), f = F;
     mx = CVX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H);
     drawBack(F, N);
-    if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.lay);
+    if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.mode === 'lineup' ? PHOTO.view : MO.lay);
     // print look: speckles, paper blotches, invert for light, then the yellowed-paper tint (same matrix as #paper)
     if (MO.grain) { mx.globalCompositeOperation = 'lighter'; mx.drawImage(NOISE.specks[f % 4], 0, 0); }
     if (MO.paper) { mx.globalCompositeOperation = 'lighter'; mx.globalAlpha = .09; mx.drawImage(NOISE.clouds, 0, 0); mx.globalAlpha = 1; }
@@ -1751,12 +1752,13 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   chips($('#mo-fx'), MO_FX, 'fx'); chips($('#mo-lay'), MO_LAY, 'lay'); chips($('#mo-back'), MO_BACK, 'back');
   const seg = (attr, fn) => $$(`[${attr}]`).forEach(b => b.onclick = () => { fn(b.getAttribute(attr)); $$(`[${attr}]`).forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
   const fmtNote = () => { const [W, H] = FMT[MO.fmt], n = frameCount(); $('#mo-fmtnote').textContent = `${W} × ${H} · ${(n / MO.fps).toFixed(1)} s`; };
-  seg('data-mo-mode', v => { MO.mode = v; mroom.classList.toggle('post', v !== 'logo'); mroom.classList.toggle('reel', v === 'reel'); fmtNote(); });
+  seg('data-mo-mode', v => { MO.mode = v; mroom.classList.toggle('post', v !== 'logo'); mroom.classList.toggle('reel', v === 'reel'); mroom.classList.toggle('lineup', v === 'lineup'); mroom.classList.toggle('lu', v === 'lineup' || v === 'reel'); fmtNote(); });
   seg('data-mo-fmt', v => { MO.fmt = v; fmtNote(); });
   seg('data-mo-bg', v => { MO.dark = v === '0'; });
   seg('data-mo-grain', v => { MO.grain = v === '1'; });
   seg('data-mo-paper', v => { MO.paper = v === '1'; });
   seg('data-mo-blend', v => { PHOTO.blend = v; });
+  seg('data-mo-view', v => { PHOTO.view = v; });
   $('#mo-mark').onchange = e => { MO.m = e.target.value; };
   $('#mo-word').onchange = e => { MO.w = e.target.value; };
   const loadFont = k => { const F = TFONTS[k]; document.fonts.load(fontStr(F, 100)).catch(() => {}); };
@@ -2032,7 +2034,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 
   // loop + export
   let mt0 = performance.now(), mLast = -1, recOn = false;
-  const fileBase = () => ['bbk', MO.mode === 'post' ? MO.lay : MO.mode, MO.p !== '-' ? (findP(MO.p) || { n: '' }).n.replace(/[^a-z0-9]+/gi, '') : '', MO.fx, MO.fmt === 'story' ? '9x16' : '4x5'].filter(Boolean).join('-');
+  const fileBase = () => ['bbk', MO.mode === 'post' ? MO.lay : MO.mode === 'lineup' ? (PHOTO.view === 'artist' ? 'artist-' + ((ARTISTS[PHOTO.ai] || {}).name || '').replace(/[^a-z0-9]+/gi, '') : 'lineup') : MO.mode, MO.p !== '-' ? (findP(MO.p) || { n: '' }).n.replace(/[^a-z0-9]+/gi, '') : '', MO.fx, MO.fmt === 'story' ? '9x16' : '4x5'].filter(Boolean).join('-');
   // published: the viewer's downloads capability (with a confirm prompt); opened as a local file: a plain download link
   const dl = window.claude && window.claude.use ? window.claude.use('downloads').catch(() => null) : Promise.resolve(undefined);
   async function save(blob, name, stat = mstat) {
