@@ -439,7 +439,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 <div class="room" id="r-shirt">
   <h1>bbk shirt</h1>
   <div class="sh-main">
-    <div><canvas id="sh-cv" width="1500" height="1650" aria-label="Shirt-Vorschau, Motiv mit der Maus verschiebbar"></canvas></div>
+    <div><canvas id="sh-cv" width="1500" height="1500" aria-label="Shirt-Vorschau, Motiv mit der Maus verschiebbar"></canvas></div>
     <aside class="kb-ctl sh-ctl">
       <div class="row"><div class="seg" role="group" aria-label="Seite"><button data-sh-view="front" aria-pressed="true">vorne</button><button data-sh-view="back" aria-pressed="false">hinten</button></div></div>
       <div><span class="mo-lbl">shirt</span><div class="sh-sw" id="sh-colors"></div></div>
@@ -2059,11 +2059,12 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 
   // ---------- shirt: drawn tee with fabric shading; the print follows the folds ----------
   // everything is laid out in a 1000 x 1100 unit space (1 unit ~ 1 mm on a size-L tee) and drawn at 1.5x.
-  const SHU = 1.5, SHW = 1500, SHH = 1650;
+  const SHU = 1.5, SHW = 1500, SHH = 1500;
+  const TEE_BODY = ' L705 118 C760 132 800 148 828 172 L905 372 C880 388 846 400 810 406 L752 318 C750 470 746 600 748 700 C750 780 754 840 758 880 C600 896 400 896 242 880 C246 840 250 780 252 700 C254 600 250 470 248 318 L190 406 C154 400 120 388 95 372 L172 172 C200 148 240 132 295 118 Z';
   const TEE = {
-    front: 'M388 92 C428 152 572 152 612 92 L700 116 C780 138 842 160 880 190 L975 400 C935 425 890 440 840 452 L772 332 C770 520 772 800 774 1036 C600 1054 400 1054 226 1036 C228 800 230 520 228 332 L160 452 C110 440 65 425 25 400 L120 190 C158 160 220 138 300 116 Z',
-    back: 'M388 92 C428 112 572 112 612 92 L700 116 C780 138 842 160 880 190 L975 400 C935 425 890 440 840 452 L772 332 C770 520 772 800 774 1036 C600 1054 400 1054 226 1036 C228 800 230 520 228 332 L160 452 C110 440 65 425 25 400 L120 190 C158 160 220 138 300 116 Z',
-    neck: { front: 'M388 92 C428 152 572 152 612 92', back: 'M388 92 C428 112 572 112 612 92' },
+    front: 'M400 95 C440 152 560 152 600 95' + TEE_BODY,
+    back: 'M400 95 C440 116 560 116 600 95' + TEE_BODY,
+    neck: { front: 'M400 95 C440 152 560 152 600 95', back: 'M400 95 C440 116 560 116 600 95' },
   };
   const SH_AREA = { front: [350, 170, 650, 590], back: [350, 140, 650, 640] };   // printable box per side (30 x 40 cm)
   const SH_POS = { front: [['brust', 610, 235, 85], ['mitte', 500, 330, 230], ['groß', 500, 400, 300]], back: [['nacken', 500, 175, 100], ['rücken', 500, 360, 260], ['voll', 500, 420, 300]] };
@@ -2074,25 +2075,42 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const shcv = $('#sh-cv'), shx = shcv.getContext('2d'), shStat = $('#sh-stat'), SHUP = {};
   const pathU = d => { const p2 = new Path2D(); p2.addPath(new Path2D(d), new DOMMatrix().scale(SHU)); return p2; };
   const lumOf = h => { const [r, g, b] = rgbOf(h); return (r * .3 + g * .59 + b * .11) / 255; };
-  // shading map per side: neutral grey, darker towards the sides, soft folds under the arms and down the body
+  // lighting: a height field (the blurred silhouette gives the body its roundness, strokes add folds) is lit from the
+  // top left. the result is a multiply map (shade), a screen map (sheen) and the slope (gx, gy) the print is warped along.
   const SHADE = {};
   function shadeMap(view) {
     if (SHADE[view]) return SHADE[view];
-    const [c, x] = mk(); c.width = SHW; c.height = SHH; x.fillStyle = '#808080'; x.fillRect(0, 0, SHW, SHH); x.scale(SHU, SHU);
-    const side = x.createLinearGradient(220, 0, 780, 0); side.addColorStop(0, 'rgba(0,0,0,.42)'); side.addColorStop(.18, 'rgba(0,0,0,0)'); side.addColorStop(.5, 'rgba(255,255,255,.08)'); side.addColorStop(.82, 'rgba(0,0,0,0)'); side.addColorStop(1, 'rgba(0,0,0,.42)');
-    x.fillStyle = side; x.fillRect(0, 0, 1000, 1100);
-    const sl = (x0, y0, x1, y1, w, col, bl) => { x.save(); x.filter = `blur(${bl}px)`; x.strokeStyle = col; x.lineWidth = w; x.lineCap = 'round'; x.beginPath(); x.moveTo(x0, y0); x.quadraticCurveTo((x0 + x1) / 2 + (y1 - y0) * .08, (y0 + y1) / 2, x1, y1); x.stroke(); x.restore(); };
-    [[238, 350, 340, 560], [250, 420, 330, 650], [762, 350, 660, 560], [750, 420, 670, 650]].forEach(q => sl(...q, 30, 'rgba(0,0,0,.42)', 16));
-    [[420, 640, 395, 1030], [610, 600, 640, 1030], [505, 760, 490, 1040]].forEach(q => sl(...q, 38, 'rgba(0,0,0,.30)', 22));
-    [[470, 220, 520, 760], [300, 300, 315, 900], [690, 300, 700, 900]].forEach(q => sl(...q, 48, 'rgba(255,255,255,.24)', 26));
-    [[130, 300, 70, 400], [870, 300, 930, 400]].forEach(q => sl(...q, 40, 'rgba(0,0,0,.22)', 20));
-    x.save(); x.filter = 'blur(10px)'; x.strokeStyle = 'rgba(0,0,0,.35)'; x.lineWidth = 16; x.stroke(new Path2D(TEE.neck[view])); x.restore();
-    const hem = x.createLinearGradient(0, 980, 0, 1050); hem.addColorStop(0, 'rgba(0,0,0,0)'); hem.addColorStop(1, 'rgba(0,0,0,.22)'); x.fillStyle = hem; x.fillRect(0, 960, 1000, 100);
-    return (SHADE[view] = c);
+    const W = SHW, H = SHH, tee = pathU(TEE[view]);
+    const [mc, mx2] = mk(); mc.width = W; mc.height = H; mx2.fillStyle = '#000'; mx2.fillRect(0, 0, W, H); mx2.filter = 'blur(70px)'; mx2.fillStyle = '#fff'; mx2.fill(tee); mx2.filter = 'blur(18px)'; mx2.fill(tee);
+    const [fc, fx] = mk(); fc.width = W; fc.height = H; fx.fillStyle = '#808080'; fx.fillRect(0, 0, W, H); fx.scale(SHU, SHU); fx.lineCap = 'round';
+    const fold = (pts, w, up, bl) => { fx.save(); fx.filter = `blur(${bl * 2.2}px)`; fx.strokeStyle = up ? 'rgba(255,255,255,.4)' : 'rgba(0,0,0,.4)'; fx.lineWidth = w; fx.beginPath();
+      fx.moveTo(pts[0], pts[1]); if (pts.length === 6) fx.quadraticCurveTo(pts[2], pts[3], pts[4], pts[5]); else fx.lineTo(pts[2], pts[3]); fx.stroke(); fx.restore(); };
+    // pull lines from the armpits towards the chest, sleeve folds, soft waist wrinkles, drape to the hem
+    [[262, 336, 330, 380, 410, 470], [738, 336, 670, 380, 590, 470]].forEach(q => { fold(q, 22, false, 10); fold(q.map((v, i) => v + (i % 2 ? -14 : 0)), 16, true, 9); });
+    [[268, 372, 320, 440, 360, 520], [732, 372, 680, 440, 640, 520]].forEach(q => fold(q, 14, false, 8));
+    [[195, 230, 160, 300, 130, 370], [805, 230, 840, 300, 870, 370]].forEach(q => fold(q, 20, true, 10));
+    [[215, 260, 180, 330, 165, 395], [785, 260, 820, 330, 835, 395]].forEach(q => fold(q, 12, false, 7));
+    [[300, 640, 500, 668, 700, 645], [320, 700, 500, 722, 680, 702]].forEach((q, i) => fold(q, 26, i === 1, 16));
+    [[420, 740, 412, 820, 408, 885], [585, 745, 594, 820, 598, 885], [500, 770, 504, 840, 498, 890]].forEach((q, i) => fold(q, 22, i === 2, 14));
+    [[500, 200, 505, 420, 500, 600]].forEach(q => fold(q, 80, true, 34));
+    const md = mx2.getImageData(0, 0, W, H).data, fd = fx.getImageData(0, 0, W, H).data, n = W * H, h = new Float32Array(n);
+    for (let i = 0; i < n; i++) { const dome = md[i * 4] / 255, f = (fd[i * 4] - 128) / 128; h[i] = Math.sqrt(dome) * 1.25 + f * .22; }
+    const gx = new Float32Array(n), gy = new Float32Array(n), [sc, sx] = mk(), [hc, hx] = mk(); sc.width = hc.width = W; sc.height = hc.height = H;
+    const si = sx.createImageData(W, H), hi = hx.createImageData(W, H), L = [-.4, -.55, .73], k = 14;
+    for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+      const i = y * W + x, dx = (h[i + 1] - h[i - 1]) * k, dy = (h[i + W] - h[i - W]) * k; gx[i] = dx; gy[i] = dy;
+      const nl = Math.hypot(dx, dy, 1), nx = -dx / nl, ny = -dy / nl, nz = 1 / nl, diff = Math.max(0, nx * L[0] + ny * L[1] + nz * L[2]);
+      const ao = .62 + .38 * Math.min(1, md[i * 4] / 255 * 1.5), v = Math.min(1, (.42 + .66 * diff) * ao), spec = Math.pow(diff, 18) * .4;
+      si.data[i * 4] = si.data[i * 4 + 1] = si.data[i * 4 + 2] = v * 255; si.data[i * 4 + 3] = 255;
+      hi.data[i * 4] = hi.data[i * 4 + 1] = hi.data[i * 4 + 2] = spec * 255; hi.data[i * 4 + 3] = 255;
+    }
+    sx.putImageData(si, 0, 0); hx.putImageData(hi, 0, 0);
+    return (SHADE[view] = { shade: sc, sheen: hc, gx, gy });
   }
-  let SHTEX = null;   // fine knit texture, tiled
-  function knit() { if (SHTEX) return SHTEX; const [c, x] = mk(); c.width = c.height = 192; const d = x.createImageData(192, 192);
-    for (let y = 0; y < 192; y++) for (let xx = 0; xx < 192; xx++) { const i = (y * 192 + xx) * 4, v = 128 + (Math.random() - .5) * 46 + ((xx + (y >> 1)) % 3 === 0 ? 14 : 0); d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+  let SHTEX = null;   // jersey knit: tiny vertical loops, tiled
+  function knit() { if (SHTEX) return SHTEX; const [c, x] = mk(); c.width = c.height = 120; const d = x.createImageData(120, 120);
+    for (let y = 0; y < 120; y++) for (let xx = 0; xx < 120; xx++) { const i = (y * 120 + xx) * 4, loop = Math.sin((xx % 4) / 4 * Math.PI) * Math.sin(((y + (xx >> 2) * 1.5) % 3) / 3 * Math.PI);
+      const v = 128 + loop * 26 + (Math.random() - .5) * 30; d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
     x.putImageData(d, 0, 0); return (SHTEX = c); }
   let SHHOLES = null;
   function holes(W, H) { if (SHHOLES && SHHOLES.width === W && SHHOLES.height === H) return SHHOLES; const [c, x] = mk(); c.width = W; c.height = H; const d = x.createImageData(W, H);
@@ -2112,41 +2130,52 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       for (let i = 0; i < d.length; i += 4) { const a = d[i + 3] * Math.max(d[i], d[i + 1], d[i + 2]) / 255; d[i] = rgb[0]; d[i + 1] = rgb[1]; d[i + 2] = rgb[2]; d[i + 3] = a; } ox.putImageData(img, 0, 0); }
     SHD.set(key, o); if (SHD.size > 16) SHD.delete(SHD.keys().next().value); return o;
   }
-  const [plc, plx] = mk(), [spc, spx] = mk(); let shBusy = 0;
+  const [plc, plx] = mk(), [pwc, pwx] = mk(); let shBusy = 0;
   async function drawShirt() {
     const ticket = ++shBusy, v = SH.view, P = SH[v], dsg = P.src !== '-' ? await designBitmap(P.src, 1400) : null;
     if (ticket !== shBusy) return;
-    const x = shx, tee = pathU(TEE[v]);
+    const x = shx, tee = pathU(TEE[v]), M = shadeMap(v), dark = lumOf(SH.color) < .3;
     x.setTransform(1, 0, 0, 1, 0, 0); x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.filter = 'none';
-    const bg = x.createRadialGradient(SHW / 2, SHH * .42, 100, SHW / 2, SHH / 2, SHH * .8); bg.addColorStop(0, '#efece6'); bg.addColorStop(1, '#d6d2ca'); x.fillStyle = bg; x.fillRect(0, 0, SHW, SHH);
-    x.save(); x.filter = 'blur(26px)'; x.translate(0, 26); x.fillStyle = 'rgba(0,0,0,.32)'; x.fill(tee); x.restore();
+    const bg = x.createRadialGradient(SHW / 2, SHH * .4, 80, SHW / 2, SHH / 2, SHH * .85); bg.addColorStop(0, '#f1eee8'); bg.addColorStop(1, '#d3cfc6'); x.fillStyle = bg; x.fillRect(0, 0, SHW, SHH);
+    x.save(); x.filter = 'blur(34px)'; x.translate(8, 30); x.fillStyle = 'rgba(0,0,0,.30)'; x.fill(tee); x.restore();
+    x.save(); x.filter = 'blur(6px)'; x.translate(2, 6); x.fillStyle = 'rgba(0,0,0,.25)'; x.fill(tee); x.restore();
     x.save(); x.clip(tee);
     x.fillStyle = SH.color; x.fillRect(0, 0, SHW, SHH);
-    const sh = shadeMap(v), dark = lumOf(SH.color) < .3;
-    x.globalCompositeOperation = 'soft-light'; x.drawImage(sh, 0, 0); if (dark) { x.globalCompositeOperation = 'screen'; x.globalAlpha = .16; x.drawImage(sh, 0, 0); x.globalAlpha = 1; }
-    x.globalCompositeOperation = 'soft-light'; x.globalAlpha = .55; x.fillStyle = x.createPattern(knit(), 'repeat'); x.fillRect(0, 0, SHW, SHH); x.globalAlpha = 1;
-    // the print: placed, grained, shaded like the fabric, then warped a little along the folds
+    x.globalCompositeOperation = 'multiply'; x.drawImage(M.shade, 0, 0);
+    x.globalCompositeOperation = 'screen'; x.globalAlpha = dark ? .55 : .3; x.drawImage(M.sheen, 0, 0); x.globalAlpha = 1;
+    x.globalCompositeOperation = 'soft-light'; x.globalAlpha = dark ? .7 : .45; x.fillStyle = x.createPattern(knit(), 'repeat'); x.fillRect(0, 0, SHW, SHH); x.globalAlpha = 1;
+    // the print: placed, warped along the slope of the fabric, lit the same way, grained if wanted
     if (dsg) {
-      if (plc.width !== SHW || plc.height !== SHH) { plc.width = SHW; plc.height = SHH; } else plx.clearRect(0, 0, SHW, SHH);
-      const w = P.w * SHU, h = w * dsg.height / dsg.width; plx.globalCompositeOperation = 'source-over'; plx.drawImage(dsg, P.cx * SHU - w / 2, P.cy * SHU - h / 2, w, h);
-      if (SH.grain) { plx.globalCompositeOperation = 'destination-out'; plx.drawImage(holes(SHW, SHH), 0, 0); }
-      if (spc.width !== SHW || spc.height !== SHH) { spc.width = SHW; spc.height = SHH; } else spx.clearRect(0, 0, SHW, SHH);
-      spx.globalCompositeOperation = 'source-over'; spx.drawImage(sh, 0, 0); spx.globalCompositeOperation = 'destination-in'; spx.drawImage(plc, 0, 0); spx.globalCompositeOperation = 'source-over';
-      plx.globalCompositeOperation = 'soft-light'; plx.globalAlpha = .9; plx.drawImage(spc, 0, 0); plx.globalAlpha = 1; plx.globalCompositeOperation = 'source-over';
-      x.globalCompositeOperation = 'source-over'; x.globalAlpha = .94; x.filter = 'url(#shirtwarp)'; x.drawImage(plc, 0, 0); x.filter = 'none'; x.globalAlpha = 1;
+      if (plc.width !== SHW || plc.height !== SHH) { plc.width = pwc.width = SHW; plc.height = pwc.height = SHH; } else { plx.clearRect(0, 0, SHW, SHH); pwx.clearRect(0, 0, SHW, SHH); }
+      const w = P.w * SHU, h = w * dsg.height / dsg.width, x0 = Math.max(0, Math.floor(P.cx * SHU - w / 2 - 30)), y0 = Math.max(0, Math.floor(P.cy * SHU - h / 2 - 30));
+      const bw = Math.min(SHW - x0, Math.ceil(w + 60)), bh = Math.min(SHH - y0, Math.ceil(h + 60));
+      plx.drawImage(dsg, P.cx * SHU - w / 2, P.cy * SHU - h / 2, w, h);
+      const src = plx.getImageData(x0, y0, bw, bh), out = pwx.createImageData(bw, bh), sd = src.data, od = out.data, D = 7;
+      for (let yy = 0; yy < bh; yy++) for (let xx = 0; xx < bw; xx++) { const gi = (y0 + yy) * SHW + x0 + xx, sxp = Math.round(xx + M.gx[gi] * D), syp = Math.round(yy + M.gy[gi] * D);
+        if (sxp < 0 || syp < 0 || sxp >= bw || syp >= bh) continue; const a = (syp * bw + sxp) * 4, b = (yy * bw + xx) * 4; od[b] = sd[a]; od[b + 1] = sd[a + 1]; od[b + 2] = sd[a + 2]; od[b + 3] = sd[a + 3]; }
+      pwx.putImageData(out, x0, y0);
+      if (SH.grain) { pwx.globalCompositeOperation = 'destination-out'; pwx.drawImage(holes(SHW, SHH), 0, 0); }
+      plx.clearRect(0, 0, SHW, SHH); plx.drawImage(pwc, 0, 0);   // keep the print's shape, then light it like the fabric
+      pwx.globalCompositeOperation = 'multiply'; pwx.drawImage(M.shade, 0, 0); pwx.globalCompositeOperation = 'destination-in'; pwx.drawImage(plc, 0, 0); pwx.globalCompositeOperation = 'source-over';
+      x.globalCompositeOperation = 'source-over'; x.globalAlpha = .96; x.drawImage(pwc, 0, 0); x.globalAlpha = 1;
+      x.globalCompositeOperation = 'screen'; x.globalAlpha = .18; x.drawImage(M.sheen, 0, 0); x.globalAlpha = 1;
       x.globalCompositeOperation = 'soft-light'; x.globalAlpha = .35; x.fillStyle = x.createPattern(knit(), 'repeat'); x.fillRect(0, 0, SHW, SHH); x.globalAlpha = 1;
     }
     x.restore();
-    // rib collar + stitching
-    x.save(); x.setTransform(SHU, 0, 0, SHU, 0, 0); x.lineCap = 'round';
-    if (v === 'front') { const inner = new Path2D('M392 94 C430 118 570 118 608 94 C570 146 430 146 392 94 Z'); x.fillStyle = SH.color; x.fill(inner);
-      x.fillStyle = 'rgba(0,0,0,.38)'; x.fill(inner); x.strokeStyle = SH.color; x.lineWidth = 9; x.stroke(new Path2D('M392 94 C430 118 570 118 608 94')); x.strokeStyle = 'rgba(0,0,0,.25)'; x.lineWidth = 2; x.stroke(new Path2D('M396 99 C432 121 568 121 604 99')); }
-    const neck = new Path2D(TEE.neck[v]); x.strokeStyle = SH.color; x.lineWidth = 20; x.stroke(neck);
-    x.strokeStyle = dark ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.18)'; x.lineWidth = 1.4; x.setLineDash([3, 3]);
-    x.translate(0, 9); x.stroke(neck); x.translate(0, -9);
-    [[[230, 1018], [772, 1018]], [[30, 386], [160, 438]], [[970, 386], [840, 438]]].forEach(([a, b]) => { x.beginPath(); x.moveTo(...a); x.lineTo(...b); x.stroke(); });
-    x.setLineDash([]); x.strokeStyle = dark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.12)'; x.lineWidth = 3; x.stroke(neck);
-    x.restore();
+    // construction: inside back collar, ribbed neck band, shoulder + set-in sleeve seams, double-needle hems
+    x.save(); x.setTransform(SHU, 0, 0, SHU, 0, 0); x.lineCap = 'round'; x.lineJoin = 'round';
+    const seam = dark ? 'rgba(255,255,255,.10)' : 'rgba(0,0,0,.16)', stitch = dark ? 'rgba(255,255,255,.16)' : 'rgba(0,0,0,.22)';
+    if (v === 'front') { const inner = new Path2D('M404 97 C442 120 558 120 596 97 C560 146 440 146 404 97 Z'); x.fillStyle = SH.color; x.fill(inner); x.fillStyle = 'rgba(0,0,0,.45)'; x.fill(inner);
+      x.fillStyle = 'rgba(255,255,255,.04)'; x.fill(new Path2D('M404 97 C442 120 558 120 596 97 C560 112 440 112 404 97 Z')); }
+    const neck = new Path2D(TEE.neck[v]); x.strokeStyle = SH.color; x.lineWidth = 16; x.stroke(neck);
+    x.strokeStyle = 'rgba(0,0,0,.18)'; x.lineWidth = 16; x.stroke(neck);
+    x.save(); x.strokeStyle = dark ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.08)'; x.lineWidth = 14; x.setLineDash([1.2, 2.2]); x.stroke(neck); x.restore();
+    x.strokeStyle = stitch; x.lineWidth = 1.1; x.setLineDash([3, 2.5]);
+    x.save(); x.translate(0, 9); x.stroke(neck); x.restore();
+    [['M600 95 L705 118', 'M400 95 L295 118'], ['M705 118 C722 190 735 260 752 318', 'M295 118 C278 190 265 260 248 318']].flat().forEach(d => { x.setLineDash([]); x.strokeStyle = seam; x.lineWidth = 2.2; x.stroke(new Path2D(d)); });
+    x.setLineDash([3, 2.5]); x.strokeStyle = stitch; x.lineWidth = 1.1;
+    ['M246 862 C400 878 600 878 754 862', 'M246 870 C400 886 600 886 754 870', 'M102 360 L180 392', 'M898 360 L820 392', 'M106 368 L184 400', 'M894 368 L816 400'].forEach(d => x.stroke(new Path2D(d)));
+    x.setLineDash([]); x.restore();
   }
   // controls
   const shUi = () => {
@@ -2182,9 +2211,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // drag the motif
   let shDrag = null;
   shcv.addEventListener('pointerdown', e => { const r = shcv.getBoundingClientRect(), k = 1000 / r.width, P = SH[SH.view];
-    shDrag = { x: (e.clientX - r.left) * k, y: (e.clientY - r.top) * (1100 / r.height), cx: P.cx, cy: P.cy }; shcv.setPointerCapture(e.pointerId); });
+    shDrag = { x: (e.clientX - r.left) * k, y: (e.clientY - r.top) * (SHH / SHU / r.height), cx: P.cx, cy: P.cy }; shcv.setPointerCapture(e.pointerId); });
   shcv.addEventListener('pointermove', e => { if (!shDrag) return; const r = shcv.getBoundingClientRect(), P = SH[SH.view], A = SH_AREA[SH.view];
-    P.cx = Math.max(A[0], Math.min(A[2], shDrag.cx + (e.clientX - r.left) * (1000 / r.width) - shDrag.x)); P.cy = Math.max(A[1], Math.min(A[3], shDrag.cy + (e.clientY - r.top) * (1100 / r.height) - shDrag.y)); drawShirt(); });
+    P.cx = Math.max(A[0], Math.min(A[2], shDrag.cx + (e.clientX - r.left) * (1000 / r.width) - shDrag.x)); P.cy = Math.max(A[1], Math.min(A[3], shDrag.cy + (e.clientY - r.top) * (SHH / SHU / r.height) - shDrag.y)); drawShirt(); });
   const shUp = () => { shDrag = null; }; shcv.addEventListener('pointerup', shUp); shcv.addEventListener('pointercancel', shUp);
   // exports: the mockup as seen, and the print file at 300 dpi (30 x 40 cm box, transparent)
   $('#sh-mock').onclick = () => shcv.toBlob(b => save(b, `bbk-shirt-${SH.view === 'front' ? 'vorne' : 'hinten'}.png`, shStat), 'image/png');
