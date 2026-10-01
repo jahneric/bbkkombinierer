@@ -295,7 +295,6 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <button data-v="kombi" aria-pressed="false">kombinierer</button>
   <button data-v="motion" aria-pressed="false">bewegt</button>
   <button data-v="y2k" aria-pressed="false">website</button>
-  <span class="note">Logos aus eurem Kreis-Logo abgeleitet · Termine aus Insta, bitte prüfen</span>
 </div>
 <div class="grain" aria-hidden="true"></div>
 
@@ -306,7 +305,6 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <div class="lab-head">
     <div>
       <h1>bbk logo-labor</h1>
-      <p>neueste runde oben. körnung „leicht“ ist wie ein kopierer: toner fehlt, kanten fransen, krümel im hintergrund. „stark“ druckt zusätzlich leicht versetzt doppelt. „vergilbt“ gibt allem das warme papierweiß von alten flyern und scans. „auf weiß“ zeigt alle logos invertiert, z. B. für shirts und sticker.</p>
     </div>
     <div class="lab-ctl">
       <span>körnung</span><div class="seg" role="group" aria-label="Körnung"><button data-grain="0" aria-pressed="false">aus</button><button data-grain="1" aria-pressed="true">leicht</button><button data-grain="2" aria-pressed="false">stark</button></div>
@@ -316,7 +314,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     </div>
   </div>
   <section class="dl-box" aria-label="Downloads">
-  <h2 class="lab-h" style="margin-top:0">downloads · alle logos als png mit transparentem hintergrund, in den logo-farben, mit und ohne körnung. einzelne logos über „png ↓“ an jeder kachel.</h2>
+  <h2 class="lab-h" style="margin-top:0">downloads</h2>
   <div class="dl-top"><button class="kb-btn" id="dl-all" type="button">alles laden (zip)</button><button class="kb-btn ghost" id="dl-pal" type="button">farbpalette laden</button>
     <label class="mo-lbl" style="margin:0">größe <select id="dl-size" style="background:#000;color:var(--bone);border:1px solid #555;font:12px var(--f-min);padding:5px"><option value="1000">1000 px</option><option value="2000" selected>2000 px</option><option value="3000">3000 px</option></select></label>
     <span id="dl-status" aria-live="polite"></span></div>
@@ -325,17 +323,13 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <div class="pal" id="dl-palette"></div>
   </section>
   <h2 class="lab-h">runde 5 · zeichen zum kombinieren</h2>
-  <p class="lab-p">von pinterest inspiriert (köpfe, embleme, 90er-labels), gesichter mit kopfhörern, alles ohne schrift, damit euer schriftzug daneben passt. „schriftzug-probe“ stellt euer gebautes bbk testweise daneben.</p>
   <div class="lab-ctl" style="margin-bottom:14px"><span>schriftzug-probe</span><div class="seg" role="group" aria-label="Schriftzug-Probe"><button data-lock="0" aria-pressed="true">aus</button><button data-lock="1" aria-pressed="false">an</button></div></div>
   <div class="logos" id="logos5"></div>
   <h2 class="lab-h">runde 4 · musik</h2>
-  <p class="lab-p">euer kopf-pin mit musik verbunden, dazu boxen, kassette und platte. die GC-kapsel steckt in der kassette.</p>
   <div class="logos" id="logos4"></div>
   <h2 class="lab-h">runde 3 · zeichen ohne buchstaben</h2>
-  <p class="lab-p">reine bildmarken, die auch ohne schrift funktionieren: als profilbild, stempel, sticker oder aufnäher. die idee: zwei schläge und ein knall, gekreuzt mit euren pins.</p>
   <div class="logos" id="logos3"></div>
   <h2 class="lab-h">runde 2 · gebaute buchstaben</h2>
-  <p class="lab-p">keine fertige schrift mehr: ein eigenes bbk aus kreisen und runden stielen, die ineinander schmelzen. dazu eure pins (adopt, giallo, DASH, NO4MAT) und eure drei favoriten neu gebaut. beim 3D-block bewegt die maus die kamera.</p>
   <div class="logos" id="logos2"></div>
   <h2 class="lab-h">runde 1 · fertige schriften</h2>
   <div class="fontbar" id="fontbar" role="group" aria-label="Schrift für alle Logos"></div>
@@ -345,7 +339,6 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 <!-- ================= KOMBINIERER ================= -->
 <div class="room" id="r-kombi">
   <h1>bbk kombinierer</h1>
-  <p>jedes zeichen mit jedem schriftzug. unten auswählen, rechts anordnen. „merken“ sammelt eure favoriten, „liste kopieren“ gibt sie als text, den ihr mir schicken könnt, dann baue ich die finalen dateien.</p>
   <div class="kb-main">
     <div class="kombi"><div class="tile kb-stage"><div class="kb-lock quer" id="kb-lock"><div class="kb-mk"></div><div class="kb-wm"></div></div></div><div id="kb-name"></div></div>
     <aside class="kb-ctl">
@@ -360,7 +353,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row"><button class="kb-btn" id="kb-rnd">zufall</button><button class="kb-btn" id="kb-fav">merken</button><button class="kb-btn ghost" id="kb-copy">liste kopieren</button></div>
       <textarea id="kb-copytxt" hidden aria-label="Favoritenliste zum Kopieren"></textarea>
       <div class="kb-dlrow"><button class="kb-btn" id="kb-png" type="button">kombi als png ↓</button><button class="kb-btn ghost" id="kb-pal" type="button">farbpalette ↓</button></div>
-      <p class="kb-empty" id="kb-dlstat" aria-live="polite" style="font-size:11px">png mit transparentem hintergrund, farben und größe wie im logo-labor eingestellt.</p>
+      <p class="kb-empty" id="kb-dlstat" aria-live="polite" style="font-size:11px"></p>
     </aside>
   </div>
   <h2>gemerkt</h2><div id="kb-favs"></div>
@@ -371,7 +364,6 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 <!-- ================= BEWEGT ================= -->
 <div class="room" id="r-motion">
   <h1>bbk bewegt</h1>
-  <p>logos und event-posts, die nie stillstehen: linien zittern wie im daumenkino, dazu ein effekt. „video laden“ nimmt eine nahtlose schleife auf, die direkt auf insta kann. während der aufnahme den tab offen lassen.</p>
   <div class="mo-main">
     <div class="mo-view"><canvas id="mo-cv" width="1080" height="1350" aria-label="Vorschau des bewegten Posts"></canvas><div id="mo-status" aria-live="polite"></div></div>
     <aside class="kb-ctl mo-ctl">
@@ -412,13 +404,13 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 
 <!-- ================= Y2K DESKTOP ================= -->
 <div class="room" id="r-y2k">
-  <div class="marq" aria-hidden="true"><span>+++ bbk kollektiv +++ leipzig +++ open air season 2026 +++ reconnect × bbk 25.09. +++ sets online soon +++ fenster lassen sich verschieben +++ bbk kollektiv +++ leipzig +++ open air season 2026 +++ reconnect × bbk 25.09. +++ sets online soon +++ fenster lassen sich verschieben +++&nbsp;</span></div>
+  <div class="marq" aria-hidden="true"><span>+++ bbk kollektiv +++ leipzig +++ open air season 2026 +++ reconnect × bbk 25.09. +++ sets online soon +++ bbk kollektiv +++ leipzig +++ open air season 2026 +++ reconnect × bbk 25.09. +++ sets online soon +++&nbsp;</span></div>
   <div class="desk" id="desk">
     <canvas class="wall" id="wall" width="320" height="240" aria-hidden="true"></canvas>
 
     <section class="win" data-win="kollektiv" style="--w:300px;left:3%;top:56px">
       <div class="tb">kollektiv.doc<span class="ctl"><button data-act="min" aria-label="minimieren">_</button><button data-act="min" aria-label="schließen">x</button></span></div>
-      <div class="wb"><p>bbk ist ein musik- und kreativkollektiv aus leipzig. partys, open airs, sets und alles dazwischen.</p><p class="pix">&gt; hier kommt euer text hin<span class="cursor"></span></p></div>
+      <div class="wb"><p>bbk ist ein musik- und kreativkollektiv aus leipzig. partys, open airs, sets und alles dazwischen.</p><p class="pix">&gt; text folgt<span class="cursor"></span></p></div>
     </section>
 
     <section class="win" data-win="player" style="--w:270px;right:3%;top:48px">
@@ -453,7 +445,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
           <div class="seg" role="group" aria-label="Körnung"><button data-w-grain="1">körnig</button><button data-w-grain="0">glatt</button></div>
           <div class="seg" role="group" aria-label="Papier"><button data-w-paper="1">vergilbt</button><button data-w-paper="0">rein</button></div></div>
         <div class="full"><button class="wbtn" id="w-rnd" type="button">zufall</button><button class="wbtn" id="w-copy" type="button">einstellung kopieren</button></div>
-        <p class="note" id="w-note">wird in diesem browser gemerkt. „einstellung kopieren“ schickt ihr mir, dann wird das der feste look der website.</p>
+        <p class="note" id="w-note"></p>
       </div>
     </section>
 
@@ -582,7 +574,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     ['siegel', 'siegel', 'kreisform, blubbernde schrift, punkt-umlauf'],
     ['bit', '1-bit', 'pixel-fraktur, gerastert, mit wanderndem glanz'],
   ];
-  $('#logos').innerHTML = LAB.map(([k, n, d]) => `<figure data-k="${k}"><div class="tile">${k === 'bit' ? '<canvas id="bitlogo" width="180" height="74" aria-label="bbk 1-Bit-Logo"></canvas>' : LOGOS[k]()}</div><figcaption><span>${n} · <span class="fn"></span></span><span>${d}</span></figcaption></figure>`).join('');
+  $('#logos').innerHTML = LAB.map(([k, n, d]) => `<figure data-k="${k}"><div class="tile">${k === 'bit' ? '<canvas id="bitlogo" width="180" height="74" aria-label="bbk 1-Bit-Logo"></canvas>' : LOGOS[k]()}</div><figcaption><span>${n} · <span class="fn"></span></span></figcaption></figure>`).join('');
 
   // ---------- round 2: constructed "bbk" (circles + round stems, fused) ----------
   // glyph lives in a 330 × 230 box
@@ -649,7 +641,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     ['echo', 'echo 2', 'euer favorit: konturen-echo der neuen form'],
     ['streifen', 'streifen 2', 'euer favorit: linienraster in der neuen form'],
   ];
-  $('#logos2').innerHTML = LAB2.map(([k, n, d]) => `<figure data-k2="${k}"><div class="tile">${R2[k]()}</div><figcaption><span>${n}</span><span>${d}</span></figcaption></figure>`).join('');
+  $('#logos2').innerHTML = LAB2.map(([k, n, d]) => `<figure data-k2="${k}"><div class="tile">${R2[k]()}</div><figcaption><span>${n}</span></figcaption></figure>`).join('');
 
   // ---------- round 3: marks without letters ----------
   const W = '#f0f0f0';
@@ -702,7 +694,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     ['tropfen', 'tropfen', 'zwei kreise und ein keil verschmolzen, mit tropfen'],
     ['bitball', '1-bit kugel', 'die discokugel der website als zeichen'],
   ];
-  $('#logos3').innerHTML = LAB3.map(([k, n, d]) => `<figure data-k3="${k}"><div class="tile">${R3[k]()}</div><figcaption><span>${n}</span><span>${d}</span></figcaption></figure>`).join('');
+  $('#logos3').innerHTML = LAB3.map(([k, n, d]) => `<figure data-k3="${k}"><div class="tile">${R3[k]()}</div><figcaption><span>${n}</span></figcaption></figure>`).join('');
 
 
   // ---------- round 4: music ----------
@@ -791,7 +783,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     ['vinyl', 'vinyl-eclipse', 'schallplatte mit sichel und tonarm (DASH)'],
     ['membran', 'membran', 'lautsprecher von vorn, funke in der mitte'],
   ];
-  $('#logos4').innerHTML = LAB4.map(([k, n, d]) => `<figure data-k4="${k}"><div class="tile">${R4[k]()}</div><figcaption><span>${n}</span><span>${d}</span></figcaption></figure>`).join('');
+  $('#logos4').innerHTML = LAB4.map(([k, n, d]) => `<figure data-k4="${k}"><div class="tile">${R4[k]()}</div><figcaption><span>${n}</span></figcaption></figure>`).join('');
   function drawBitKopf() {
     const cv = $('#bitkopf'), p = new Path2D(HEAD), t = document.createElement('canvas').getContext('2d');
     render(cv, (u, v, asp) => {
@@ -894,7 +886,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     ['klammer', 'klammer', 'klammern um einen lautsprecher, wie berghain'],
     ['halbton', 'halbton', 'gerasterte kugel, funke ausgeschnitten'],
   ];
-  $('#logos5').innerHTML = LAB5.map(([k, n, d]) => `<figure data-k5="${k}"><div class="tile"><div class="lk"><div class="mk">${R5[k]()}</div><div class="wm">${WORD}</div></div></div><figcaption><span>${n}</span><span>${d}</span></figcaption></figure>`).join('');
+  $('#logos5').innerHTML = LAB5.map(([k, n, d]) => `<figure data-k5="${k}"><div class="tile"><div class="lk"><div class="mk">${R5[k]()}</div><div class="wm">${WORD}</div></div></div><figcaption><span>${n}</span></figcaption></figure>`).join('');
   $$('[data-lock]').forEach(b => b.onclick = () => { document.body.classList.toggle('lockup-on', b.dataset.lock === '1'); $$('[data-lock]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
 
 
@@ -950,7 +942,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const favName = f => `${findM(f.m).n} × ${findW(f.w).n} · ${f.lay}`;
   function drawFavs() {
     $('#kb-favs').innerHTML = favs.length ? favs.map((f, i) => `<span class="fav"><button data-f="${i}">${esc(favName(f))}</button><button data-x="${i}" aria-label="entfernen">×</button></span>`).join('')
-      : '<p class="kb-empty">noch nichts gemerkt. baut eine kombi und drückt „merken“.</p>';
+      : '<p class="kb-empty">noch nichts gemerkt.</p>';
     $$('[data-f]').forEach(b => b.onclick = () => { Object.assign(KB, favs[+b.dataset.f]); drawKombi(); scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }); });
     $$('[data-x]').forEach(b => b.onclick = () => { favs.splice(+b.dataset.x, 1); saveFavs(); drawFavs(); });
   }
@@ -1674,9 +1666,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   $('#mo-up').onchange = async e => { const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;
     try { mstat.textContent = 'logo wird eingelesen …'; const r = await ingest(file), x = { id: 'p-u' + Date.now(), n: file.name.replace(/\.[^.]+$/, '').toLowerCase(), ...r };
       PARTNERS.push({ id: x.id, n: x.n, make: upSvg(x.src, x.w, x.h), up: x }); MO.p = x.id; partnerOpts(); wallUi();
-      try { localStorage.setItem('bbk-partner-logos', JSON.stringify(PARTNERS.filter(q => q.up).map(q => q.up))); mstat.textContent = `„${x.n}“ ist drin und bleibt in diesem browser gespeichert.`; }
-      catch (err) { mstat.textContent = `„${x.n}“ ist drin (nur bis zum neuladen, der speicher ist voll).`; }
-    } catch (err) { mstat.textContent = 'das bild ließ sich nicht lesen. png, jpg oder svg probieren.'; } };
+      try { localStorage.setItem('bbk-partner-logos', JSON.stringify(PARTNERS.filter(q => q.up).map(q => q.up))); mstat.textContent = `„${x.n}“ geladen und im browser gespeichert.`; }
+      catch (err) { mstat.textContent = `„${x.n}“ geladen (nicht gespeichert, speicher voll).`; }
+    } catch (err) { mstat.textContent = 'bild nicht lesbar. png, jpg oder svg verwenden.'; } };
   // reel scene list
   const scOpt = (list, cur) => list.map(([k, n]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${n}</option>`).join('');
   function drawScenes() {
@@ -1749,7 +1741,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   $('#w-rnd').onclick = () => { const pick = a => a[Math.floor(Math.random() * a.length)];
     Object.assign(WALL, { m: pick(MARKS).id, w: Math.random() < .6 ? pick(WORDS.slice(1)).id : '-', back: pick(MO_BACK.slice(1))[0], fx: pick(MO_FX)[0], wash: Math.round(20 + Math.random() * 70) }); wSave(); };
   $('#w-copy').onclick = () => { const txt = 'bbk website-hintergrund: ' + JSON.stringify(WALL);
-    const ok = () => { $('#w-note').textContent = 'kopiert. schickt mir den text, dann baue ich ihn als festen look ein.'; };
+    const ok = () => { $('#w-note').textContent = 'einstellung kopiert.'; };
     if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok, () => { $('#w-note').textContent = txt; }); else $('#w-note').textContent = txt; };
   wallUi(); wallStill();
 
@@ -1816,7 +1808,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (dlBusy) return; dlBusy = true; $$('.dl-box button, .figdl, .kb-dlrow button').forEach(b => { b.disabled = true; });
     try { const JSZip = await zipLib(), zip = new JSZip(); await build(zip); dlStat.textContent = 'zip wird gepackt …';
       const blob = await zip.generateAsync({ type: 'blob' }); dlStat.textContent = ''; await save(blob, name, st); }
-    catch (e) { console.warn(e); st.textContent = 'das ging schief, bitte nochmal probieren.'; }
+    catch (e) { console.warn(e); st.textContent = 'fehler. erneut versuchen.'; }
     finally { dlBusy = false; $$('.dl-box button, .figdl, .kb-dlrow button').forEach(b => { b.disabled = false; }); }
   }
   const addLogo = async (zip, x, folder, size) => { const files = await logoPngs(x, size), base = 'bbk-' + slug(x.n.replace(/\s*\(.*\)$/, ''));
@@ -1855,7 +1847,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   const kbStat = $('#kb-dlstat');
   $('#kb-png').onclick = () => { const m = findM(KB.m), w = findW(KB.w), name = slug([m.id !== '-' ? m.n : '', w.id !== '-' ? w.n.replace(/\s*\(.*\)$/, '') : '', KB.lay].filter(Boolean).join('-')), size = +$('#dl-size').value;
-    if (KB.m === '-' && KB.w === '-') { kbStat.textContent = 'erst ein zeichen oder einen schriftzug auswählen.'; return; }
+    if (KB.m === '-' && KB.w === '-') { kbStat.textContent = 'zeichen oder schriftzug auswählen.'; return; }
     zipUp(async zip => { kbStat.textContent = 'kombi wird gezeichnet …';
       for (const grain of [false, true]) { const c = await kombiCanvas(grain, size); Object.entries(await inkify(c)).forEach(([n, blob]) => zip.file(`bbk-${name}/bbk-${name}_${n}${grain ? '_koernig' : ''}.png`, blob)); }
       kbStat.textContent = ''; }, `bbk-${name}.zip`, kbStat); };
@@ -1877,7 +1869,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   async function save(blob, name, stat = mstat) {
     const d = await dl;
     if (d) { try { await d.save({ filename: name, data: blob }); stat.textContent = 'gespeichert: ' + name; }
-      catch (e) { stat.textContent = e && e.code === 'declined' ? 'speichern abgebrochen.' : 'speichern ging hier nicht (' + ((e && e.code) || 'fehler') + ').'; } return; }
+      catch (e) { stat.textContent = e && e.code === 'declined' ? 'speichern abgebrochen.' : 'speichern nicht möglich (' + ((e && e.code) || 'fehler') + ').'; } return; }
     if (d === null) { stat.textContent = 'speichern ist in dieser ansicht nicht verfügbar.'; return; }
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   }
@@ -1896,7 +1888,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (recOn) return;
     const types = ['video/mp4;codecs=avc1.640028', 'video/mp4;codecs=avc1.4d0028', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm'];
     const type = window.MediaRecorder && types.find(t => MediaRecorder.isTypeSupported(t));
-    if (!type) { mstat.textContent = 'dieser browser kann keine videos aufnehmen, bitte chrome nehmen.'; return; }
+    if (!type) { mstat.textContent = 'videoaufnahme hier nicht möglich. chrome verwenden.'; return; }
     const ext = type.startsWith('video/mp4') ? 'mp4' : 'webm', btn = $('#mo-rec'), secs = frameCount() / MO.fps;
     const rec = new MediaRecorder(mcv.captureStream(30), { mimeType: type, videoBitsPerSecond: 16e6 }), parts = [];
     rec.ondataavailable = e => { if (e.data.size) parts.push(e.data); };
@@ -1905,7 +1897,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     const tick = setInterval(() => { mstat.textContent = `nimmt auf … ${Math.max(0, secs - (performance.now() - mt0) / 1000).toFixed(1)} s`; }, 100);
     await new Promise(r => setTimeout(r, secs * 1000 + 60));
     rec.stop(); await done; clearInterval(tick); recOn = false; btn.disabled = false;
-    mstat.textContent = ext === 'mp4' ? 'aufnahme fertig, speichern bestätigen …' : 'fertig als webm. für insta ggf. in mp4 umwandeln (z. b. handbrake).';
+    mstat.textContent = ext === 'mp4' ? 'aufnahme fertig, speichern bestätigen …' : 'fertig (webm). für instagram in mp4 umwandeln.';
     save(new Blob(parts, { type: type.split(';')[0] }), `${fileBase()}.${ext}`);
   };
 
