@@ -32,7 +32,7 @@ button{font:inherit;color:inherit}
 .grain{position:fixed;inset:0;pointer-events:none;z-index:70;background-image:var(--noise);opacity:.08;mix-blend-mode:screen;animation:grain .5s steps(4) infinite}
 @keyframes grain{0%{background-position:0 0}25%{background-position:-37px 21px}50%{background-position:14px -48px}75%{background-position:-22px -9px}}
 .room{display:none}
-body[data-v="logos"] #r-logos,body[data-v="kombi"] #r-kombi,body[data-v="motion"] #r-motion,body[data-v="y2k"] #r-y2k{display:block}
+body[data-v="logos"] #r-logos,body[data-v="kombi"] #r-kombi,body[data-v="motion"] #r-motion,body[data-v="shirt"] #r-shirt,body[data-v="y2k"] #r-y2k{display:block}
 
 /* ---------- logo lab ---------- */
 #r-logos{max-width:1240px;margin:0 auto;padding:36px 16px 80px}
@@ -163,6 +163,20 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-art input[type=radio]{accent-color:var(--bone)}
 .kb-btn:disabled{opacity:.5;cursor:wait}
 
+/* ---------- shirt ---------- */
+#r-shirt{max-width:1240px;margin:0 auto;padding:30px 16px 80px}
+#r-shirt h1{font:800 clamp(30px,5vw,54px)/.9 var(--f-min);font-stretch:112.5%;letter-spacing:-.05em;margin:0 0 18px}
+.sh-main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px;align-items:start}
+@media (max-width:900px){.sh-main{grid-template-columns:minmax(0,1fr)}}
+#sh-cv{display:block;width:100%;height:auto;max-height:calc(100vh - 130px);object-fit:contain;border:1px solid var(--ash);background:#e8e5df;touch-action:none;cursor:grab}
+#sh-cv:active{cursor:grabbing}
+.sh-sw{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.sh-sw button{width:28px;height:28px;border:1px solid #555;cursor:pointer;padding:0}
+.sh-sw button[aria-pressed="true"]{outline:2px solid var(--bone);outline-offset:2px}
+.sh-sw button.txt{width:auto;padding:0 8px;background:none;color:var(--bone);font:11px var(--f-min)}
+.sh-sw input[type=color]{width:34px;height:28px;padding:0;border:1px solid #555;background:none;cursor:pointer}
+.sh-ctl select{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:7px 8px;font:12px var(--f-min)}
+
 /* ---------- website desktop ----------
    one palette for wallpaper and windows: --dk (window ground) and --ik (ink) flip with hell/dunkel and vergilbt/rein,
    the same choices the wallpaper engine uses, so windows and background always match. */
@@ -292,6 +306,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <filter id="scratch" x="-10%" y="-30%" width="120%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="3" seed="12" result="t"/><feDisplacementMap in="SourceGraphic" in2="t" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
   <filter id="duo" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".3 .59 .11 0 0  .3 .59 .11 0 0  .3 .59 .11 0 0  0 0 0 1 0"/>
     <feComponentTransfer><feFuncR type="table" tableValues="0 1"/><feFuncG type="table" tableValues="0 1"/><feFuncB type="table" tableValues="0 1"/></feComponentTransfer></filter>
+  <filter id="shirtwarp" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".004 .007" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter>
   <filter id="melt" x="-10%" y="-20%" width="120%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".012 .09" numOctaves="2" seed="5"/><feDisplacementMap in="SourceGraphic" scale="14"/></filter>
 </svg>
 
@@ -300,6 +315,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <button data-v="logos" aria-pressed="true">logo-labor</button>
   <button data-v="kombi" aria-pressed="false">kombinierer</button>
   <button data-v="motion" aria-pressed="false">bewegt</button>
+  <button data-v="shirt" aria-pressed="false">shirt</button>
   <button data-v="y2k" aria-pressed="false">website</button>
 </div>
 <div class="grain" aria-hidden="true"></div>
@@ -378,6 +394,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="mo-lu"><span class="mo-lbl">artists</span><div id="mo-artists"></div>
         <div class="row"><button class="kb-btn ghost" id="mo-addart" type="button">+ artist</button><button class="kb-btn ghost mo-reelonly" id="mo-art2reel" type="button">artists → szenen</button></div></div>
       <div class="mo-lu"><span class="mo-lbl">foto</span><div class="mo-chips" id="mo-look" role="group" aria-label="Foto-Look"></div></div>
+      <div class="mo-lu row"><div class="seg" role="group" aria-label="Foto-Bewegung"><button data-mo-still="1" aria-pressed="true">ruhig</button><button data-mo-still="0" aria-pressed="false">lebendig</button></div></div>
       <div class="mo-lu"><label for="mo-ppal">fotofarben<select id="mo-ppal"></select></label></div>
       <div class="mo-lu"><label for="mo-con">kontrast <output id="mo-con-o"></output><input type="range" id="mo-con" min="50" max="250" value="140"></label></div>
       <div class="mo-lu"><label for="mo-bri">helligkeit <output id="mo-bri-o"></output><input type="range" id="mo-bri" min="-50" max="50" value="0"></label></div>
@@ -414,6 +431,26 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <label class="mo-noreel" for="mo-len">länge<select id="mo-len"><option value="3">3 sekunden</option><option value="6" selected>6 sekunden</option><option value="10">10 sekunden</option><option value="15">15 sekunden</option></select></label>
       <div class="row"><button class="kb-btn" id="mo-rec">video ↓</button><button class="kb-btn ghost" id="mo-png">png ↓</button><button class="kb-btn ghost" id="mo-rnd">zufall</button></div>
       <p class="mo-note" id="mo-fmtnote"></p>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= SHIRT ================= -->
+<div class="room" id="r-shirt">
+  <h1>bbk shirt</h1>
+  <div class="sh-main">
+    <div><canvas id="sh-cv" width="1500" height="1650" aria-label="Shirt-Vorschau, Motiv mit der Maus verschiebbar"></canvas></div>
+    <aside class="kb-ctl sh-ctl">
+      <div class="row"><div class="seg" role="group" aria-label="Seite"><button data-sh-view="front" aria-pressed="true">vorne</button><button data-sh-view="back" aria-pressed="false">hinten</button></div></div>
+      <div><span class="mo-lbl">shirt</span><div class="sh-sw" id="sh-colors"></div></div>
+      <label for="sh-src">motiv<select id="sh-src"></select></label>
+      <div class="row"><label class="kb-btn ghost mo-up">eigene datei<input type="file" id="sh-up" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden></label></div>
+      <div><span class="mo-lbl">position</span><div class="mo-chips" id="sh-pos" role="group" aria-label="Position"></div></div>
+      <label for="sh-size">größe <output id="sh-size-o"></output><input type="range" id="sh-size" min="30" max="320"></label>
+      <div><span class="mo-lbl">druckfarbe</span><div class="sh-sw" id="sh-inks"></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Druck"><button data-sh-grain="0" aria-pressed="true">glatt</button><button data-sh-grain="1" aria-pressed="false">körnig</button></div></div>
+      <div class="row"><button class="kb-btn" id="sh-mock" type="button">mockup ↓</button><button class="kb-btn ghost" id="sh-print" type="button">druck ↓</button></div>
+      <p class="kb-empty" id="sh-stat" aria-live="polite" style="font-size:11px"></p>
     </aside>
   </div>
 </div>
@@ -1190,7 +1227,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const MO_LAY = [['plakat', 'plakat'], ['ticker', 'ticker'], ['raster', 'raster'], ['zaehler', 'zähler']];
   // lineup posts: artists with a photo each; the photo gets a look + a colour pair, the name runs huge across the frame
   const ARTISTS = EVENTS[0].l.split(/[·,×]/).map(t => t.trim()).filter(Boolean).map((name, i) => ({ id: 'a' + i, name, img: null }));
-  const PHOTO = { view: 'artist', ai: 0, look: 'foto', pal: 'sw', con: 140, bri: 0, ns: 'gezogen', nfont: 'archivo', lt: '#e4531c', blend: 'normal' };
+  const PHOTO = { view: 'artist', still: true, ai: 0, look: 'foto', pal: 'sw', con: 140, bri: 0, ns: 'gezogen', nfont: 'archivo', lt: '#e4531c', blend: 'normal' };
   const P_LOOKS = [['foto', 'foto'], ['kopierer', 'kopierer'], ['raster', 'raster'], ['bit', '1-bit'], ['glow', 'glow']];
   const P_PALS = { sw: ['schwarz / weiß', '#0b0b0b', '#f2f2f2'], rw: ['rot / weiß', '#c3221b', '#f4eee2'], sr: ['schwarz / rot', '#0b0b0b', '#e3271d'],
     bw: ['blau / weiß', '#1b2f8a', '#f2f0ea'], lg: ['lila / gelb', '#3b1a5c', '#f5d33d'], pv: ['papier', '#12110f', '#ebe3cb'], own: ['eigene farben', null, null] };
@@ -1577,7 +1614,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     } else if (kind === 'artist' || kind.startsWith('artist:') || kind === 'lineup') {
       const ai = kind.startsWith('artist:') ? +kind.slice(7) : PHOTO.ai, a = ARTISTS[ai] || ARTISTS[0];
       PHOTO_FRAME = true; tx.fillStyle = PHOTO.lt; tx.strokeStyle = PHOTO.lt;
-      const ph = a && a.img ? photoCanvas(a, W, H, f % 4) : null;
+      const ph = a && a.img ? photoCanvas(a, W, H, PHOTO.still ? 0 : f % 4) : null;
       if (ph) { mx.globalAlpha = kind === 'lineup' ? .42 : 1; mx.drawImage(ph, 0, 0); mx.globalAlpha = 1; }
       else { mx.fillStyle = photoPal()[0]; mx.fillRect(0, 0, W, H); }
       const logoH = H * (story ? .1 : .12), foot = story ? 150 : 110;
@@ -1746,6 +1783,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   seg('data-mo-paper', v => { MO.paper = v === '1'; });
   seg('data-mo-blend', v => { PHOTO.blend = v; });
   seg('data-mo-view', v => { PHOTO.view = v; });
+  seg('data-mo-still', v => { PHOTO.still = v === '1'; });
   $('#mo-mark').onchange = e => { MO.m = e.target.value; };
   $('#mo-word').onchange = e => { MO.w = e.target.value; };
   const loadFont = k => { const F = TFONTS[k]; document.fonts.load(fontStr(F, 100)).catch(() => {}); };
@@ -2019,6 +2057,146 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     REEL.push({ k: 'lineup', d: 4, t: 'blende' }); drawScenes(); };
   drawArtists(); loadFont(PHOTO.nfont);
 
+  // ---------- shirt: drawn tee with fabric shading; the print follows the folds ----------
+  // everything is laid out in a 1000 x 1100 unit space (1 unit ~ 1 mm on a size-L tee) and drawn at 1.5x.
+  const SHU = 1.5, SHW = 1500, SHH = 1650;
+  const TEE = {
+    front: 'M388 92 C428 152 572 152 612 92 L700 116 C780 138 842 160 880 190 L975 400 C935 425 890 440 840 452 L772 332 C770 520 772 800 774 1036 C600 1054 400 1054 226 1036 C228 800 230 520 228 332 L160 452 C110 440 65 425 25 400 L120 190 C158 160 220 138 300 116 Z',
+    back: 'M388 92 C428 112 572 112 612 92 L700 116 C780 138 842 160 880 190 L975 400 C935 425 890 440 840 452 L772 332 C770 520 772 800 774 1036 C600 1054 400 1054 226 1036 C228 800 230 520 228 332 L160 452 C110 440 65 425 25 400 L120 190 C158 160 220 138 300 116 Z',
+    neck: { front: 'M388 92 C428 152 572 152 612 92', back: 'M388 92 C428 112 572 112 612 92' },
+  };
+  const SH_AREA = { front: [350, 170, 650, 590], back: [350, 140, 650, 640] };   // printable box per side (30 x 40 cm)
+  const SH_POS = { front: [['brust', 610, 235, 85], ['mitte', 500, 330, 230], ['groß', 500, 400, 300]], back: [['nacken', 500, 175, 100], ['rücken', 500, 360, 260], ['voll', 500, 420, 300]] };
+  const SH_COLORS = [['schwarz', '#151515'], ['weiß', '#f4f4f2'], ['creme', '#ece4cf'], ['asche', '#3a3a38'], ['grau', '#a9a8a4'], ['toner', '#12110f'], ['lila', '#3b1a5c'], ['rot', '#8e1b16']];
+  const SH_INKS = [['original', null], ['knochen', '#e6dfc8'], ['kreide', '#f0f0f0'], ['tinte', '#1a1915'], ['nacht', '#050505'], ['rot', '#c8241c'], ['orange', '#e4531c'], ['gelb', '#f5d33d']];
+  const SH = { view: 'front', color: '#151515', ink: '#e6dfc8', grain: false,
+    front: { src: 'r4-kopfwellebbk', cx: 500, cy: 330, w: 230 }, back: { src: 'r4-kopfwellesiegel', cx: 500, cy: 360, w: 260 } };
+  const shcv = $('#sh-cv'), shx = shcv.getContext('2d'), shStat = $('#sh-stat'), SHUP = {};
+  const pathU = d => { const p2 = new Path2D(); p2.addPath(new Path2D(d), new DOMMatrix().scale(SHU)); return p2; };
+  const lumOf = h => { const [r, g, b] = rgbOf(h); return (r * .3 + g * .59 + b * .11) / 255; };
+  // shading map per side: neutral grey, darker towards the sides, soft folds under the arms and down the body
+  const SHADE = {};
+  function shadeMap(view) {
+    if (SHADE[view]) return SHADE[view];
+    const [c, x] = mk(); c.width = SHW; c.height = SHH; x.fillStyle = '#808080'; x.fillRect(0, 0, SHW, SHH); x.scale(SHU, SHU);
+    const side = x.createLinearGradient(220, 0, 780, 0); side.addColorStop(0, 'rgba(0,0,0,.42)'); side.addColorStop(.18, 'rgba(0,0,0,0)'); side.addColorStop(.5, 'rgba(255,255,255,.08)'); side.addColorStop(.82, 'rgba(0,0,0,0)'); side.addColorStop(1, 'rgba(0,0,0,.42)');
+    x.fillStyle = side; x.fillRect(0, 0, 1000, 1100);
+    const sl = (x0, y0, x1, y1, w, col, bl) => { x.save(); x.filter = `blur(${bl}px)`; x.strokeStyle = col; x.lineWidth = w; x.lineCap = 'round'; x.beginPath(); x.moveTo(x0, y0); x.quadraticCurveTo((x0 + x1) / 2 + (y1 - y0) * .08, (y0 + y1) / 2, x1, y1); x.stroke(); x.restore(); };
+    [[238, 350, 340, 560], [250, 420, 330, 650], [762, 350, 660, 560], [750, 420, 670, 650]].forEach(q => sl(...q, 30, 'rgba(0,0,0,.42)', 16));
+    [[420, 640, 395, 1030], [610, 600, 640, 1030], [505, 760, 490, 1040]].forEach(q => sl(...q, 38, 'rgba(0,0,0,.30)', 22));
+    [[470, 220, 520, 760], [300, 300, 315, 900], [690, 300, 700, 900]].forEach(q => sl(...q, 48, 'rgba(255,255,255,.24)', 26));
+    [[130, 300, 70, 400], [870, 300, 930, 400]].forEach(q => sl(...q, 40, 'rgba(0,0,0,.22)', 20));
+    x.save(); x.filter = 'blur(10px)'; x.strokeStyle = 'rgba(0,0,0,.35)'; x.lineWidth = 16; x.stroke(new Path2D(TEE.neck[view])); x.restore();
+    const hem = x.createLinearGradient(0, 980, 0, 1050); hem.addColorStop(0, 'rgba(0,0,0,0)'); hem.addColorStop(1, 'rgba(0,0,0,.22)'); x.fillStyle = hem; x.fillRect(0, 960, 1000, 100);
+    return (SHADE[view] = c);
+  }
+  let SHTEX = null;   // fine knit texture, tiled
+  function knit() { if (SHTEX) return SHTEX; const [c, x] = mk(); c.width = c.height = 192; const d = x.createImageData(192, 192);
+    for (let y = 0; y < 192; y++) for (let xx = 0; xx < 192; xx++) { const i = (y * 192 + xx) * 4, v = 128 + (Math.random() - .5) * 46 + ((xx + (y >> 1)) % 3 === 0 ? 14 : 0); d.data[i] = d.data[i + 1] = d.data[i + 2] = v; d.data[i + 3] = 255; }
+    x.putImageData(d, 0, 0); return (SHTEX = c); }
+  let SHHOLES = null;
+  function holes(W, H) { if (SHHOLES && SHHOLES.width === W && SHHOLES.height === H) return SHHOLES; const [c, x] = mk(); c.width = W; c.height = H; const d = x.createImageData(W, H);
+    for (let i = 3; i < d.data.length; i += 4) d.data[i] = Math.random() < .16 ? 255 : 0; x.putImageData(d, 0, 0); return (SHHOLES = c); }
+  // motif as a one-colour (or original) bitmap, cached
+  const SHD = new Map(), shItem = id => id === 'kombi' ? 'kombi' : MARKS.find(q => q.id === id) || WORDS.find(q => q.id === id) || findP(id);
+  async function designBitmap(src, width) {
+    const key = [src, width, SH.ink, src === 'kombi' ? JSON.stringify(KB) : '', (SHUP[src] || {}).v || 0].join('|');
+    if (SHD.has(key)) return SHD.get(key);
+    let c;
+    if (SHUP[src]) { c = SHUP[src].canvas; }
+    else if (src === 'kombi') c = await kombiCanvas(false, width);
+    else { const it = shItem(src); if (!it || it === 'kombi' || it.id === '-') return null; const bmp = await svgImage(it.make(), width, it.font, 3, 0, false); const [cc, xx] = mk(); cc.width = bmp.width; cc.height = bmp.height; xx.drawImage(bmp, 0, 0); c = cc; }
+    if (!c) return null;
+    const [o, ox] = mk(); o.width = c.width; o.height = c.height; ox.drawImage(c, 0, 0);
+    if (SH.ink) { const img = ox.getImageData(0, 0, o.width, o.height), d = img.data, rgb = rgbOf(SH.ink);
+      for (let i = 0; i < d.length; i += 4) { const a = d[i + 3] * Math.max(d[i], d[i + 1], d[i + 2]) / 255; d[i] = rgb[0]; d[i + 1] = rgb[1]; d[i + 2] = rgb[2]; d[i + 3] = a; } ox.putImageData(img, 0, 0); }
+    SHD.set(key, o); if (SHD.size > 16) SHD.delete(SHD.keys().next().value); return o;
+  }
+  const [plc, plx] = mk(), [spc, spx] = mk(); let shBusy = 0;
+  async function drawShirt() {
+    const ticket = ++shBusy, v = SH.view, P = SH[v], dsg = P.src !== '-' ? await designBitmap(P.src, 1400) : null;
+    if (ticket !== shBusy) return;
+    const x = shx, tee = pathU(TEE[v]);
+    x.setTransform(1, 0, 0, 1, 0, 0); x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.filter = 'none';
+    const bg = x.createRadialGradient(SHW / 2, SHH * .42, 100, SHW / 2, SHH / 2, SHH * .8); bg.addColorStop(0, '#efece6'); bg.addColorStop(1, '#d6d2ca'); x.fillStyle = bg; x.fillRect(0, 0, SHW, SHH);
+    x.save(); x.filter = 'blur(26px)'; x.translate(0, 26); x.fillStyle = 'rgba(0,0,0,.32)'; x.fill(tee); x.restore();
+    x.save(); x.clip(tee);
+    x.fillStyle = SH.color; x.fillRect(0, 0, SHW, SHH);
+    const sh = shadeMap(v), dark = lumOf(SH.color) < .3;
+    x.globalCompositeOperation = 'soft-light'; x.drawImage(sh, 0, 0); if (dark) { x.globalCompositeOperation = 'screen'; x.globalAlpha = .16; x.drawImage(sh, 0, 0); x.globalAlpha = 1; }
+    x.globalCompositeOperation = 'soft-light'; x.globalAlpha = .55; x.fillStyle = x.createPattern(knit(), 'repeat'); x.fillRect(0, 0, SHW, SHH); x.globalAlpha = 1;
+    // the print: placed, grained, shaded like the fabric, then warped a little along the folds
+    if (dsg) {
+      if (plc.width !== SHW || plc.height !== SHH) { plc.width = SHW; plc.height = SHH; } else plx.clearRect(0, 0, SHW, SHH);
+      const w = P.w * SHU, h = w * dsg.height / dsg.width; plx.globalCompositeOperation = 'source-over'; plx.drawImage(dsg, P.cx * SHU - w / 2, P.cy * SHU - h / 2, w, h);
+      if (SH.grain) { plx.globalCompositeOperation = 'destination-out'; plx.drawImage(holes(SHW, SHH), 0, 0); }
+      if (spc.width !== SHW || spc.height !== SHH) { spc.width = SHW; spc.height = SHH; } else spx.clearRect(0, 0, SHW, SHH);
+      spx.globalCompositeOperation = 'source-over'; spx.drawImage(sh, 0, 0); spx.globalCompositeOperation = 'destination-in'; spx.drawImage(plc, 0, 0); spx.globalCompositeOperation = 'source-over';
+      plx.globalCompositeOperation = 'soft-light'; plx.globalAlpha = .9; plx.drawImage(spc, 0, 0); plx.globalAlpha = 1; plx.globalCompositeOperation = 'source-over';
+      x.globalCompositeOperation = 'source-over'; x.globalAlpha = .94; x.filter = 'url(#shirtwarp)'; x.drawImage(plc, 0, 0); x.filter = 'none'; x.globalAlpha = 1;
+      x.globalCompositeOperation = 'soft-light'; x.globalAlpha = .35; x.fillStyle = x.createPattern(knit(), 'repeat'); x.fillRect(0, 0, SHW, SHH); x.globalAlpha = 1;
+    }
+    x.restore();
+    // rib collar + stitching
+    x.save(); x.setTransform(SHU, 0, 0, SHU, 0, 0); x.lineCap = 'round';
+    if (v === 'front') { const inner = new Path2D('M392 94 C430 118 570 118 608 94 C570 146 430 146 392 94 Z'); x.fillStyle = SH.color; x.fill(inner);
+      x.fillStyle = 'rgba(0,0,0,.38)'; x.fill(inner); x.strokeStyle = SH.color; x.lineWidth = 9; x.stroke(new Path2D('M392 94 C430 118 570 118 608 94')); x.strokeStyle = 'rgba(0,0,0,.25)'; x.lineWidth = 2; x.stroke(new Path2D('M396 99 C432 121 568 121 604 99')); }
+    const neck = new Path2D(TEE.neck[v]); x.strokeStyle = SH.color; x.lineWidth = 20; x.stroke(neck);
+    x.strokeStyle = dark ? 'rgba(255,255,255,.12)' : 'rgba(0,0,0,.18)'; x.lineWidth = 1.4; x.setLineDash([3, 3]);
+    x.translate(0, 9); x.stroke(neck); x.translate(0, -9);
+    [[[230, 1018], [772, 1018]], [[30, 386], [160, 438]], [[970, 386], [840, 438]]].forEach(([a, b]) => { x.beginPath(); x.moveTo(...a); x.lineTo(...b); x.stroke(); });
+    x.setLineDash([]); x.strokeStyle = dark ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.12)'; x.lineWidth = 3; x.stroke(neck);
+    x.restore();
+  }
+  // controls
+  const shUi = () => {
+    $('#sh-colors').innerHTML = SH_COLORS.map(([n, c]) => `<button type="button" data-shc="${c}" title="${n}" aria-label="${n}" aria-pressed="${c === SH.color}" style="background:${c}"></button>`).join('') + `<input type="color" id="sh-color" value="${SH.color}" aria-label="eigene shirtfarbe">`;
+    $('#sh-inks').innerHTML = SH_INKS.map(([n, c]) => c ? `<button type="button" data-shi="${c}" title="${n}" aria-label="${n}" aria-pressed="${c === SH.ink}" style="background:${c}"></button>` : `<button type="button" class="txt" data-shi="" aria-pressed="${!SH.ink}">original</button>`).join('') + `<input type="color" id="sh-ink" value="${SH.ink || '#e6dfc8'}" aria-label="eigene druckfarbe">`;
+    const P = SH[SH.view];
+    $('#sh-src').innerHTML = `<option value="-">kein motiv</option><option value="kombi">kombi aus dem kombinierer</option><optgroup label="zeichen">${MARKS.filter(q => q.id !== '-').map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup>`
+      + `<optgroup label="schriftzüge">${WORDS.filter(q => q.id !== '-').map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup>`
+      + `<optgroup label="partner">${PARTNERS.map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup>`
+      + (Object.keys(SHUP).length ? `<optgroup label="eigene">${Object.entries(SHUP).map(([k, u]) => `<option value="${k}">${esc(u.n)}</option>`).join('')}</optgroup>` : '');
+    $('#sh-src').value = P.src;
+    $('#sh-pos').innerHTML = SH_POS[SH.view].map(([n], i) => `<button type="button" data-shp="${i}" aria-pressed="false">${n}</button>`).join('');
+    $('#sh-size').value = P.w; $('#sh-size-o').textContent = Math.round(P.w / 10) + ' cm';
+    $$('[data-sh-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shView === SH.view)));
+    $$('[data-sh-grain]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.shGrain === '1') === SH.grain)));
+  };
+  const shSet = () => { shUi(); drawShirt(); };
+  $('#r-shirt').addEventListener('click', e => { const t = e.target.closest('button'); if (!t) return; const P = SH[SH.view];
+    if (t.dataset.shc) SH.color = t.dataset.shc; else if (t.dataset.shi !== undefined) SH.ink = t.dataset.shi || null;
+    else if (t.dataset.shp !== undefined) { const [, cx, cy, w] = SH_POS[SH.view][+t.dataset.shp]; Object.assign(P, { cx, cy, w }); }
+    else if (t.dataset.shView) SH.view = t.dataset.shView; else if (t.dataset.shGrain) SH.grain = t.dataset.shGrain === '1'; else return;
+    shSet(); });
+  $('#r-shirt').addEventListener('input', e => { const P = SH[SH.view];
+    if (e.target.id === 'sh-color') SH.color = e.target.value; else if (e.target.id === 'sh-ink') SH.ink = e.target.value;
+    else if (e.target.id === 'sh-size') { P.w = +e.target.value; $('#sh-size-o').textContent = Math.round(P.w / 10) + ' cm'; drawShirt(); return; } else return;
+    drawShirt(); });
+  $('#sh-src').onchange = e => { SH[SH.view].src = e.target.value; drawShirt(); };
+  $('#sh-up').onchange = async e => { const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;
+    try { const url = URL.createObjectURL(file), img = new Image(); img.src = url; await img.decode(); const sc = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight)), [c, x] = mk();
+      c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc); x.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      const id = 'u' + Date.now(); SHUP[id] = { n: file.name.replace(/\.[^.]+$/, ''), canvas: c, v: 1 }; SH[SH.view].src = id; SH.ink = null; shSet(); }
+    catch (err) { shStat.textContent = 'bild nicht lesbar.'; } };
+  // drag the motif
+  let shDrag = null;
+  shcv.addEventListener('pointerdown', e => { const r = shcv.getBoundingClientRect(), k = 1000 / r.width, P = SH[SH.view];
+    shDrag = { x: (e.clientX - r.left) * k, y: (e.clientY - r.top) * (1100 / r.height), cx: P.cx, cy: P.cy }; shcv.setPointerCapture(e.pointerId); });
+  shcv.addEventListener('pointermove', e => { if (!shDrag) return; const r = shcv.getBoundingClientRect(), P = SH[SH.view], A = SH_AREA[SH.view];
+    P.cx = Math.max(A[0], Math.min(A[2], shDrag.cx + (e.clientX - r.left) * (1000 / r.width) - shDrag.x)); P.cy = Math.max(A[1], Math.min(A[3], shDrag.cy + (e.clientY - r.top) * (1100 / r.height) - shDrag.y)); drawShirt(); });
+  const shUp = () => { shDrag = null; }; shcv.addEventListener('pointerup', shUp); shcv.addEventListener('pointercancel', shUp);
+  // exports: the mockup as seen, and the print file at 300 dpi (30 x 40 cm box, transparent)
+  $('#sh-mock').onclick = () => shcv.toBlob(b => save(b, `bbk-shirt-${SH.view === 'front' ? 'vorne' : 'hinten'}.png`, shStat), 'image/png');
+  $('#sh-print').onclick = async () => { const v = SH.view, P = SH[v], A = SH_AREA[v]; if (P.src === '-') { shStat.textContent = 'motiv wählen.'; return; }
+    shStat.textContent = 'druckdatei wird gezeichnet …'; const ppu = 3543 / 300, W = 3543, H = 4724;
+    try { const d = await designBitmap(P.src, Math.min(3600, Math.round(P.w * ppu))), [c, x] = mk(); c.width = W; c.height = H;
+      const w = P.w * ppu, h = w * d.height / d.width; x.drawImage(d, (P.cx - A[0]) * ppu - w / 2, (P.cy - A[1]) * ppu - h / 2, w, h);
+      if (SH.grain) { x.globalCompositeOperation = 'destination-out'; x.drawImage(holes(W, H), 0, 0); x.globalCompositeOperation = 'source-over'; SHHOLES = null; }
+      c.toBlob(b => { shStat.textContent = ''; save(b, `bbk-druck-${v === 'front' ? 'vorne' : 'hinten'}-30x40cm-300dpi.png`, shStat); }, 'image/png'); }
+    catch (err) { console.warn(err); shStat.textContent = 'fehler. erneut versuchen.'; } };
+  shUi(); drawShirt();
+
   // loop + export
   let mt0 = performance.now(), mLast = -1, recOn = false;
   const fileBase = () => ['bbk', MO.mode === 'post' ? MO.lay : MO.mode === 'lineup' ? (PHOTO.view === 'artist' ? 'artist-' + ((ARTISTS[PHOTO.ai] || {}).name || '').replace(/[^a-z0-9]+/gi, '') : 'lineup') : MO.mode, MO.p !== '-' ? (findP(MO.p) || { n: '' }).n.replace(/[^a-z0-9]+/gi, '') : '', MO.fx, MO.fmt === 'story' ? '9x16' : '4x5'].filter(Boolean).join('-');
@@ -2072,7 +2250,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   sw.addEventListener('click', e => { const b = e.target.closest('button'); if (b) { show(b.dataset.v); scrollTo(0, 0); } });
   const h = location.hash.slice(1);
-  show(['logos', 'kombi', 'motion', 'y2k'].includes(h) ? h : 'logos');
+  show(['logos', 'kombi', 'motion', 'shirt', 'y2k'].includes(h) ? h : 'logos');
 
   ready = true;
   setFonts('');
