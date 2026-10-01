@@ -1,6 +1,6 @@
 // network first, cache as fallback: the app always gets the newest version when online and still opens offline.
 // logo PNGs under logos/ are not precached (hundreds of MB); everything the app itself needs is.
-const CACHE = 'bbk-app-v1';
+const CACHE = 'bbk-app-v2';
 const CORE = ['./', './index.html', './app/manifest.webmanifest', './app/icon-192.png', './app/icon-512.png'];
 
 self.addEventListener('install', e => {

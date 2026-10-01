@@ -304,7 +304,6 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 <div class="room" id="r-logos">
   <div class="lab-head">
     <div>
-      <h1>bbk logo-labor</h1>
     </div>
     <div class="lab-ctl">
       <span>körnung</span><div class="seg" role="group" aria-label="Körnung"><button data-grain="0" aria-pressed="false">aus</button><button data-grain="1" aria-pressed="true">leicht</button><button data-grain="2" aria-pressed="false">stark</button></div>
@@ -318,27 +317,26 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <div class="dl-top"><button class="kb-btn" id="dl-all" type="button">alles laden (zip)</button><button class="kb-btn ghost" id="dl-pal" type="button">farbpalette laden</button>
     <label class="mo-lbl" style="margin:0">größe <select id="dl-size" style="background:#000;color:var(--bone);border:1px solid #555;font:12px var(--f-min);padding:5px"><option value="1000">1000 px</option><option value="2000" selected>2000 px</option><option value="3000">3000 px</option></select></label>
     <span id="dl-status" aria-live="polite"></span></div>
-  <div class="dl-inks"><span class="mo-lbl" style="margin:0">logo-farben für den download:</span><span id="dl-inks"></span></div>
-  <h2 class="lab-h">farbpalette · für logos und website · klick kopiert den hex-code</h2>
+  <div class="dl-inks"><span class="mo-lbl" style="margin:0">farben</span><span id="dl-inks"></span></div>
+  <h2 class="lab-h">farben</h2>
   <div class="pal" id="dl-palette"></div>
   </section>
-  <h2 class="lab-h">runde 5 · zeichen zum kombinieren</h2>
+  <h2 class="lab-h">runde 5</h2>
   <div class="lab-ctl" style="margin-bottom:14px"><span>schriftzug-probe</span><div class="seg" role="group" aria-label="Schriftzug-Probe"><button data-lock="0" aria-pressed="true">aus</button><button data-lock="1" aria-pressed="false">an</button></div></div>
   <div class="logos" id="logos5"></div>
-  <h2 class="lab-h">runde 4 · musik</h2>
+  <h2 class="lab-h">runde 4</h2>
   <div class="logos" id="logos4"></div>
-  <h2 class="lab-h">runde 3 · zeichen ohne buchstaben</h2>
+  <h2 class="lab-h">runde 3</h2>
   <div class="logos" id="logos3"></div>
-  <h2 class="lab-h">runde 2 · gebaute buchstaben</h2>
+  <h2 class="lab-h">runde 2</h2>
   <div class="logos" id="logos2"></div>
-  <h2 class="lab-h">runde 1 · fertige schriften</h2>
+  <h2 class="lab-h">runde 1</h2>
   <div class="fontbar" id="fontbar" role="group" aria-label="Schrift für alle Logos"></div>
   <div class="logos" id="logos"></div>
 </div>
 
 <!-- ================= KOMBINIERER ================= -->
 <div class="room" id="r-kombi">
-  <h1>bbk kombinierer</h1>
   <div class="kb-main">
     <div class="kombi"><div class="tile kb-stage"><div class="kb-lock quer" id="kb-lock"><div class="kb-mk"></div><div class="kb-wm"></div></div></div><div id="kb-name"></div></div>
     <aside class="kb-ctl">
@@ -363,13 +361,12 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 
 <!-- ================= BEWEGT ================= -->
 <div class="room" id="r-motion">
-  <h1>bbk bewegt</h1>
   <div class="mo-main">
     <div class="mo-view"><canvas id="mo-cv" width="1080" height="1350" aria-label="Vorschau des bewegten Posts"></canvas><div id="mo-status" aria-live="polite"></div></div>
     <aside class="kb-ctl mo-ctl">
       <div class="row"><div class="seg" role="group" aria-label="Modus"><button data-mo-mode="logo" aria-pressed="true">logo-effekt</button><button data-mo-mode="post" aria-pressed="false">event-post</button><button data-mo-mode="reel" aria-pressed="false">reel</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Format"><button data-mo-fmt="post" aria-pressed="true">post 4:5</button><button data-mo-fmt="story" aria-pressed="false">story / reel 9:16</button></div></div>
-      <div class="mo-reel"><span class="mo-lbl">szenen · inhalt, sekunden, übergang zur nächsten</span><div id="mo-scenes"></div>
+      <div class="mo-reel"><span class="mo-lbl">szenen</span><div id="mo-scenes"></div>
         <div class="row"><button class="kb-btn ghost" id="mo-add">+ szene</button></div></div>
       <div class="mo-post mo-noreel"><span class="mo-lbl">layout</span><div class="mo-chips" id="mo-lay" role="group" aria-label="Layout"></div></div>
       <div class="mo-post"><label for="mo-ev">termin übernehmen<select id="mo-ev"></select></label></div>
@@ -1618,7 +1615,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     box.onclick = e => { const b = e.target.closest('button'); if (!b) return; MO[key] = b.dataset.k; $$('button', box).forEach(x => x.setAttribute('aria-pressed', String(x === b))); }; };
   chips($('#mo-fx'), MO_FX, 'fx'); chips($('#mo-lay'), MO_LAY, 'lay'); chips($('#mo-back'), MO_BACK, 'back');
   const seg = (attr, fn) => $$(`[${attr}]`).forEach(b => b.onclick = () => { fn(b.getAttribute(attr)); $$(`[${attr}]`).forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
-  const fmtNote = () => { const [W, H] = FMT[MO.fmt], n = frameCount(); $('#mo-fmtnote').textContent = `${W} × ${H} px · ${n} bilder = ${(n / MO.fps).toFixed(1)} s, läuft als schleife`; };
+  const fmtNote = () => { const [W, H] = FMT[MO.fmt], n = frameCount(); $('#mo-fmtnote').textContent = `${W} × ${H} · ${(n / MO.fps).toFixed(1)} s`; };
   seg('data-mo-mode', v => { MO.mode = v; mroom.classList.toggle('post', v !== 'logo'); mroom.classList.toggle('reel', v === 'reel'); fmtNote(); });
   seg('data-mo-fmt', v => { MO.fmt = v; fmtNote(); });
   seg('data-mo-bg', v => { MO.dark = v === '0'; });
@@ -1675,7 +1672,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('#mo-scenes').innerHTML = REEL.map((sc, i) => `<div class="mo-sc" data-i="${i}"><select data-f="k" aria-label="inhalt szene ${i + 1}">${scOpt(SC_K, sc.k)}</select>
       <input type="number" data-f="d" min="1" max="12" step=".5" value="${sc.d}" aria-label="sekunden szene ${i + 1}">
       <select data-f="t" aria-label="übergang nach szene ${i + 1}">${scOpt(SC_T, sc.t)}</select><button data-x aria-label="szene ${i + 1} entfernen"${REEL.length < 2 ? ' disabled' : ''}>×</button>
-      <div class="n">${i + 1}. szene${i === REEL.length - 1 ? ' · übergang führt zurück zum anfang' : ''}</div></div>`).join('');
+      </div>`).join('');
     fmtNote();
   }
   $('#mo-scenes').addEventListener('change', e => { const row = e.target.closest('.mo-sc'); if (!row) return; const sc = REEL[+row.dataset.i], fld = e.target.dataset.f;
@@ -1759,7 +1756,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   ];
   const FONTS_USED = 'schriften: archivo (breit, 900, fonts.google.com/specimen/Archivo) · martian mono (fonts.google.com/specimen/Martian+Mono) · silkscreen (pixel)';
   const dlStat = $('#dl-status');
-  const swatch = ([n, hex, , d]) => `<button class="sw" type="button" data-hex="${hex}"><i style="background:${hex}"></i><span>${n} · ${hex}<small>${d}</small></span></button>`;
+  const swatch = ([n, hex]) => `<button class="sw" type="button" data-hex="${hex}"><i style="background:${hex}"></i><span>${n} · ${hex}</span></button>`;
   $('#dl-palette').innerHTML = `<p class="pal-h">für logos</p>${PALETTE.filter(c => c[2] === 'logo').map(swatch).join('')}<p class="pal-h">für die website</p>${PALETTE.filter(c => c[2] === 'website').map(swatch).join('')}`;
   $('#dl-inks').innerHTML = PALETTE.filter(c => c[2] === 'logo').map(([n, hex], i) => `<label><input type="checkbox" value="${n}"${i < 2 ? ' checked' : ''}><i style="background:${hex}"></i>${n}</label>`).join('');
   $('#dl-palette').onclick = e => { const b = e.target.closest('.sw'); if (!b) return; const hex = b.dataset.hex;
