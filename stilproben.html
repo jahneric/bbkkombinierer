@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Silkscreen&family=Sniglet:wght@800&family=Kablammo:MORF@0..60&family=Danfo:ELSH@0..100&family=Moirai+One&family=Monoton&family=Faster+One&family=Major+Mono+Display&family=Climate+Crisis:YEAR@1979..2050&family=Grenze+Gotisch:wght@100..900&family=Jacquard+24&family=Doto:ROND,wght@0..100,100..900&family=Handjet:ELGR,ELSH,wght@1..2,0..16,100..900&family=Rubik+Glitch&family=Zen+Tokyo+Zoo&family=Train+One&family=Foldit&family=Tilt+Warp&family=Sedgwick+Ave+Display&family=Workbench:BLED,SCAN@0..100,-53..100&family=Sixtyfour:BLED,SCAN@0..100,-53..100&family=Codystar&family=Rubik+Wet+Paint&family=Bungee+Hairline&family=Tourney:ital,wdth,wght@1,75..125,100..900&display=swap">
 <style>
-/* layout: fixed switcher; three full-bleed rooms below it (logo lab, y2k desktop, 1-bit club).
+/* layout: fixed switcher; rooms below it (logo lab, kombinierer, bewegt, website desktop).
    single dark theme by choice: the whole identity lives on black. */
 :root{
   --void:#050505; --ink:#000; --bone:#ecebe6; --phosphor:#d3d6d4; --ash:#2c2c2a; --line:#3a3c3b; --mute:#8d8c87;
@@ -32,7 +32,7 @@ button{font:inherit;color:inherit}
 .grain{position:fixed;inset:0;pointer-events:none;z-index:70;background-image:var(--noise);opacity:.08;mix-blend-mode:screen;animation:grain .5s steps(4) infinite}
 @keyframes grain{0%{background-position:0 0}25%{background-position:-37px 21px}50%{background-position:14px -48px}75%{background-position:-22px -9px}}
 .room{display:none}
-body[data-v="logos"] #r-logos,body[data-v="kombi"] #r-kombi,body[data-v="motion"] #r-motion,body[data-v="y2k"] #r-y2k,body[data-v="dit"] #r-dit{display:block}
+body[data-v="logos"] #r-logos,body[data-v="kombi"] #r-kombi,body[data-v="motion"] #r-motion,body[data-v="y2k"] #r-y2k{display:block}
 
 /* ---------- logo lab ---------- */
 #r-logos{max-width:1240px;margin:0 auto;padding:36px 16px 80px}
@@ -149,91 +149,74 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
 .mo-up{display:inline-block}
 .kb-btn:disabled{opacity:.5;cursor:wait}
 
-/* ---------- y2k desktop ---------- */
-.marq{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--line);font:12px/1 var(--f-pix);padding:7px 0;background:#000}
+/* ---------- website desktop ----------
+   one palette for wallpaper and windows: --dk (window ground) and --ik (ink) flip with hell/dunkel and vergilbt/rein,
+   the same choices the wallpaper engine uses, so windows and background always match. */
+#r-y2k{--dk:#12110f;--ik:#e6dfc8;--mid:#8f887a}
+#r-y2k.light{--dk:#ebe3cb;--ik:#1a1915;--mid:#6f6a5e}
+#r-y2k.pure{--dk:#050505;--ik:#f0f0f0;--mid:#8a8a8a}
+#r-y2k.pure.light{--dk:#fafafa;--ik:#0a0a0a;--mid:#777}
+.marq{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--ik);font:12px/1 var(--f-pix);padding:7px 0;background:var(--dk);color:var(--ik)}
 .marq span{display:inline-block;animation:marq 30s linear infinite}
 @keyframes marq{to{transform:translateX(-50%)}}
-.desk{position:relative;height:900px;overflow:hidden;background:#020202;text-shadow:0 0 6px rgba(215,220,218,.35)}
-.desk::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:40;
-  background:repeating-linear-gradient(0deg,rgba(0,0,0,.36) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.75) 100%)}
-.wall{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;opacity:.7}
-.desk-emblem{position:absolute;left:50%;top:34px;transform:translateX(-50%);width:min(580px,52%);text-align:center;z-index:2;pointer-events:none}
-.desk-emblem svg{width:100%;height:auto;filter:blur(.35px) drop-shadow(0 0 10px rgba(255,255,255,.28))}
-.wordmark{margin:10px 0 0;font:italic 850 clamp(26px,4.6vw,62px)/.95 var(--f-wide);font-stretch:125%;text-transform:uppercase;
-  background:linear-gradient(180deg,var(--chrome-hi) 0%,#c4c4c4 40%,var(--chrome-lo) 51%,#e3e3e3 63%,#8c8c8c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:blur(.4px)}
-.tag{font:11px var(--f-pix);letter-spacing:.16em;margin-top:8px;opacity:.75}
+.desk{position:relative;height:1000px;overflow:hidden;background:var(--dk);color:var(--ik)}
+.wall{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .mer{transform-box:view-box;transform-origin:300px 130px;animation:turn 7s linear infinite}
 .m2{animation-delay:-3.5s}
 @keyframes turn{0%,100%{transform:scaleX(1)}50%{transform:scaleX(-1)}}
-.win{position:absolute;z-index:5;width:var(--w,300px);background:#0a0a0a;border:1px solid #8a8a8a;
-  box-shadow:inset 1px 1px 0 #d8d8d8,inset -1px -1px 0 #2e2e2e,5px 5px 0 rgba(0,0,0,.65);font:13px/1.55 var(--f-wide)}
+.win{position:absolute;z-index:5;width:var(--w,300px);background:var(--dk);color:var(--ik);border:2px solid var(--ik);box-shadow:6px 6px 0 color-mix(in srgb,var(--ik) 22%,transparent);font:13px/1.55 var(--f-wide)}
+.win::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:var(--noise);opacity:.09;mix-blend-mode:overlay}
+#r-y2k.nograin .win::after{display:none}
 .win.min{display:none}
-.tb{display:flex;align-items:center;gap:6px;padding:3px 3px 3px 8px;background:linear-gradient(90deg,#ececec,#8a8a8a 55%,#2b2b2b);
-  color:#000;text-shadow:none;font:11px var(--f-pix);cursor:grab;user-select:none;touch-action:none}
+.tb{display:flex;align-items:center;gap:6px;padding:4px 4px 4px 9px;background:var(--ik);color:var(--dk);font:11px var(--f-pix);cursor:grab;user-select:none;touch-action:none}
 .tb:active{cursor:grabbing}
-.tb .ctl{margin-left:auto;display:flex;gap:2px}
-.tb .ctl button{width:18px;height:16px;padding:0;line-height:12px;font:10px var(--f-pix);background:#d2d2d2;color:#000;cursor:pointer;
-  border:1px solid;border-color:#fff #444 #444 #fff}
-.tb .ctl button:active{border-color:#444 #fff #fff #444}
-.wb{padding:12px 14px}
+.tb .ctl{margin-left:auto;display:flex;gap:3px}
+.tb .ctl button{width:18px;height:16px;padding:0;line-height:12px;font:10px var(--f-pix);background:var(--dk);color:var(--ik);cursor:pointer;border:1px solid var(--dk)}
+.tb .ctl button:hover{background:var(--ik);color:var(--dk);border-color:var(--dk)}
+.wb{padding:12px 14px;position:relative}
 .wb p{margin:0 0 10px}
+.wb a{color:var(--ik)}
 .wb table{width:100%;border-collapse:collapse}
-.wb td{padding:6px 4px;border-bottom:1px dotted var(--line);vertical-align:top}
+.wb td{padding:6px 4px;border-bottom:1px dotted var(--mid);vertical-align:top;color:var(--ik)}
 .wb td.d{font:11px var(--f-pix);white-space:nowrap;width:1%}
 .wb td.t{font-weight:800;font-style:italic;font-stretch:118%;text-transform:uppercase}
-.wb td.l{opacity:.65;font-size:12px}
-.cursor{display:inline-block;width:.6em;height:1em;background:var(--phosphor);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+.wb td.l{color:var(--mid);font-size:12px}
+.cursor{display:inline-block;width:.6em;height:1em;background:var(--ik);vertical-align:-2px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
 .eq{display:flex;gap:3px;align-items:flex-end;height:44px;margin:4px 0 10px}
-.eq i{flex:1;background:linear-gradient(0deg,#555,#f0f0f0);animation:eq 1s ease-in-out infinite alternate}
+.eq i{flex:1;background:var(--ik);animation:eq 1s steps(5) infinite alternate}
 @keyframes eq{0%{height:10%}100%{height:100%}}
-.prog{height:10px;border:1px solid #777;padding:1px;margin:8px 0}
-.prog i{display:block;height:100%;width:38%;background:repeating-linear-gradient(90deg,#ddd 0 6px,transparent 6px 8px)}
+.prog{height:10px;border:1px solid var(--ik);padding:1px;margin:8px 0}
+.prog i{display:block;height:100%;width:38%;background:repeating-linear-gradient(90deg,var(--ik) 0 6px,transparent 6px 8px)}
 .pix{font:11px/1.6 var(--f-pix)}
 .thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.thumbs canvas{width:100%;height:auto;aspect-ratio:4/3;image-rendering:pixelated;border:1px solid var(--line)}
+.thumbs canvas{width:100%;height:auto;aspect-ratio:4/3;image-rendering:pixelated;border:1px solid var(--ik)}
+#r-y2k.light .thumbs canvas{filter:invert(1)}
 .count{display:flex;gap:2px;margin:6px 0}
-.count span{font:15px var(--f-pix);background:#000;border:1px solid #555;padding:1px 5px}
-.taskbar{position:absolute;left:0;right:0;bottom:0;z-index:50;display:flex;gap:4px;align-items:center;padding:3px 6px;height:36px;
-  background:linear-gradient(#e2e2e2,#9d9d9d);border-top:1px solid #fff;color:#000;font:11px var(--f-pix);text-shadow:none;overflow-x:auto}
-.taskbar button{flex:none;height:26px;padding:0 9px;background:#d2d2d2;cursor:pointer;border:1px solid;border-color:#fff #444 #444 #fff;font:11px var(--f-pix);color:#000}
-.taskbar button[aria-pressed="true"]{border-color:#444 #fff #fff #444;background:#bdbdbd}
+.count span{font:15px var(--f-pix);background:var(--ik);color:var(--dk);padding:1px 5px}
+.taskbar{position:absolute;left:0;right:0;bottom:0;z-index:50;display:flex;gap:4px;align-items:center;padding:4px 6px;height:38px;
+  background:var(--ik);color:var(--dk);font:11px var(--f-pix);overflow-x:auto}
+.taskbar button{flex:none;height:28px;padding:0 9px;background:var(--ik);cursor:pointer;border:1px solid var(--dk);font:11px var(--f-pix);color:var(--dk)}
+.taskbar button[aria-pressed="true"]{background:var(--dk);color:var(--ik)}
 .taskbar .start{font-weight:700;display:flex;gap:6px;align-items:center}
 .taskbar .start svg{width:34px;height:auto}
-.taskbar .clock{margin-left:auto;flex:none;padding:0 10px;border:1px solid;border-color:#666 #fff #fff #666;height:26px;display:grid;place-items:center}
+.taskbar .clock{margin-left:auto;flex:none;padding:0 10px;height:28px;display:grid;place-items:center;border:1px solid var(--dk)}
+.wset{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;font:11px var(--f-min)}
+.wset label{display:grid;gap:3px;color:var(--mid)}
+.wset select{width:100%;background:var(--dk);color:var(--ik);border:1px solid var(--ik);padding:4px;font:11px var(--f-min)}
+.wset input[type=range]{width:100%;accent-color:var(--ik)}
+.wset .full{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px}
+.wset .seg{border-color:var(--ik)}
+.wset .seg button{padding:4px 8px;font:11px var(--f-min);color:var(--ik)}
+.wset .seg button[aria-pressed="true"]{background:var(--ik);color:var(--dk)}
+.wset .wbtn{background:none;border:1px solid var(--ik);color:var(--ik);padding:5px 9px;cursor:pointer;font:11px var(--f-min)}
+.wset .wbtn:hover{background:var(--ik);color:var(--dk)}
+.wset .note{grid-column:1/-1;color:var(--mid);font-size:10px;margin:0}
 @media (max-width:900px){
   .desk{height:auto;padding:16px 16px 56px}
-  .desk-emblem{position:relative;left:auto;top:auto;transform:none;width:100%;margin-bottom:8px}
   .win{position:relative;left:auto!important;right:auto!important;top:auto!important;width:auto!important;margin-top:16px}
   .tb{cursor:default}
 }
-
-/* ---------- 1-bit club ---------- */
-.hero{position:relative;background:#000}
-.hero canvas{display:block;width:100%;height:auto;image-rendering:pixelated;cursor:crosshair;touch-action:none}
-.hero .over{position:absolute;left:16px;right:16px;top:14px;display:flex;justify-content:space-between;gap:12px;pointer-events:none;font-size:11px;color:var(--bone);mix-blend-mode:difference}
-.panel{max-width:1240px;margin:0 auto;padding:14px 16px;display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;border-bottom:1px solid var(--ash);font-size:12px}
-.panel label{color:var(--mute)}
-.panel input[type=range]{width:160px;accent-color:var(--bone)}
-.dit-wrap{max-width:1240px;margin:0 auto;padding:0 16px 80px;color:var(--bone)}
-.dit-wrap section{margin-top:64px}
-.dit-wrap h2{font:400 11px var(--f-min);letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin:0 0 14px}
-.list{list-style:none;margin:0;padding:0}
-.list li{display:grid;grid-template-columns:10ch minmax(0,1fr) auto;gap:16px;padding:11px 8px;border-top:1px solid var(--ash);transition:background .08s}
-.list li:last-child{border-bottom:1px solid var(--ash)}
-.list li:hover{background:var(--bone);color:var(--ink)}
-.list .d{font-variant-numeric:tabular-nums}
-.list .t{font-weight:700;font-stretch:112.5%}
-.list .l{color:var(--mute);text-align:right}
-.list li:hover .l{color:var(--ink)}
-@media (max-width:560px){.list li{grid-template-columns:9ch minmax(0,1fr)}.list .l{grid-column:2;text-align:left}}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.tiles figure{margin:0}
-.tiles canvas{display:block;width:100%;height:auto;aspect-ratio:4/3;image-rendering:pixelated}
-.tiles figcaption{margin-top:6px;color:var(--mute);font-size:12px}
-.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px}
-.dit-wrap p{max-width:58ch;margin:0 0 12px}
-.dit-wrap footer{margin-top:80px;display:flex;flex-wrap:wrap;gap:12px 32px;color:var(--mute)}
 
 @media (prefers-reduced-motion:reduce){.grain,.marq span,.mer,.eq i,.cursor{animation:none}}
 </style>
@@ -281,8 +264,7 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
   <button data-v="logos" aria-pressed="true">logo-labor</button>
   <button data-v="kombi" aria-pressed="false">kombinierer</button>
   <button data-v="motion" aria-pressed="false">bewegt</button>
-  <button data-v="y2k" aria-pressed="false">y2k desktop</button>
-  <button data-v="dit" aria-pressed="false">1-bit club</button>
+  <button data-v="y2k" aria-pressed="false">website</button>
   <span class="note">Logos aus eurem Kreis-Logo abgeleitet · Termine aus Insta, bitte prüfen</span>
 </div>
 <div class="grain" aria-hidden="true"></div>
@@ -388,12 +370,7 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
 <div class="room" id="r-y2k">
   <div class="marq" aria-hidden="true"><span>+++ bbk kollektiv +++ leipzig +++ open air season 2026 +++ reconnect × bbk 25.09. +++ sets online soon +++ fenster lassen sich verschieben +++ bbk kollektiv +++ leipzig +++ open air season 2026 +++ reconnect × bbk 25.09. +++ sets online soon +++ fenster lassen sich verschieben +++&nbsp;</span></div>
   <div class="desk" id="desk">
-    <canvas class="wall" id="wall" width="200" height="112" aria-hidden="true"></canvas>
-    <div class="desk-emblem">
-      <span data-logo="globe"></span>
-      <p class="wordmark">bbk kollektiv</p>
-      <div class="tag">MUSIK · KREATIV · LEIPZIG</div>
-    </div>
+    <canvas class="wall" id="wall" width="320" height="240" aria-hidden="true"></canvas>
 
     <section class="win" data-win="kollektiv" style="--w:300px;left:3%;top:56px">
       <div class="tb">kollektiv.doc<span class="ctl"><button data-act="min" aria-label="minimieren">_</button><button data-act="min" aria-label="schließen">x</button></span></div>
@@ -415,7 +392,28 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
       <div class="wb"><div class="thumbs"><canvas data-thumb="wald" width="96" height="72"></canvas><canvas data-thumb="lights" width="96" height="72"></canvas><canvas data-thumb="crowd" width="96" height="72"></canvas></div><div class="pix" style="margin-top:8px">3 objekte · 1-bit</div></div>
     </section>
 
-    <section class="win" data-win="kontakt" style="--w:290px;left:calc(50% - 145px);top:600px">
+    <section class="win" data-win="hintergrund" style="--w:360px;right:3%;top:560px">
+      <div class="tb">hintergrund.exe<span class="ctl"><button data-act="min" aria-label="minimieren">_</button><button data-act="min" aria-label="schließen">x</button></span></div>
+      <div class="wb wset">
+        <label for="w-m">zeichen<select id="w-m"></select></label>
+        <label for="w-w">schriftzug<select id="w-w"></select></label>
+        <label for="w-p">partner<select id="w-p"></select></label>
+        <label for="w-pm">partner zeigen<select id="w-pm"><option value="kollabo">bbk × partner</option><option value="partner">nur partner</option></select></label>
+        <label for="w-back">hintergrund<select id="w-back"></select></label>
+        <label for="w-fx">effekt<select id="w-fx"></select></label>
+        <label for="w-size">logo-größe<input type="range" id="w-size" min="10" max="100"></label>
+        <label for="w-bga">hintergrund-stärke<input type="range" id="w-bga" min="10" max="100"></label>
+        <label for="w-wash">verwaschen<input type="range" id="w-wash" min="0" max="100"></label>
+        <label for="w-boil">zittern<input type="range" id="w-boil" min="0" max="10"></label>
+        <div class="full"><div class="seg" role="group" aria-label="Hintergrund hell oder dunkel"><button data-w-dark="1">dunkel</button><button data-w-dark="0">hell</button></div>
+          <div class="seg" role="group" aria-label="Körnung"><button data-w-grain="1">körnig</button><button data-w-grain="0">glatt</button></div>
+          <div class="seg" role="group" aria-label="Papier"><button data-w-paper="1">vergilbt</button><button data-w-paper="0">rein</button></div></div>
+        <div class="full"><button class="wbtn" id="w-rnd" type="button">zufall</button><button class="wbtn" id="w-copy" type="button">einstellung kopieren</button></div>
+        <p class="note" id="w-note">wird in diesem browser gemerkt. „einstellung kopieren“ schickt ihr mir, dann wird das der feste look der website.</p>
+      </div>
+    </section>
+
+    <section class="win" data-win="kontakt" style="--w:290px;left:3%;top:720px">
       <div class="tb">kontakt.url<span class="ctl"><button data-act="min" aria-label="minimieren">_</button><button data-act="min" aria-label="schließen">x</button></span></div>
       <div class="wb"><a href="https://www.instagram.com/bbkkollektiv/">instagram @bbkkollektiv</a><br>mail: neue adresse folgt
         <div class="count" aria-label="Besucherzähler (Deko)"><span>0</span><span>0</span><span>4</span><span>9</span><span>8</span></div><div class="pix">optimiert für 1024×768</div></div>
@@ -424,38 +422,6 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
     <div class="taskbar" id="taskbar">
       <button class="start" type="button"><span data-logo="nomad-mini"></span>start</button>
     </div>
-  </div>
-</div>
-
-<!-- ================= 1-BIT CLUB ================= -->
-<div class="room" id="r-dit">
-  <div class="hero">
-    <canvas id="hero" width="256" height="144" aria-label="gerasterte Discokugel über dem bbk-Logo, Lichtstrahlen folgen dem Zeiger"></canvas>
-    <div class="over"><span>bbk · leipzig</span><span>zeiger bewegen: der strahl folgt</span></div>
-  </div>
-  <div class="panel">
-    <span class="seg" role="group" aria-label="Raster"><button data-mode="bayer" aria-pressed="true">bayer</button><button data-mode="noise" aria-pressed="false">rauschen</button><button data-mode="dots" aria-pressed="false">punkte</button></span>
-    <label for="expo">belichtung</label><input type="range" id="expo" min="-30" max="30" value="0">
-  </div>
-  <div class="dit-wrap">
-    <section>
-      <h2>termine / archiv</h2>
-      <ul class="list" data-list="ul"></ul>
-    </section>
-    <section>
-      <h2>bilder · drüberfahren zum entwickeln</h2>
-      <div class="tiles">
-        <figure><canvas data-tile="wald" width="160" height="120"></canvas><figcaption>open air, wald</figcaption></figure>
-        <figure><canvas data-tile="lights" width="160" height="120"></canvas><figcaption>lichterkette</figcaption></figure>
-        <figure><canvas data-tile="crowd" width="160" height="120"></canvas><figcaption>dancefloor</figcaption></figure>
-      </div>
-    </section>
-    <section class="two">
-      <div><h2>kollektiv</h2><p>bbk ist ein musik- und kreativkollektiv aus leipzig. partys, open airs, sets und alles dazwischen. hier kommt euer eigener text hin.</p></div>
-      <div><h2>sets</h2><p>set 01 · soundcloud-link folgt<br>set 02 · soundcloud-link folgt</p></div>
-      <div><h2>kontakt</h2><p><a href="https://www.instagram.com/bbkkollektiv/">instagram @bbkkollektiv</a><br>mail: neue adresse folgt</p></div>
-    </section>
-    <footer><span>bbk · leipzig</span><span>2026</span></footer>
   </div>
 </div>
 
@@ -477,7 +443,6 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
     { d: '04.02.26', t: 'between', l: 'elipamanoke × bbk' },
   ];
   $('[data-list="table"]').innerHTML = EVENTS.map(e => `<tr><td class="d">${e.d}</td><td class="t">${esc(e.t)}</td><td class="l">${esc(e.l)}</td></tr>`).join('');
-  $('[data-list="ul"]').innerHTML = EVENTS.map(e => `<li><span class="d">${e.d}</span><span class="t">${esc(e.t)}</span><span class="l">${esc(e.l)}</span></li>`).join('');
   $('.eq').innerHTML = Array.from({ length: 16 }, (_, i) => `<i style="animation-duration:${(.45 + ((i * 37) % 9) / 10).toFixed(2)}s;animation-delay:-${(i * .13).toFixed(2)}s"></i>`).join('');
 
   // ---------- grain ----------
@@ -974,7 +939,6 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
     Object.entries(FONTS).map(([k, F]) => `<button data-font="${k}" aria-pressed="false" style="font-family:${F.f},sans-serif;font-weight:${F.w};font-style:${F.s || 'normal'}">${F.n}</button>`).join('');
   function setFonts(key) {
     $$('#logos figure').forEach(fig => { const k = key || CURATED[fig.dataset.k]; applyFont(fig, k); $('.fn', fig).textContent = FONTS[k].n; });
-    applyFont($('.desk-emblem'), key || CURATED.globe);
     applyFont($('#taskbar .start'), key || CURATED.nomad);
     $$('button', fb).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.font === key)));
     setMaskFont(key || CURATED.bit);
@@ -1099,11 +1063,8 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
   };
 
   // ---------- y2k: thumbs + wallpaper ----------
-  $$('[data-thumb]').forEach((cv, i) => render(cv, (u, v) => SCENES[cv.dataset.thumb](u, v, 1.5 + i), 'bayer', VOID, PHOS));
+  $$('[data-thumb]').forEach((cv, i) => render(cv, (u, v) => SCENES[cv.dataset.thumb](u, v, 1.5 + i), 'bayer', [18, 17, 15], [232, 225, 204]));
   const wall = $('#wall'), desk = $('#desk');
-  const wLight = { x: .6, y: .2 }, wTarget = { x: .6, y: .2 };
-  desk.addEventListener('pointermove', e => { const r = desk.getBoundingClientRect(), asp = wall.width / wall.height;
-    wTarget.x = ((e.clientX - r.left) / r.width * 2 - 1) * asp; wTarget.y = (e.clientY - r.top) / r.height * 2 - 1; });
 
   // draggable windows + taskbar
   let z = 10;
@@ -1135,44 +1096,17 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
   const tick = () => { const d = new Date(); clock.textContent = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); };
   tick(); setInterval(tick, 20000);
 
-  // ---------- 1-bit club ----------
-  const hero = $('#hero');
-  if (hero.parentElement.clientWidth < 700) { hero.width = 150; hero.height = 190; }
-  const DIT = { mode: 'bayer', exp: 0 };
-  const hLight = { x: .9, y: .3 }, hTarget = { x: .9, y: .3 };
-  hero.addEventListener('pointermove', e => { const r = hero.getBoundingClientRect(), asp = hero.width / hero.height;
-    hTarget.x = ((e.clientX - r.left) / r.width * 2 - 1) * asp; hTarget.y = (e.clientY - r.top) / r.height * 2 - 1;
-    if (reduce) drawHero(0); });
-  const drawHero = t => render(hero, (u, v, asp) => room(u, v, t, hLight, asp, true), DIT.mode, BLACK, BONE, DIT.exp);
-
-  const tiles = $$('[data-tile]');
-  const drawTile = (cv, extra = 0) => render(cv, (u, v) => SCENES[cv.dataset.tile](u, v, 1.5 + tiles.indexOf(cv)), DIT.mode, BLACK, BONE, DIT.exp + extra);
-  const redrawTiles = () => tiles.forEach(cv => drawTile(cv));
-  tiles.forEach(cv => cv.addEventListener('pointerenter', () => {
-    if (reduce) return;
-    const t0 = performance.now();
-    const step = now => { const k = Math.min(1, (now - t0) / 900); drawTile(cv, -.7 * (1 - k) ** 2); if (k < 1) requestAnimationFrame(step); };
-    requestAnimationFrame(step);
-  }));
-  $$('[data-mode]').forEach(b => b.onclick = () => {
-    DIT.mode = b.dataset.mode; $$('[data-mode]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
-    redrawTiles(); drawHero(T);
-  });
-  $('#expo').addEventListener('input', e => { DIT.exp = e.target.value / 100; redrawTiles(); drawHero(T); });
-
   // ---------- main loop: only the visible room animates ----------
   let T = 0, last = performance.now();
   function frame(now) {
     const dt = Math.min(.05, (now - last) / 1000); last = now; T += dt;
     const v = document.body.dataset.v;
-    if (v === 'dit') { hLight.x += (hTarget.x - hLight.x) * .1; hLight.y += (hTarget.y - hLight.y) * .1; drawHero(T); }
-    if (v === 'y2k') { wLight.x += (wTarget.x - wLight.x) * .08; wLight.y += (wTarget.y - wLight.y) * .08;
-      render(wall, (u, vv, asp) => room(u, vv, T, wLight, asp, false), 'bayer', VOID, DIM); }
+    if (v === 'y2k') drawWall(now);
     if (v === 'logos') { render(bitCv, bitFn(T), 'bayer', BLACK, BONE); render(bitBall, (u, vv) => ball(u, vv, T, { x: -.5, y: -.6 }), 'bayer', BLACK, BONE); turnIso(T); }
     if (!reduce) requestAnimationFrame(frame);
   }
   const bitBall = $('#bitball');
-  const drawAll = () => { drawBitKopf(); render(bitBall, (u, vv) => ball(u, vv, 1.3, { x: -.5, y: -.6 }), 'bayer', BLACK, BONE); drawHero(0); render(wall, (u, vv, asp) => room(u, vv, 0, wLight, asp, false), 'bayer', VOID, DIM); render(bitCv, bitFn(1.2), 'bayer', BLACK, BONE); redrawTiles(); };
+  const drawAll = () => { drawBitKopf(); render(bitBall, (u, vv) => ball(u, vv, 1.3, { x: -.5, y: -.6 }), 'bayer', BLACK, BONE); render(bitCv, bitFn(1.2), 'bayer', BLACK, BONE); };
 
   // ---------- bewegt: flip-book logos + event posts, recorded as video ----------
   // every logo is rasterised from its svg in 4 "drawings" (different boil seeds), cycled like a flip book.
@@ -1257,6 +1191,7 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
 
   // canvases: main, text layer (gets toner holes), logo group, 1-bit scratch
   const mcv = $('#mo-cv'), MAINX = mcv.getContext('2d'); let mx = MAINX;   // mx is swapped to a scene layer while a reel transition renders
+  let CV = mcv, CVX = MAINX, CVSIZE = null;   // the engine draws onto CV; the website wallpaper swaps in its own canvas
   const mk = () => { const c = document.createElement('canvas'); return [c, c.getContext('2d', { willReadFrequently: true })]; };
   const [tcv, tx] = mk(), [gcv, gx] = mk(), [bcv, bx] = mk();
   let NOISE = null;
@@ -1269,7 +1204,13 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
         const [c, x] = mk(); c.width = W; c.height = H; x.filter = 'blur(28px)'; x.drawImage(small, -60, -60, W + 120, H + 120); return c; })(),
     };
   }
-  function setSize() { const [W, H] = FMT[MO.fmt]; if (mcv.width !== W || mcv.height !== H || !NOISE) { mcv.width = tcv.width = W; mcv.height = tcv.height = H; makeNoise(W, H); } }
+  const NOISES = {};
+  function setSize() {
+    const [W, H] = CVSIZE || FMT[MO.fmt];
+    if (CV.width !== W || CV.height !== H) { CV.width = W; CV.height = H; }
+    if (tcv.width !== W || tcv.height !== H) { tcv.width = W; tcv.height = H; }
+    const k = W + 'x' + H; if (!NOISES[k]) { makeNoise(W, H); NOISES[k] = NOISE; } NOISE = NOISES[k];
+  }
 
   // text helpers (drawn on the text layer, letter by letter so each "drawing" wobbles)
   const fontStr = (F, px) => `${F.s || 'normal'} ${F.w} ${px}px ${F.f}, sans-serif`;
@@ -1457,7 +1398,7 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
   }
   function drawBack(f, N) {
     if (MO.back === '-') return;
-    const W = mcv.width, H = mcv.height, key = [MO.back, f % N, N, W, H, MO.wash].join('|');
+    const W = CV.width, H = CV.height, key = [MO.back, f % N, N, W, H, MO.wash].join('|');
     if (key !== bgKey) { bgKey = key; if (bgc.width !== W || bgc.height !== H) { bgc.width = W; bgc.height = H; }
       bgx.globalCompositeOperation = 'source-over'; bgx.globalAlpha = 1; bgx.fillStyle = '#000'; bgx.fillRect(0, 0, W, H); paintBack(bgx, W, H, f, N); wash(W, H, f, N); }
     mx.save(); mx.globalCompositeOperation = 'lighter'; mx.globalAlpha = MO.bga / 100; mx.drawImage(bgc, 0, 0); mx.restore();
@@ -1470,7 +1411,7 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
   let moWait = false;
   // content of one scene onto mx (no background, no print finish). f and N are local to the scene.
   function drawContent(f, N, kind) {
-    const W = mcv.width, H = mcv.height, M = 72, story = MO.fmt === 'story';
+    const W = CV.width, H = CV.height, M = 72, story = MO.fmt === 'story';
     const TF = TFONTS[MO.font] || TFONTS.archivo, INK = '#f0f0f0';
     tx.fillStyle = INK; tx.strokeStyle = INK;
     LM = { schriftzug: 'schriftzug', zeichen: 'zeichen', kollabo: 'kollabo', partner: 'partner' }[kind] || null;
@@ -1555,12 +1496,12 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
   // scene layers + transitions
   const [la, lax] = mk(), [lb, lbx] = mk(), [lt, ltx] = mk(), [lm, lmx] = mk();
   function toLayer(c, x, fn) {
-    if (c.width !== mcv.width || c.height !== mcv.height) { c.width = mcv.width; c.height = mcv.height; } else x.clearRect(0, 0, c.width, c.height);
+    if (c.width !== CV.width || c.height !== CV.height) { c.width = CV.width; c.height = CV.height; } else x.clearRect(0, 0, c.width, c.height);
     const keep = mx; mx = x; RECTS = []; rectsTaken = false; fn(); mx = keep; return RECTS;
   }
   const union = r => r.length ? r.reduce((u, q) => { const x0 = Math.min(u.x, q.x), y0 = Math.min(u.y, q.y); return { x: x0, y: y0, w: Math.max(u.x + u.w, q.x + q.w) - x0, h: Math.max(u.y + u.h, q.y + q.h) - y0 }; }) : null;
   function compose(t, p, rA, rB, F) {
-    const W = mcv.width, H = mcv.height, e = p * p * (3 - 2 * p), ss = (a, b, x) => Math.max(0, Math.min(1, (x - a) / (b - a)));
+    const W = CV.width, H = CV.height, e = p * p * (3 - 2 * p), ss = (a, b, x) => Math.max(0, Math.min(1, (x - a) / (b - a)));
     const put = (c, alpha = 1) => { mx.globalAlpha = alpha; mx.drawImage(c, 0, 0); mx.globalAlpha = 1; };
     if (t === 'schrumpf') {   // the logo of scene A shrinks onto where the logo sits in scene B
       let ra = union(rA), rb = union(rB);
@@ -1608,8 +1549,8 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
   }
   function drawMotion(F) {
     setSize(); flash = false; moWait = false;
-    const W = mcv.width, H = mcv.height, N = frameCount(), f = F;
-    mx = MAINX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H);
+    const W = CV.width, H = CV.height, N = frameCount(), f = F;
+    mx = CVX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H);
     drawBack(F, N);
     if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.lay);
     // print look: speckles, paper blotches, invert for light, then the yellowed-paper tint (same matrix as #paper)
@@ -1678,7 +1619,7 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
   }
   $('#mo-up').onchange = async e => { const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;
     try { mstat.textContent = 'logo wird eingelesen …'; const r = await ingest(file), x = { id: 'p-u' + Date.now(), n: file.name.replace(/\.[^.]+$/, '').toLowerCase(), ...r };
-      PARTNERS.push({ id: x.id, n: x.n, make: upSvg(x.src, x.w, x.h), up: x }); MO.p = x.id; partnerOpts();
+      PARTNERS.push({ id: x.id, n: x.n, make: upSvg(x.src, x.w, x.h), up: x }); MO.p = x.id; partnerOpts(); wallUi();
       try { localStorage.setItem('bbk-partner-logos', JSON.stringify(PARTNERS.filter(q => q.up).map(q => q.up))); mstat.textContent = `„${x.n}“ ist drin und bleibt in diesem browser gespeichert.`; }
       catch (err) { mstat.textContent = `„${x.n}“ ist drin (nur bis zum neuladen, der speicher ist voll).`; }
     } catch (err) { mstat.textContent = 'das bild ließ sich nicht lesen. png, jpg oder svg probieren.'; } };
@@ -1697,6 +1638,45 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
   $('#mo-add').onclick = () => { if (REEL.length >= 8) return; const next = ['daten', 'titel', 'kollabo', 'raster'][REEL.length % 4]; REEL.push({ k: next, d: 3, t: 'blende' }); drawScenes(); };
   drawScenes();
   fmtNote(); loadFont(MO.font); document.fonts.load(fontStr(MONO, 100)).catch(() => {}); document.fonts.load(fontStr(MONO_L, 100)).catch(() => {});
+
+  // ---------- website wallpaper: same engine, own settings ----------
+  const WALL_DEF = { m: 'r4-kopfwelle', w: 'r2-guss', p: '-', pmode: 'kollabo', back: 'kontur', fx: 'ruhig', size: 46, bga: 50, wash: 50, boil: 3, amt: 40, fps: 8, len: 8, dark: true, grain: true, paper: true };
+  let WALL = { ...WALL_DEF };
+  try { Object.assign(WALL, JSON.parse(localStorage.getItem('bbk-wall') || '{}')); } catch (e) {}
+  const wcv = $('#wall'), wcx = wcv.getContext('2d'), wroom = $('#r-y2k');
+  let wLast = '', wT0 = performance.now();
+  function drawWall(now) {
+    const r = desk.getBoundingClientRect(); if (!r.width) return;
+    const sc = Math.min(1, 1500 / r.width), W = Math.max(320, Math.round(r.width * sc)), H = Math.max(240, Math.round(r.height * sc));
+    const N = Math.max(8, Math.round(WALL.len * WALL.fps / 8) * 8), f = Math.floor((now - wT0) / 1000 * WALL.fps) % N, key = [f, W, H, JSON.stringify(WALL)].join('|');
+    if (key === wLast && !moWait) return; wLast = key;
+    const keep = { ...MO }, kCV = CV, kX = CVX, kS = CVSIZE;
+    Object.assign(MO, WALL, { mode: 'logo', len: WALL.len }); CV = wcv; CVX = wcx; CVSIZE = [W, H];
+    try { drawMotion(f); } finally { Object.assign(MO, keep); CV = kCV; CVX = kX; CVSIZE = kS; mx = MAINX; }
+  }
+  // controls of hintergrund.exe
+  const wOpt = (list, cur) => list.map(x => `<option value="${x.id}"${x.id === cur ? ' selected' : ''}>${esc(x.n)}</option>`).join('');
+  const wPairs = (list, cur) => list.map(([k, n]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${n}</option>`).join('');
+  function wallUi() {
+    $('#w-m').innerHTML = wOpt(MARKS, WALL.m); $('#w-w').innerHTML = wOpt(WORDS, WALL.w);
+    $('#w-p').innerHTML = '<option value="-">kein partner</option>' + wOpt(PARTNERS, WALL.p); $('#w-pm').value = WALL.pmode;
+    $('#w-back').innerHTML = wPairs(MO_BACK, WALL.back); $('#w-fx').innerHTML = wPairs(MO_FX, WALL.fx);
+    ['size', 'bga', 'wash', 'boil'].forEach(k => { $('#w-' + k).value = WALL[k]; });
+    [['dark', 'data-w-dark'], ['grain', 'data-w-grain'], ['paper', 'data-w-paper']].forEach(([k, at]) => $$(`[${at}]`).forEach(b => b.setAttribute('aria-pressed', String((b.getAttribute(at) === '1') === WALL[k]))));
+    wroom.classList.toggle('light', !WALL.dark); wroom.classList.toggle('pure', !WALL.paper); wroom.classList.toggle('nograin', !WALL.grain);
+  }
+  // with reduced motion the frame loop never runs: draw a still, and redraw until the logos have finished loading
+  const wallStill = () => { if (!reduce) return; wLast = ''; drawWall(performance.now()); if (moWait) setTimeout(wallStill, 400); };
+  const wSave = () => { try { localStorage.setItem('bbk-wall', JSON.stringify(WALL)); } catch (e) {} wallUi(); wallStill(); };
+  [['m', 'm'], ['w', 'w'], ['p', 'p'], ['pm', 'pmode'], ['back', 'back'], ['fx', 'fx']].forEach(([id, k]) => { $('#w-' + id).onchange = e => { WALL[k] = e.target.value; wSave(); }; });
+  ['size', 'bga', 'wash', 'boil'].forEach(k => { $('#w-' + k).oninput = e => { WALL[k] = +e.target.value; wSave(); }; });
+  [['dark', 'data-w-dark'], ['grain', 'data-w-grain'], ['paper', 'data-w-paper']].forEach(([k, at]) => $$(`[${at}]`).forEach(b => { b.onclick = () => { WALL[k] = b.getAttribute(at) === '1'; wSave(); }; }));
+  $('#w-rnd').onclick = () => { const pick = a => a[Math.floor(Math.random() * a.length)];
+    Object.assign(WALL, { m: pick(MARKS).id, w: Math.random() < .6 ? pick(WORDS.slice(1)).id : '-', back: pick(MO_BACK.slice(1))[0], fx: pick(MO_FX)[0], wash: Math.round(20 + Math.random() * 70) }); wSave(); };
+  $('#w-copy').onclick = () => { const txt = 'bbk website-hintergrund: ' + JSON.stringify(WALL);
+    const ok = () => { $('#w-note').textContent = 'kopiert. schickt mir den text, dann baue ich ihn als festen look ein.'; };
+    if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok, () => { $('#w-note').textContent = txt; }); else $('#w-note').textContent = txt; };
+  wallUi(); wallStill();
 
   // loop + export
   let mt0 = performance.now(), mLast = -1, recOn = false;
@@ -1747,10 +1727,11 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
     $$('button', sw).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
     if (location.hash !== '#' + v) history.replaceState(null, '', '#' + v);
     fit();
+    if (v === 'y2k') wallStill();
   }
   sw.addEventListener('click', e => { const b = e.target.closest('button'); if (b) { show(b.dataset.v); scrollTo(0, 0); } });
   const h = location.hash.slice(1);
-  show(['logos', 'kombi', 'motion', 'y2k', 'dit'].includes(h) ? h : 'logos');
+  show(['logos', 'kombi', 'motion', 'y2k'].includes(h) ? h : 'logos');
 
   ready = true;
   setFonts('');
