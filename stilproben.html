@@ -152,12 +152,14 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-chips button[aria-pressed="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .mo-ctl output{color:var(--bone)}
 .mo-note{margin:0;font-size:11px;color:var(--mute)}
-#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
+#r-motion:not(.fxbg) .mo-fxbg,#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
 .mo-sc{display:grid;grid-template-columns:minmax(0,1.3fr) 58px minmax(0,1fr) auto;gap:5px;align-items:center;margin-bottom:6px}
 .mo-sc select,.mo-sc input{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px 5px;font:11px var(--f-min)}
 .mo-sc button{background:none;border:1px solid #555;color:var(--mute);cursor:pointer;padding:5px 8px}
 .mo-sc .n{grid-column:1/-1;font-size:10px;color:var(--mute);margin:-2px 0 2px}
 .mo-up{display:inline-block}
+.mo-fxbg{display:grid;gap:8px;border-left:2px solid #444;padding-left:10px}
+.mo-fxbg select{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px;font:11px var(--f-min)}
 .mo-art{display:grid;grid-template-columns:auto minmax(0,1fr) auto 40px auto;gap:5px;align-items:center;margin-bottom:6px}
 .mo-art input[type=text]{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px;font:11px var(--f-min)}
 .mo-art img,.mo-art .nophoto{width:40px;height:40px;object-fit:cover;border:1px solid #555;display:block}
@@ -437,7 +439,14 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row"><div class="seg" role="group" aria-label="Partner-Anordnung"><button data-mo-pmode="kollabo" aria-pressed="true">bbk × partner</button><button data-mo-pmode="partner" aria-pressed="false">nur partner</button></div>
         <label class="kb-btn ghost mo-up">logo hochladen<input type="file" id="mo-up" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden></label></div>
       <div><span class="mo-lbl">effekt</span><div class="mo-chips" id="mo-fx" role="group" aria-label="Effekt"></div></div>
+      <div><span class="mo-lbl">druck</span><div class="mo-chips" id="mo-pfx" role="group" aria-label="Druck-Effekt"></div></div>
+      <label for="mo-pstr">druck-stärke <output id="mo-pstr-o"></output><input type="range" id="mo-pstr" min="10" max="100" value="60"></label>
       <div><span class="mo-lbl">hintergrund</span><div class="mo-chips" id="mo-back" role="group" aria-label="Hintergrund-Visual"></div></div>
+      <div class="mo-fxbg"><label for="mfx-src">motiv<select id="mfx-src"></select></label>
+        <span class="mo-lbl">effekt</span><div class="mo-chips" id="mfx-fx" role="group" aria-label="Effekt-Motiv Effekt"></div>
+        <span class="mo-lbl">anordnung</span><div class="mo-chips" id="mfx-arr" role="group" aria-label="Effekt-Motiv Anordnung"></div>
+        <label for="mfx-n">anzahl <output id="mfx-n-o"></output><input type="range" id="mfx-n" min="2" max="24" value="5"></label>
+        <div class="row"><div class="seg" role="group" aria-label="Details"><button data-mfx-det="1" aria-pressed="true">details</button><button data-mfx-det="0" aria-pressed="false">ohne</button></div><div class="seg"><button data-mfx-light aria-pressed="false">licht</button></div></div></div>
       <label for="mo-bga">hintergrund-stärke <output id="mo-bga-o"></output><input type="range" id="mo-bga" min="10" max="100" value="45"></label>
       <label for="mo-wash">verwaschen <output id="mo-wash-o"></output><input type="range" id="mo-wash" min="0" max="100" value="45"></label>
       <label for="mo-boil">zittern (daumenkino) <output id="mo-boil-o"></output><input type="range" id="mo-boil" min="0" max="10" value="4"></label>
@@ -1248,7 +1257,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // every logo is rasterised from its svg in 4 "drawings" (different boil seeds), cycled like a flip book.
   // everything is a pure function of the frame index f, so a recording of N frames loops seamlessly.
   const MO = { mode: 'logo', fmt: 'post', m: 'r4-kopfwelle', w: 'r2-guss', fx: 'ruhig', lay: 'plakat', boil: 4, amt: 55, fps: 8, size: 72,
-    dark: true, grain: true, paper: true, len: 6, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
+    dark: true, grain: true, paper: true, len: 6, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', pfx: 'sauber', pstr: 60, p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
   const FMT = { post: [1080, 1350], story: [1080, 1920] };
   // own colour pair, shared by logo-labor, kombinierer and bewegt (and the png downloads)
   const COL = { on: false, ground: '#3b1a5c', ink: '#f5d33d' };
@@ -1396,6 +1405,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     return items;
   }
   let flash = false;
+  const PFX = new Map();   // cached print effects of the logo group
   function logoBlock(box, f, fx = MO.fx) {
     const W = Math.ceil(box.w), H = Math.ceil(box.h); if (W < 2 || H < 2) return;
     if (gcv.width !== W || gcv.height !== H) { gcv.width = W; gcv.height = H; } else gx.clearRect(0, 0, W, H);
@@ -1403,13 +1413,24 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     items.forEach(it => { if (it.cross) { const r = it.s / 2, j = (sr(f % 4, 77) - .5) * r * .15; gx.strokeStyle = '#f0f0f0'; gx.lineWidth = Math.max(2, it.s * .16); gx.lineCap = 'round';
         gx.beginPath(); gx.moveTo(it.x - r + j, it.y - r); gx.lineTo(it.x + r, it.y + r - j); gx.moveTo(it.x + r - j, it.y - r); gx.lineTo(it.x - r, it.y + r + j); gx.stroke(); return; }
       gx.drawImage(it.a.frames[f % it.a.frames.length], it.x, it.y, it.w, it.h); });
-    if (CLEAN() && !PHOTO_FRAME) { const im = gx.getImageData(0, 0, W, H), d = im.data;
-      for (let i = 0; i < d.length; i += 4) { const al = d[i + 3] * Math.max(d[i], d[i + 1], d[i + 2]) / 255; d[i] = d[i + 1] = d[i + 2] = 11; d[i + 3] = al; } gx.putImageData(im, 0, 0); }
+    const toBlack = cv => { const cx2 = cv.getContext('2d'), im = cx2.getImageData(0, 0, cv.width, cv.height), d = im.data;
+      for (let i = 0; i < d.length; i += 4) { const al = d[i + 3] * Math.max(d[i], d[i + 1], d[i + 2]) / 255; d[i] = d[i + 1] = d[i + 2] = 11; d[i + 3] = al; } cx2.putImageData(im, 0, 0); };
+    let SRC = gcv, SP = 0, TINT = null;
+    if (MO.pfx !== 'sauber' && !PHOTO_FRAME) {   // druck: the logo group gets an effect from the effekte tab
+      const key = [W, H, f % 4, MO.pfx, MO.pstr, MO.look, LM, items.map(it => it.cross ? 'x' : it.a.id + (it.w | 0)).join(',')].join('|');
+      let r = PFX.get(key);
+      if (!r) { const [m, mx3] = mk(); m.width = W; m.height = H; mx3.drawImage(gcv, 0, 0); const im = mx3.getImageData(0, 0, W, H), d = im.data;
+        for (let i = 0; i < d.length; i += 4) { const al = d[i + 3] * Math.max(d[i], d[i + 1], d[i + 2]) / 255; d[i] = d[i + 1] = d[i + 2] = 255; d[i + 3] = al; } mx3.putImageData(im, 0, 0);
+        const it = fxInstance(m, W, 1, 31 + (f % 4) * 17, MO.pfx, MO.pstr); if (CLEAN()) toBlack(it.ink);
+        r = { c: it.ink, pad: it.pad, tint: it.tint }; PFX.set(key, r); if (PFX.size > 24) PFX.delete(PFX.keys().next().value); }
+      SRC = r.c; SP = r.pad; TINT = r.tint;
+    } else if (CLEAN() && !PHOTO_FRAME) toBlack(gcv);
     if (PHOTO_FRAME && PHOTO.lt.toLowerCase() !== '#f2f2f2') { if (lt.width !== W || lt.height !== H) { lt.width = W; lt.height = H; } ltx.clearRect(0, 0, W, H); ltx.drawImage(gcv, 0, 0);
       gx.globalCompositeOperation = 'multiply'; gx.fillStyle = PHOTO.lt; gx.fillRect(0, 0, W, H); gx.globalCompositeOperation = 'destination-in'; gx.drawImage(lt, 0, 0); gx.globalCompositeOperation = 'source-over'; }
     if (!rectsTaken) { rectsTaken = true; RECTS = items.filter(it => !it.cross).map(it => ({ id: it.a.id, x: box.x + it.x, y: box.y + it.y, w: it.w, h: it.h })); }
     const a = MO.amt / 100, cx = box.x + box.w / 2, cy = box.y + box.h / 2, c = mx;
-    const at = (dx, dy, sx, sy, rot, alpha = 1) => { c.save(); c.globalAlpha = alpha; c.translate(cx + dx, cy + dy); c.rotate(rot); c.scale(sx, sy); c.drawImage(gcv, -W / 2, -H / 2); c.restore(); };
+    const at = (dx, dy, sx, sy, rot, alpha = 1) => { c.save(); c.globalAlpha = alpha; c.translate(cx + dx, cy + dy); c.rotate(rot); c.scale(sx, sy); c.drawImage(SRC, -W / 2 - SP, -H / 2 - SP);
+      if (TINT) { c.globalCompositeOperation = CLEAN() ? 'multiply' : 'lighter'; c.globalAlpha = alpha * .6; c.drawImage(TINT, -W / 2 - SP, -H / 2 - SP); } c.restore(); };
     const q = f % 16;
     if (fx === 'wackeln') at((sr(q % 8, 1) - .5) * a * 60, (sr(q % 8, 2) - .5) * a * 60, 1, 1, (sr(q % 8, 3) - .5) * a * .3);
     else if (fx === 'puls') { const s = 1 + a * .32 * [1, .55, .3, .15, .06, 0, 0, 0][f % 8]; at(0, 0, s, s, 0); }
@@ -1567,7 +1588,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const [bgt, bgtx] = mk();
   function drawBack(f, N) {
     if (MO.back === '-') return;
-    const W = CV.width, H = CV.height, key = [MO.back, f % N, N, W, H, MO.wash, MO.back === 'fx' ? FX_VER : 0].join('|');
+    const W = CV.width, H = CV.height, key = [MO.back, f % N, N, W, H, MO.wash, MO.back === 'fx' ? FX_VER + JSON.stringify(FXL) : 0].join('|');
     if (key !== bgKey) { bgKey = key; if (bgc.width !== W || bgc.height !== H) { bgc.width = W; bgc.height = H; }
       bgx.globalCompositeOperation = 'source-over'; bgx.globalAlpha = 1; bgx.fillStyle = '#000'; bgx.fillRect(0, 0, W, H); paintBack(bgx, W, H, f, N); wash(W, H, f, N); }
     if (CLEAN()) {   // the motif as petrol-to-teal ink on the pale ground
@@ -2190,24 +2211,24 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   const fxr = (v, i, k) => sr(FXL.seed * 7.31 + v * 1.93, i * 5 + k);
   // one instance: motif at width w with the effect; returns { ink, tint, pad }
-  function fxInstance(m, w, press, seed) {
-    const h = w * m.height / m.width, pad = Math.round(w * (FXL.fx === 'schliere' ? .6 : .28)), [c, x] = mk(); c.width = Math.ceil(w + 2 * pad); c.height = Math.ceil(h + 2 * pad);
-    const k = FXL.str / 100; let tint = null;
+  function fxInstance(m, w, press, seed, fx = FXL.fx, str = FXL.str) {
+    const h = w * m.height / m.width, pad = Math.round(w * (fx === 'schliere' ? .6 : .28)), [c, x] = mk(); c.width = Math.ceil(w + 2 * pad); c.height = Math.ceil(h + 2 * pad);
+    const k = str / 100; let tint = null;
     const put = (alpha, filt = 'none', dx = 0, dy = 0, cc = x) => { cc.save(); cc.globalAlpha = alpha; cc.filter = filt; cc.drawImage(m, pad + dx, pad + dy, w, h); cc.restore(); };
-    if (FXL.fx === 'spray') {
+    if (fx === 'spray') {
       put(.85 * k + .1, `blur(${(w * .05 * k).toFixed(1)}px)`); put(1, `blur(${(w * .016).toFixed(1)}px)`); put(.75, `blur(${(w * .004).toFixed(1)}px)`);
       x.globalCompositeOperation = 'destination-in'; x.drawImage(stampMask(c.width, c.height, seed, true), 0, 0); x.globalCompositeOperation = 'source-over';
       const [t, tx2] = mk(); t.width = c.width; t.height = c.height; tint = t;
       [['#f29a55', w * .012, w * .01], ['#6fc4d6', -w * .012, -w * .006]].forEach(([col, dx, dy]) => { const [q, qx] = mk(); q.width = c.width; q.height = c.height;
         put(.55 * k, `blur(${(w * .06).toFixed(1)}px)`, dx, dy, qx); qx.globalCompositeOperation = 'source-in'; qx.fillStyle = col; qx.fillRect(0, 0, q.width, q.height); tx2.drawImage(q, 0, 0); });
-    } else if (FXL.fx === 'raster') {
+    } else if (fx === 'raster') {
       const [b2, bx2] = mk(); b2.width = c.width; b2.height = c.height; put(1, `blur(${(w * .018 * (.5 + k)).toFixed(1)}px)`, 0, 0, bx2);
       const d = bx2.getImageData(0, 0, c.width, c.height).data, g = Math.max(6, w / 44); x.fillStyle = '#fff';
       for (let yy = g / 2; yy < c.height; yy += g) for (let xx = g / 2; xx < c.width; xx += g) { const a = d[((yy | 0) * c.width + (xx | 0)) * 4 + 3] / 255;
         if (a > .04) { x.beginPath(); x.arc(xx, yy, Math.sqrt(a) * g * .56, 0, Math.PI * 2); x.fill(); } }
       const [t, tx2] = mk(); t.width = c.width; t.height = c.height; tint = t;
       put(.75, `blur(${(w * .05).toFixed(1)}px)`, w * .02, w * .03, tx2); tx2.globalCompositeOperation = 'source-in'; tx2.fillStyle = '#7fa6c6'; tx2.fillRect(0, 0, t.width, t.height);
-    } else if (FXL.fx === 'schliere') {
+    } else if (fx === 'schliere') {
       const len = h * (.25 + .6 * k), steps = 14;
       for (let i = steps; i >= 1; i--) put((1 - i / steps) * .32, `blur(${(1 + i * w * .002).toFixed(1)}px)`, 0, len * i / steps);
       put(1, `blur(${(w * .003).toFixed(1)}px)`);
@@ -2216,8 +2237,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         put(.7, `blur(${(w * .012).toFixed(1)}px)`, dx, dy, qx); qx.globalCompositeOperation = 'source-in'; qx.fillStyle = col; qx.fillRect(0, 0, q.width, q.height); tx2.drawImage(q, 0, 0); });
     } else {
       put(1);
-      if (FXL.fx === 'stempel') { x.globalCompositeOperation = 'destination-in'; x.drawImage(stampMask(c.width, c.height, seed), 0, 0); x.globalCompositeOperation = 'source-over'; }
-      if (FXL.fx === 'kopie') {   // toner: hard threshold, dropouts, a faint smeared double
+      if (fx === 'stempel') { x.globalCompositeOperation = 'destination-in'; x.drawImage(stampMask(c.width, c.height, seed), 0, 0); x.globalCompositeOperation = 'source-over'; }
+      if (fx === 'kopie') {   // toner: hard threshold, dropouts, a faint smeared double
         const d = x.getImageData(0, 0, c.width, c.height), p2 = d.data;
         for (let i = 0; i < p2.length; i += 4) { const a = p2[i + 3] / 255 + (Math.random() - .5) * .5 * k; p2[i + 3] = a > .5 ? (Math.random() < .06 * k ? 60 : 255) : 0; }
         x.putImageData(d, 0, 0); put(.18 * k, `blur(${(w * .004).toFixed(1)}px)`, w * .012, 0);
@@ -2312,6 +2333,21 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('#fx-rnd').onclick = () => { FXL.seed = 1 + Math.floor(Math.random() * 998); drawFx(); };
     $('#fx-png').onclick = () => fxcv.toBlob(bl => save(bl, `bbk-effekt-${FXL.fx}-${FXL.arr}-${String(FXL.seed).padStart(3, '0')}.png`, fxStat), 'image/png');
     drawFx();
+    // the same effect settings inside bewegt: druck chips for the logo, and the effekt-motiv panel for the background
+    chips($('#mo-pfx'), FX_LIST, 'pfx');
+    { const el = $('#mo-pstr'), o = $('#mo-pstr-o'); o.textContent = el.value; el.oninput = () => { o.textContent = el.value; MO.pstr = +el.value; }; }
+    const fxSyncAll = () => { fxChips($('#fx-fx'), FX_LIST, 'fx'); fxChips($('#fx-arr'), ARR_LIST, 'arr'); fxChips($('#mfx-fx'), FX_LIST, 'fx'); fxChips($('#mfx-arr'), ARR_LIST, 'arr');
+      ['#fx-src', '#mfx-src'].forEach(id => { $(id).value = FXL.src; }); ['n'].forEach(k => { ['#fx-', '#mfx-'].forEach(pr => { $(pr + k).value = FXL[k]; $(pr + k + '-o').textContent = FXL[k]; }); });
+      $$('[data-fx-det],[data-mfx-det]').forEach(b => b.setAttribute('aria-pressed', String(((b.dataset.fxDet || b.dataset.mfxDet) === '1') === FXL.det)));
+      $$('[data-fx-light],[data-mfx-light]').forEach(b => b.setAttribute('aria-pressed', String(FXL.light))); };
+    $('#mfx-src').innerHTML = $('#fx-src').innerHTML;
+    const fxChange = () => { FXCOMP.clear(); fxSyncAll(); drawFx(); };
+    ['#fx-fx', '#fx-arr', '#mfx-fx', '#mfx-arr'].forEach(id => $(id).addEventListener('click', e => { if (e.target.closest('button')) setTimeout(fxSyncAll, 0); }));
+    $('#mfx-src').onchange = e => { FXL.src = e.target.value; fxChange(); }; $('#fx-src').onchange = e => { FXL.src = e.target.value; fxChange(); };
+    $('#mfx-n').oninput = e => { FXL.n = +e.target.value; fxChange(); };
+    $$('[data-mfx-det]').forEach(b => b.onclick = () => { FXL.det = b.dataset.mfxDet === '1'; fxChange(); });
+    $$('[data-mfx-light]').forEach(b => b.onclick = () => { FXL.light = !FXL.light; FX_VER++; fxChange(); });
+    fxSyncAll();
   }
 
   // ---------- shirt: drawn tee with fabric shading; the print follows the folds ----------
@@ -2479,6 +2515,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (document.body.dataset.v === 'motion' || recOn) {
       const f = Math.floor(Math.max(0, now - mt0) / 1000 * MO.fps) % frameCount();
       drawMotion(f); mLast = f;
+      mroom.classList.toggle('fxbg', MO.back === 'fx');
       if (!recOn) mstat.textContent = moWait ? 'logo wird gezeichnet …' : (mstat.textContent === 'logo wird gezeichnet …' ? '' : mstat.textContent);   // every rAF: assets finish loading asynchronously, and the recorder needs a steady stream
     }
     requestAnimationFrame(moLoop);
