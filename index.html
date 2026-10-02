@@ -109,6 +109,8 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
 .paper-on .kombi.inv .tile{filter:invert(1) url(#paper)}
 /* own colour pair: black becomes the ground colour, white the ink colour (overrides auf weiß / hell) */
 body.duo-on #r-logos .tile,body.duo-on .kombi .tile{filter:url(#duo)}
+body.stamp-on #r-logos .tile,body.stamp-on .kombi .tile{filter:url(#stamp0)!important}
+body.stamp-on .tile > *{filter:none!important}
 body.duo-on.paper-on #r-logos .tile,body.duo-on.paper-on .kombi .tile{filter:url(#paper) url(#duo)}
 .colctl{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:11px;color:var(--mute)}
 .colctl label{display:flex;gap:5px;align-items:center}
@@ -198,6 +200,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 #r-y2k.pure{--dk:#050505;--ik:#f0f0f0;--mid:#8a8a8a}
 #r-y2k.pure.light{--dk:#fafafa;--ik:#0a0a0a;--mid:#777}
 #r-y2k.clean{--dk:#eef7f5;--ik:#0b0b0b;--mid:#3f8478}
+#r-y2k.stamp{--dk:#ebe3cf;--ik:#2e2c29;--mid:#8a8377}
+#r-y2k.stamp .win{box-shadow:5px 5px 0 rgba(46,44,41,.25)}
 #r-y2k.clean .win{box-shadow:6px 6px 0 rgba(79,163,154,.45)}
 #r-y2k.clean .tb{background:#0b0b0b;color:#eef7f5}
 .marq{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--ik);font:12px/1 var(--f-pix);padding:7px 0;background:var(--dk);color:var(--ik)}
@@ -323,6 +327,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <filter id="duo" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".3 .59 .11 0 0  .3 .59 .11 0 0  .3 .59 .11 0 0  0 0 0 1 0"/>
     <feComponentTransfer><feFuncR type="table" tableValues="0 1"/><feFuncG type="table" tableValues="0 1"/><feFuncB type="table" tableValues="0 1"/></feComponentTransfer></filter>
   <filter id="shirtwarp" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".004 .007" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="stamp0" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="m"/><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="3" result="fine"/><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="43" result="press"/><feComposite in="fine" in2="press" operator="arithmetic" k2=".5" k3=".85" result="mix"/><feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.1 0 0 0 -.9" result="dens"/><feComposite in="m" in2="dens" operator="in" result="ink"/><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="10" result="w"/><feDisplacementMap in="ink" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" result="inkd"/><feFlood flood-color="#2e2c29" result="col"/><feComposite in="col" in2="inkd" operator="in" result="inkc"/><feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="3" seed="93" result="mot"/><feColorMatrix in="mot" type="matrix" values=".1 0 0 0 .875  .1 0 0 0 .845  .1 0 0 0 .775  0 0 0 0 1" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="inkc"/></feMerge></filter><filter id="stamp1" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="m"/><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="20" result="fine"/><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="60" result="press"/><feComposite in="fine" in2="press" operator="arithmetic" k2=".5" k3=".85" result="mix"/><feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.1 0 0 0 -.9" result="dens"/><feComposite in="m" in2="dens" operator="in" result="ink"/><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="27" result="w"/><feDisplacementMap in="ink" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" result="inkd"/><feFlood flood-color="#2e2c29" result="col"/><feComposite in="col" in2="inkd" operator="in" result="inkc"/><feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="3" seed="110" result="mot"/><feColorMatrix in="mot" type="matrix" values=".1 0 0 0 .875  .1 0 0 0 .845  .1 0 0 0 .775  0 0 0 0 1" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="inkc"/></feMerge></filter><filter id="stamp2" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="m"/><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="37" result="fine"/><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="77" result="press"/><feComposite in="fine" in2="press" operator="arithmetic" k2=".5" k3=".85" result="mix"/><feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.1 0 0 0 -.9" result="dens"/><feComposite in="m" in2="dens" operator="in" result="ink"/><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="44" result="w"/><feDisplacementMap in="ink" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" result="inkd"/><feFlood flood-color="#2e2c29" result="col"/><feComposite in="col" in2="inkd" operator="in" result="inkc"/><feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="3" seed="127" result="mot"/><feColorMatrix in="mot" type="matrix" values=".1 0 0 0 .875  .1 0 0 0 .845  .1 0 0 0 .775  0 0 0 0 1" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="inkc"/></feMerge></filter><filter id="stamp3" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="m"/><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="54" result="fine"/><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="94" result="press"/><feComposite in="fine" in2="press" operator="arithmetic" k2=".5" k3=".85" result="mix"/><feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.1 0 0 0 -.9" result="dens"/><feComposite in="m" in2="dens" operator="in" result="ink"/><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="61" result="w"/><feDisplacementMap in="ink" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" result="inkd"/><feFlood flood-color="#2e2c29" result="col"/><feComposite in="col" in2="inkd" operator="in" result="inkc"/><feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="3" seed="144" result="mot"/><feColorMatrix in="mot" type="matrix" values=".1 0 0 0 .875  .1 0 0 0 .845  .1 0 0 0 .775  0 0 0 0 1" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="inkc"/></feMerge></filter>
   <filter id="l2a" color-interpolation-filters="sRGB"><feColorMatrix type="luminanceToAlpha"/></filter>
   <filter id="melt" x="-10%" y="-20%" width="120%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".012 .09" numOctaves="2" seed="5"/><feDisplacementMap in="SourceGraphic" scale="14"/></filter>
 </svg>
@@ -346,7 +351,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <h1>bbk logo-labor</h1>
     </div>
     <div class="lab-ctl">
-      <span>körnung</span><div class="seg" role="group" aria-label="Körnung"><button data-grain="0" aria-pressed="false">aus</button><button data-grain="1" aria-pressed="true">leicht</button><button data-grain="2" aria-pressed="false">stark</button></div>
+      <span>körnung</span><div class="seg" role="group" aria-label="Körnung"><button data-grain="0" aria-pressed="false">aus</button><button data-grain="1" aria-pressed="true">leicht</button><button data-grain="2" aria-pressed="false">stark</button></div><div class="seg" role="group" aria-label="Stempel"><button data-stamp aria-pressed="false">stempel</button></div>
       <span>papier</span><div class="seg" role="group" aria-label="Papier"><button data-paper="1" aria-pressed="true">vergilbt</button><button data-paper="0" aria-pressed="false">weiß</button></div>
       <div class="seg" role="group" aria-label="Hintergrund"><button id="bg-dark" aria-pressed="true">auf schwarz</button><button id="bg-light" aria-pressed="false">auf weiß</button></div>
       <span>farben</span><div class="colctl"></div>
@@ -384,7 +389,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <label for="kb-mks">zeichen-größe<input type="range" id="kb-mks" min="15" max="100" value="70"></label>
       <label for="kb-wms">schriftzug-größe<input type="range" id="kb-wms" min="10" max="100" value="40"></label>
       <label for="kb-gap">abstand<input type="range" id="kb-gap" min="0" max="14" value="5"></label>
-      <div class="row"><div class="seg" role="group" aria-label="Körnung"><button data-grain="0" aria-pressed="false">glatt</button><button data-grain="1" aria-pressed="true">körnig</button><button data-grain="2" aria-pressed="false">stark</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Körnung"><button data-grain="0" aria-pressed="false">glatt</button><button data-grain="1" aria-pressed="true">körnig</button><button data-grain="2" aria-pressed="false">stark</button></div><div class="seg" role="group" aria-label="Stempel"><button data-stamp aria-pressed="false">stempel</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Papier"><button data-paper="1" aria-pressed="true">vergilbt</button><button data-paper="0" aria-pressed="false">weiß</button></div>
         <div class="seg" role="group" aria-label="Hintergrund"><button data-kbg="0" aria-pressed="true">dunkel</button><button data-kbg="1" aria-pressed="false">hell</button></div></div>
       <div class="row colctl"></div>
@@ -444,7 +449,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row"><div class="seg" role="group" aria-label="Hintergrund"><button data-mo-bg="0" aria-pressed="true">dunkel</button><button data-mo-bg="1" aria-pressed="false">hell</button></div>
         <div class="seg" role="group" aria-label="Körnung"><button data-mo-grain="0" aria-pressed="false">glatt</button><button data-mo-grain="1" aria-pressed="true">körnig</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Papier"><button data-mo-paper="1" aria-pressed="true">vergilbt</button><button data-mo-paper="0" aria-pressed="false">rein</button></div></div>
-      <div class="row"><div class="seg" role="group" aria-label="Look"><button data-mo-look="kopierer" aria-pressed="true">kopierer</button><button data-mo-look="clean" aria-pressed="false">2000er</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Look"><button data-mo-look="kopierer" aria-pressed="true">kopierer</button><button data-mo-look="stamp" aria-pressed="false">stempel</button><button data-mo-look="clean" aria-pressed="false">2000er</button></div></div>
       <div class="row colctl"></div>
       <label class="mo-noreel" for="mo-len">länge<select id="mo-len"><option value="3">3 sekunden</option><option value="6" selected>6 sekunden</option><option value="10">10 sekunden</option><option value="15">15 sekunden</option></select></label>
       <div class="row"><button class="kb-btn" id="mo-rec">video ↓</button><button class="kb-btn ghost" id="mo-png">png ↓</button><button class="kb-btn ghost" id="mo-rnd">zufall</button></div>
@@ -467,7 +472,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <label for="sh-size">größe <output id="sh-size-o"></output><input type="range" id="sh-size" min="40" max="333"></label>
       <div><span class="mo-lbl">druckfarbe</span><div class="sh-sw" id="sh-inks"></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Mockup-Hintergrund"><button data-sh-bg="papier" aria-pressed="true">papier</button><button data-sh-bg="clean" aria-pressed="false">2000er</button></div></div>
-      <div class="row"><div class="seg" role="group" aria-label="Druck"><button data-sh-grain="0" aria-pressed="true">glatt</button><button data-sh-grain="1" aria-pressed="false">körnig</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Druck"><button data-sh-grain="0" aria-pressed="true">glatt</button><button data-sh-grain="1" aria-pressed="false">körnig</button><button data-sh-grain="s" aria-pressed="false">stempel</button></div></div>
       <div class="row"><button class="kb-btn" id="sh-mock" type="button">mockup ↓</button><button class="kb-btn ghost" id="sh-print" type="button">druck ↓</button></div>
       <p class="kb-empty" id="sh-stat" aria-live="polite" style="font-size:11px"></p>
     </aside>
@@ -516,7 +521,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <div class="full"><div class="seg" role="group" aria-label="Hintergrund hell oder dunkel"><button data-w-dark="1">dunkel</button><button data-w-dark="0">hell</button></div>
           <div class="seg" role="group" aria-label="Körnung"><button data-w-grain="1">körnig</button><button data-w-grain="0">glatt</button></div>
           <div class="seg" role="group" aria-label="Papier"><button data-w-paper="1">vergilbt</button><button data-w-paper="0">rein</button></div>
-          <div class="seg" role="group" aria-label="Look"><button data-w-look="kopierer">kopierer</button><button data-w-look="clean">2000er</button></div></div>
+          <div class="seg" role="group" aria-label="Look"><button data-w-look="kopierer">kopierer</button><button data-w-look="stamp">stempel</button><button data-w-look="clean">2000er</button></div></div>
         <div class="full"><button class="wbtn" id="w-rnd" type="button">zufall</button><button class="wbtn" id="w-copy" type="button">einstellung kopieren</button></div>
         <p class="note" id="w-note"></p>
       </div>
@@ -1297,7 +1302,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   function asset(kind) {
     const id = MO[kind]; if (id === '-') return null;
     const it = kind === 'm' ? findM(id) : kind === 'w' ? findW(id) : findP(id); if (!it) return null;
-    const boil = MO.boil, grain = MO.grain && MO.look !== 'clean', key = [id, it.font || '', grain, boil].join('|');
+    const boil = MO.boil, grain = MO.grain && MO.look === 'kopierer', key = [id, it.font || '', grain, boil].join('|');
     if (!ASSET.has(key)) {
       ASSET.set(key, null);
       (async () => { const svg = it.make(), n = boil || grain ? 4 : 1, frames = [];
@@ -1351,7 +1356,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     s.split(/\s+/).filter(Boolean).forEach(w => { const t = line ? line + ' ' + w : w; if (line && c.measureText(t).width > maxW) { out.push(line); line = w; } else line = t; });
     if (line) out.push(line); return out; };
   function flush(f) {   // text layer -> main, with toner holes
-    if (MO.grain && !CLEAN()) { tx.globalCompositeOperation = 'destination-out'; tx.drawImage(NOISE.holes[f % 4], 0, 0); tx.globalCompositeOperation = 'source-over'; }
+    if (MO.grain && MO.look === 'kopierer') { tx.globalCompositeOperation = 'destination-out'; tx.drawImage(NOISE.holes[f % 4], 0, 0); tx.globalCompositeOperation = 'source-over'; }
     mx.drawImage(tcv, 0, 0); tx.clearRect(0, 0, tcv.width, tcv.height);
   }
 
@@ -1799,6 +1804,10 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     mx = CVX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; if (CLEAN()) cleanBase(F, N); else { mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H); }
     drawBack(F, N);
     if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.mode === 'lineup' ? PHOTO.view : MO.lay);
+    if (MO.look === 'stamp' && !PHOTO_FRAME) {   // stempel: the light-on-dark frame becomes stamp ink on paper (texture changes with the flip-book)
+      if (dcv.width !== W || dcv.height !== H) { dcv.width = W; dcv.height = H; } dcx.clearRect(0, 0, W, H); dcx.drawImage(CV, 0, 0);
+      mx.save(); mx.globalCompositeOperation = 'copy'; mx.filter = `url(#stamp${MO.boil ? f % 4 : 0})`; mx.drawImage(dcv, 0, 0); mx.restore();
+      if (flash) { mx.globalCompositeOperation = 'difference'; mx.fillStyle = '#fff'; mx.fillRect(0, 0, W, H); } mx.globalCompositeOperation = 'source-over'; return; }
     if (CLEAN() && !PHOTO_FRAME) { if (flash) { mx.globalCompositeOperation = 'difference'; mx.fillStyle = '#fff'; mx.fillRect(0, 0, W, H); } mx.globalCompositeOperation = 'source-over'; return; }   // 2000er: clean, no print finish
     // print look: speckles, paper blotches, invert for light, then the yellowed-paper tint (same matrix as #paper)
     if (MO.grain) { mx.globalCompositeOperation = 'lighter'; mx.drawImage(NOISE.specks[f % 4], 0, 0); }
@@ -1938,7 +1947,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('#w-back').innerHTML = wPairs(MO_BACK, WALL.back); $('#w-fx').innerHTML = wPairs(MO_FX, WALL.fx);
     ['size', 'bga', 'wash', 'boil'].forEach(k => { $('#w-' + k).value = WALL[k]; });
     [['dark', 'data-w-dark'], ['grain', 'data-w-grain'], ['paper', 'data-w-paper']].forEach(([k, at]) => $$(`[${at}]`).forEach(b => b.setAttribute('aria-pressed', String((b.getAttribute(at) === '1') === WALL[k]))));
-    wroom.classList.toggle('clean', WALL.look === 'clean'); $$('[data-w-look]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.wLook === WALL.look)));
+    wroom.classList.toggle('clean', WALL.look === 'clean'); wroom.classList.toggle('stamp', WALL.look === 'stamp'); $$('[data-w-look]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.wLook === WALL.look)));
     wroom.classList.toggle('light', !WALL.dark); wroom.classList.toggle('pure', !WALL.paper); wroom.classList.toggle('nograin', !WALL.grain);
   }
   // with reduced motion the frame loop never runs: draw a still, and redraw until the logos have finished loading
@@ -2005,11 +2014,24 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       x.putImageData(img, 0, 0); out[name] = await new Promise(r => c.toBlob(r, 'image/png')); }
     x.putImageData(src, 0, 0); return out;
   }
+  // stamp density mask: soft pressure blotches x fine speckle; multiplying a print's alpha with it gives the stamped look
+  const STAMPS = new Map();
+  function stampMask(W, H, seed = 1) {
+    const key = W + 'x' + H + ':' + seed; if (STAMPS.has(key)) return STAMPS.get(key);
+    const gw = Math.ceil(W / 70) + 3, gh = Math.ceil(H / 70) + 3, [g, gx2] = mk(); g.width = gw; g.height = gh; const gd = gx2.createImageData(gw, gh);
+    for (let i = 0; i < gd.data.length; i += 4) { gd.data[i] = gd.data[i + 1] = gd.data[i + 2] = 255 * (.35 + .65 * Math.random()); gd.data[i + 3] = 255; } gx2.putImageData(gd, 0, 0);
+    const [c, x] = mk(); c.width = W; c.height = H; x.filter = `blur(${Math.round(Math.max(W, H) / 90)}px)`; x.drawImage(g, -70, -70, W + 140, H + 140); x.filter = 'none';
+    const d = x.getImageData(0, 0, W, H), p = d.data;
+    for (let i = 0; i < p.length; i += 4) { const press = p[i] / 255, v = press * 1.15 + (Math.random() - .5) * .75 - .18; p[i] = p[i + 1] = p[i + 2] = 0; p[i + 3] = 255 * Math.max(0, Math.min(1, (v - .1) / .5)); }
+    x.putImageData(d, 0, 0); if (STAMPS.size > 6) STAMPS.delete(STAMPS.keys().next().value); STAMPS.set(key, c); return c;
+  }
   async function logoPngs(it, size) {
     const out = {};
     for (const grain of [false, true]) {
       const bmp = await svgImage(it.make(), size, it.font, 3, 0, grain), [c, x] = mk(); c.width = bmp.width; c.height = bmp.height; x.drawImage(bmp, 0, 0);
       Object.entries(await inkify(c)).forEach(([n, blob]) => { out[`${n}${grain ? '_koernig' : ''}.png`] = blob; });
+      if (!grain && document.body.classList.contains('stamp-on')) { x.globalCompositeOperation = 'destination-in'; x.drawImage(stampMask(c.width, c.height, 5), 0, 0); x.globalCompositeOperation = 'source-over';
+        Object.entries(await inkify(c)).forEach(([n, blob]) => { out[`${n}_stempel.png`] = blob; }); }
     }
     return out;
   }
@@ -2068,6 +2090,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       for (const grain of [false, true]) { const c = await kombiCanvas(grain, size); Object.entries(await inkify(c)).forEach(([n, blob]) => zip.file(`bbk-${name}/bbk-${name}_${n}${grain ? '_koernig' : ''}.png`, blob)); }
       kbStat.textContent = ''; }, `bbk-${name}.zip`, kbStat); };
   $('#kb-pal').onclick = () => zipUp(async zip => { const f = await paletteFiles(); Object.entries(f).forEach(([n, d]) => zip.file(n, d)); }, 'bbk-farbpalette.zip', kbStat);
+  $$('[data-stamp]').forEach(b => b.onclick = () => { const on = !document.body.classList.contains('stamp-on'); document.body.classList.toggle('stamp-on', on); $$('[data-stamp]').forEach(x => x.setAttribute('aria-pressed', String(on))); });
   $('#dl-pal').onclick = () => zipUp(async zip => { const f = await paletteFiles(); Object.entries(f).forEach(([n, d]) => zip.file(n, d)); }, 'bbk-farbpalette.zip');
   $('#dl-all').onclick = () => { const size = +$('#dl-size').value, all = [...DL_MARKS.map(x => ['zeichen', x]), ...DL_WORDS.map(x => ['schriftzuege', x])];
     zipUp(async zip => {
@@ -2198,7 +2221,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       for (let yy = 0; yy < bh; yy++) for (let xx = 0; xx < bw; xx++) { const gi = (y0 + yy) * SHW + x0 + xx, sxp = Math.round(xx + M.gx[gi] * D), syp = Math.round(yy + M.gy[gi] * D);
         if (sxp < 0 || syp < 0 || sxp >= bw || syp >= bh) continue; const a = (syp * bw + sxp) * 4, b = (yy * bw + xx) * 4; od[b] = sd[a]; od[b + 1] = sd[a + 1]; od[b + 2] = sd[a + 2]; od[b + 3] = sd[a + 3]; }
       pwx.putImageData(out, x0, y0);
-      if (SH.grain) { pwx.globalCompositeOperation = 'destination-out'; pwx.drawImage(holes(SHW, SHH), 0, 0); }
+      if (SH.grain === 'stamp') { pwx.globalCompositeOperation = 'destination-in'; pwx.drawImage(stampMask(SHW, SHH, 2), 0, 0); }
+      else if (SH.grain) { pwx.globalCompositeOperation = 'destination-out'; pwx.drawImage(holes(SHW, SHH), 0, 0); }
       plx.clearRect(0, 0, SHW, SHH); plx.globalCompositeOperation = 'source-over'; plx.drawImage(pwc, 0, 0);
       pwx.globalCompositeOperation = 'multiply'; pwx.drawImage(M.shade, 0, 0); pwx.globalCompositeOperation = 'destination-in'; pwx.drawImage(plc, 0, 0); pwx.globalCompositeOperation = 'source-over';
       tcx.globalCompositeOperation = 'source-over'; tcx.globalAlpha = .95; tcx.drawImage(pwc, 0, 0); tcx.globalAlpha = 1;
@@ -2220,7 +2244,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('#sh-pos').innerHTML = SH_POS[SH.view].map(([n], i) => `<button type="button" data-shp="${i}" aria-pressed="false">${n}</button>`).join('');
     $('#sh-size').value = P.w; $('#sh-size-o').textContent = Math.round(P.w / SH_CM) + ' cm';
     $$('[data-sh-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shView === SH.view)));
-    $$('[data-sh-grain]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.shGrain === '1') === SH.grain)));
+    $$('[data-sh-grain]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shGrain === (SH.grain === 'stamp' ? 's' : SH.grain ? '1' : '0'))));
     $$('[data-sh-bg]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shBg === SH.bg)));
   };
   const shSet = () => { shUi(); drawShirt(); };
@@ -2228,7 +2252,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (t.dataset.shc) SH.color = t.dataset.shc; else if (t.dataset.shi !== undefined) SH.ink = t.dataset.shi || null;
     else if (t.dataset.shp !== undefined) { const [, cx, cy, w] = SH_POS[SH.view][+t.dataset.shp]; Object.assign(P, { cx, cy, w }); }
     else if (t.dataset.shBg) SH.bg = t.dataset.shBg;
-    else if (t.dataset.shView) SH.view = t.dataset.shView; else if (t.dataset.shGrain) SH.grain = t.dataset.shGrain === '1'; else return;
+    else if (t.dataset.shView) SH.view = t.dataset.shView; else if (t.dataset.shGrain) SH.grain = t.dataset.shGrain === 's' ? 'stamp' : t.dataset.shGrain === '1'; else return;
     shSet(); });
   $('#r-shirt').addEventListener('input', e => { const P = SH[SH.view];
     if (e.target.id === 'sh-color') SH.color = e.target.value; else if (e.target.id === 'sh-ink') SH.ink = e.target.value;
@@ -2253,7 +2277,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     shStat.textContent = 'druckdatei wird gezeichnet …'; const ppu = 3543 / (A[2] - A[0]), W = 3543, H = 4724;
     try { const d = await designBitmap(P.src, Math.min(3600, Math.round(P.w * ppu))), [c, x] = mk(); c.width = W; c.height = H;
       const w = P.w * ppu, h = w * d.height / d.width; x.drawImage(d, (P.cx - A[0]) * ppu - w / 2, (P.cy - A[1]) * ppu - h / 2, w, h);
-      if (SH.grain) { x.globalCompositeOperation = 'destination-out'; x.drawImage(holes(W, H), 0, 0); x.globalCompositeOperation = 'source-over'; SHHOLES = null; }
+      if (SH.grain === 'stamp') { x.globalCompositeOperation = 'destination-in'; x.drawImage(stampMask(W, H, 2), 0, 0); x.globalCompositeOperation = 'source-over'; }
+      else if (SH.grain) { x.globalCompositeOperation = 'destination-out'; x.drawImage(holes(W, H), 0, 0); x.globalCompositeOperation = 'source-over'; SHHOLES = null; }
       c.toBlob(b => { shStat.textContent = ''; save(b, `bbk-druck-${v === 'front' ? 'vorne' : 'hinten'}-30x40cm-300dpi.png`, shStat); }, 'image/png'); }
     catch (err) { console.warn(err); shStat.textContent = 'fehler. erneut versuchen.'; } };
   shUi(); drawShirt();
