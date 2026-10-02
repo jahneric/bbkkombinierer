@@ -16,3 +16,9 @@ Alles rund um die visuelle Identität vom bbk kollektiv (Leipzig).
 - `tools/` – Node-Skripte (headless Chrome), um die PNGs neu zu exportieren bzw. Frames zu rendern
 
 PNG-Export neu erzeugen: `node tools/export-logos.mjs logos all`
+
+## Shirt-Foto
+
+Der Shirt-Reiter nutzt ein echtes Produktfoto eines weißen T-Shirts:
+„Wikimania2023 Attendee T-Shirt Mockup“ von Adien Gunarta & Naila Rahmah, Wikimedia Commons, **CC0** (gemeinfrei).
+Der ursprüngliche Aufdruck wurde mit `node tools/prepare-tee.mjs` entfernt (Ergebnis: `app/tee-front.webp`).

@@ -1,0 +1,44 @@
+<!doctype html><meta charset="utf-8"><body><script>
+// removes the print from a white t-shirt photo and returns a grey shading map (white fabric = light) with alpha.
+// print = saturated or clearly darker than the fabric; it is filled by push-pull interpolation from the fabric around it.
+window.clean = async (src, size) => {
+  const img = new Image(); img.src = src; await img.decode();
+  const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d', { willReadFrequently: true });
+  x.drawImage(img, 0, 0, size, size);
+  const d = x.getImageData(0, 0, size, size), p = d.data, n = size * size;
+  const L = new Float32Array(n), A = new Uint8Array(n), hole = new Uint8Array(n);
+  for (let i = 0; i < n; i++) { const r = p[i * 4], g = p[i * 4 + 1], b = p[i * 4 + 2]; A[i] = p[i * 4 + 3]; L[i] = r * .3 + g * .59 + b * .11;
+    const sat = Math.max(r, g, b) - Math.min(r, g, b); hole[i] = A[i] > 200 && (sat > 14 || L[i] < 150) ? 1 : 0; }
+  // only treat the chest area as print (keeps collar / seams / edge shadows), then grow the mask to cover soft edges
+  for (let y = 0; y < size; y++) for (let xx = 0; xx < size; xx++) { const u = xx / size, v = y / size; if (u < .27 || u > .74 || v < .22 || v > .6) hole[y * size + xx] = 0; }
+  const grow = (m, r) => { const o = new Uint8Array(n); for (let y = 0; y < size; y++) for (let xx = 0; xx < size; xx++) { if (!m[y * size + xx]) continue;
+    for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const yy = y + dy, x2 = xx + dx; if (yy >= 0 && yy < size && x2 >= 0 && x2 < size && dx * dx + dy * dy <= r * r) o[yy * size + x2] = 1; } } return o; };
+  const H = grow(hole, Math.round(size / 110));
+  // push-pull: average known fabric down a pyramid, then fill holes from coarse to fine
+  let lv = [{ w: size, v: Float32Array.from(L), k: Float32Array.from(H, (h, i) => h || A[i] < 250 ? 0 : 1) }];
+  while (lv[lv.length - 1].w > 4) { const { w, v, k } = lv[lv.length - 1], w2 = w >> 1, v2 = new Float32Array(w2 * w2), k2 = new Float32Array(w2 * w2);
+    for (let y = 0; y < w2; y++) for (let xx = 0; xx < w2; xx++) { let sv = 0, sk = 0; for (const [a, b] of [[0, 0], [1, 0], [0, 1], [1, 1]]) { const j = (y * 2 + b) * w + xx * 2 + a; sv += v[j] * k[j]; sk += k[j]; }
+      const j2 = y * w2 + xx; k2[j2] = Math.min(1, sk); v2[j2] = sk ? sv / sk : 0; }
+    lv.push({ w: w2, v: v2, k: k2 }); }
+  for (let l = lv.length - 2; l >= 0; l--) { const { w, v, k } = lv[l], up = lv[l + 1];
+    const bil = (fx, fy) => { fx = Math.max(0, Math.min(up.w - 1.001, fx)); fy = Math.max(0, Math.min(up.w - 1.001, fy)); const x0 = fx | 0, y0 = fy | 0, tx = fx - x0, ty = fy - y0, W2 = up.w;
+      const a = up.v[y0 * W2 + x0], b = up.v[y0 * W2 + Math.min(W2 - 1, x0 + 1)], c2 = up.v[Math.min(W2 - 1, y0 + 1) * W2 + x0], d2 = up.v[Math.min(W2 - 1, y0 + 1) * W2 + Math.min(W2 - 1, x0 + 1)];
+      return (a * (1 - tx) + b * tx) * (1 - ty) + (c2 * (1 - tx) + d2 * tx) * ty; };
+    for (let y = 0; y < w; y++) for (let xx = 0; xx < w; xx++) { const j = y * w + xx, uv = bil((xx + .5) / 2 - .5, (y + .5) / 2 - .5); v[j] = v[j] * k[j] + uv * (1 - k[j]); } }
+  // separable box blur (3 passes ~ gaussian) of the filled result, used only inside the hole
+  const blur = (src, r) => { let a = Float32Array.from(src), t = new Float32Array(n);
+    for (let pass = 0; pass < 3; pass++) {
+      for (let y = 0; y < size; y++) { let s2 = 0; for (let xx = -r; xx <= r; xx++) s2 += a[y * size + Math.min(size - 1, Math.max(0, xx))];
+        for (let xx = 0; xx < size; xx++) { t[y * size + xx] = s2 / (2 * r + 1); s2 += a[y * size + Math.min(size - 1, xx + r + 1)] - a[y * size + Math.max(0, xx - r)]; } }
+      for (let xx = 0; xx < size; xx++) { let s2 = 0; for (let y = -r; y <= r; y++) s2 += t[Math.min(size - 1, Math.max(0, y)) * size + xx];
+        for (let y = 0; y < size; y++) { a[y * size + xx] = s2 / (2 * r + 1); s2 += t[Math.min(size - 1, y + r + 1) * size + xx] - t[Math.max(0, y - r) * size + xx]; } } }
+    return a; };
+  const F = blur(lv[0].v, Math.round(size / 160));
+  // smooth the filled area a little and give it fabric grain like the rest
+  for (let i = 0; i < n; i++) { const t = H[i] ? F[i] + (Math.random() - .5) * 5 : L[i]; p[i * 4] = p[i * 4 + 1] = p[i * 4 + 2] = Math.max(0, Math.min(255, t)); }
+  x.putImageData(d, 0, 0);
+  const mask = document.createElement('canvas'); mask.width = mask.height = size; const mx = mask.getContext('2d'); const md = mx.createImageData(size, size);
+  for (let i = 0; i < n; i++) { md.data[i * 4] = md.data[i * 4 + 1] = md.data[i * 4 + 2] = 255; md.data[i * 4 + 3] = H[i] ? 255 : 0; } mx.putImageData(md, 0, 0);
+  return { webp: c.toDataURL('image/webp', .9), png: c.toDataURL('image/png'), mask: mask.toDataURL('image/png') };
+};
+</script>
