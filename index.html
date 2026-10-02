@@ -165,7 +165,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-chips button[aria-pressed="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .mo-ctl output{color:var(--bone)}
 .mo-note{margin:0;font-size:11px;color:var(--mute)}
-#r-motion:not(.fxbg) .mo-fxbg,#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
+#r-motion:not(.fxbg) .mo-fxbg,#r-motion:not(.solo) .mo-onlylogo,#r-motion:not(.arr) .mo-arrbox,#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
 .mo-sc{display:grid;grid-template-columns:minmax(0,1.3fr) 58px minmax(0,1fr) auto;gap:5px;align-items:center;margin-bottom:6px}
 .mo-sc select,.mo-sc input{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px 5px;font:11px var(--f-min)}
 .mo-sc button{background:none;border:1px solid #555;color:var(--mute);cursor:pointer;padding:5px 8px}
@@ -348,7 +348,6 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <b>bbk · kombinierer</b>
   <button data-v="logos" aria-pressed="true">logo-labor</button>
   <button data-v="kombi" aria-pressed="false">kombinierer</button>
-  <button data-v="fx" aria-pressed="false">effekte</button>
   <button data-v="motion" aria-pressed="false">bewegt</button>
   <button data-v="shirt" aria-pressed="false">shirt</button>
   <button data-v="y2k" aria-pressed="false">website</button>
@@ -408,7 +407,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row colctl"></div>
       <div class="row"><button class="kb-btn" id="kb-rnd">zufall</button><button class="kb-btn" id="kb-fav">merken</button><button class="kb-btn ghost" id="kb-copy">liste kopieren</button></div>
       <textarea id="kb-copytxt" hidden aria-label="Favoritenliste zum Kopieren"></textarea>
-      <div class="kb-dlrow"><button class="kb-btn" id="kb-png" type="button">png ↓</button><button class="kb-btn ghost" id="kb-pal" type="button">farben ↓</button><button class="kb-btn ghost" id="kb-fx" type="button">→ effekte</button></div>
+      <div class="kb-dlrow"><button class="kb-btn" id="kb-png" type="button">png ↓</button><button class="kb-btn ghost" id="kb-pal" type="button">farben ↓</button><button class="kb-btn ghost" id="kb-fx" type="button">→ bewegt</button></div>
       <p class="kb-empty" id="kb-dlstat" aria-live="polite" style="font-size:11px"></p>
     </aside>
   </div>
@@ -424,6 +423,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     <div class="mo-view"><canvas id="mo-cv" width="1080" height="1350" aria-label="Vorschau des bewegten Posts"></canvas><div id="mo-status" aria-live="polite"></div></div>
     <aside class="kb-ctl mo-ctl">
       <div class="row"><div class="seg" role="group" aria-label="Modus"><button data-mo-mode="logo" aria-pressed="true">logo-effekt</button><button data-mo-mode="post" aria-pressed="false">event-post</button><button data-mo-mode="lineup" aria-pressed="false">lineup</button><button data-mo-mode="reel" aria-pressed="false">reel</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Bewegung"><button data-mo-frz="0" aria-pressed="true">läuft</button><button data-mo-frz="1" aria-pressed="false">still</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Format"><button data-mo-fmt="post" aria-pressed="true">post 4:5</button><button data-mo-fmt="story" aria-pressed="false">story / reel 9:16</button></div></div>
       <div class="mo-lu mo-luonly"><div class="seg" role="group" aria-label="Ansicht"><button data-mo-view="artist" aria-pressed="true">einzeln</button><button data-mo-view="lineup" aria-pressed="false">alle</button></div></div>
       <div class="mo-lu"><span class="mo-lbl">artists</span><div id="mo-artists"></div>
@@ -452,6 +452,10 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row"><div class="seg" role="group" aria-label="Partner-Anordnung"><button data-mo-pmode="kollabo" aria-pressed="true">bbk × partner</button><button data-mo-pmode="partner" aria-pressed="false">nur partner</button></div>
         <label class="kb-btn ghost mo-up">logo hochladen<input type="file" id="mo-up" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden></label></div>
       <div><span class="mo-lbl">effekt</span><div class="mo-chips" id="mo-fx" role="group" aria-label="Effekt"></div></div>
+      <div class="mo-onlylogo"><span class="mo-lbl">anordnung</span><div class="mo-chips" id="mo-arr" role="group" aria-label="Anordnung"></div></div>
+      <div class="mo-onlylogo mo-arrbox"><label for="marr-src">motiv<select id="marr-src"></select></label>
+        <label for="marr-n">anzahl <output id="marr-n-o"></output><input type="range" id="marr-n" min="2" max="24" value="5"></label>
+        <div class="row"><div class="seg" role="group" aria-label="Details"><button data-marr-det="1" aria-pressed="true">details</button><button data-marr-det="0" aria-pressed="false">ohne</button></div><div class="seg"><button data-marr-light aria-pressed="false">licht</button></div><button class="kb-btn ghost" id="marr-rnd" type="button">zufall</button></div></div>
       <div><span class="mo-lbl">druck</span><div class="mo-chips" id="mo-pfx" role="group" aria-label="Druck-Effekt"></div></div>
       <label for="mo-pstr">druck-stärke <output id="mo-pstr-o"></output><input type="range" id="mo-pstr" min="10" max="100" value="60"></label>
       <div><span class="mo-lbl">hintergrund</span><div class="mo-chips" id="mo-back" role="group" aria-label="Hintergrund-Visual"></div></div>
@@ -1270,7 +1274,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // every logo is rasterised from its svg in 4 "drawings" (different boil seeds), cycled like a flip book.
   // everything is a pure function of the frame index f, so a recording of N frames loops seamlessly.
   const MO = { mode: 'logo', fmt: 'post', m: 'r4-kopfwelle', w: 'r2-guss', fx: 'ruhig', lay: 'plakat', boil: 4, amt: 55, fps: 8, size: 72,
-    dark: true, grain: true, paper: true, len: 6, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', pfx: 'sauber', pstr: 60, p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
+    dark: true, grain: true, paper: true, len: 6, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', pfx: 'sauber', pstr: 60, arr: 'logo', still: false, p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
   const FMT = { post: [1080, 1350], story: [1080, 1920] };
   // own colour pair, shared by logo-labor, kombinierer and bewegt (and the png downloads)
   const COL = { on: false, ground: '#3b1a5c', ink: '#f5d33d' };
@@ -1711,7 +1715,15 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     };
     const title = MO.title || 'bbk', date = MO.date || '', info = MO.info || '', extra = MO.extra || '';
     const unit = ` ${title} ✱ ${date} ✱ bbk kollektiv ✱`;
-    if (LOGO_KINDS.includes(kind)) {
+    if (kind === 'logo' && MO.arr !== 'logo') {   // anordnung: the effekte composition as the main motif
+      const cfg = { ...FXL, arr: MO.arr, fx: MO.pfx, str: MO.pstr }, comp = fxCompNow(W, H, MO.boil && !MO.still ? f % 4 : 0, cfg);
+      if (!comp) moWait = true;
+      else { let ink = comp.ink;
+        if (CLEAN()) { if (!comp.black) { const [bc, bx3] = mk(); bc.width = W; bc.height = H; bx3.drawImage(comp.ink, 0, 0); bx3.globalCompositeOperation = 'source-in'; bx3.fillStyle = '#0b0b0b'; bx3.fillRect(0, 0, W, H); comp.black = bc; } ink = comp.black; }
+        mx.drawImage(ink, 0, 0);
+        if (comp.tint) { mx.save(); mx.globalCompositeOperation = CLEAN() ? 'multiply' : 'lighter'; mx.globalAlpha = .6; mx.drawImage(comp.tint, 0, 0); mx.restore(); }
+        if (FXL.light) fxLight(mx, W, H, '#ff6a2b', 0, !CLEAN()); }
+    } else if (LOGO_KINDS.includes(kind)) {
       const s = MO.size / 100, bw = (W - 2 * M) * s, bh = (H - 2 * M) * s * (story ? .55 : .75);
       logoBlock({ x: (W - bw) / 2, y: (H - bh) / 2, w: bw, h: bh }, f);
     } else if (kind === 'titel') {
@@ -2118,7 +2130,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('figcaption span', fig).append(b);
     const id = fig.dataset.k5 ? 'r5-' + fig.dataset.k5 : fig.dataset.k4 ? 'r4-' + fig.dataset.k4 : fig.dataset.k3 ? 'r3-' + fig.dataset.k3 : fig.dataset.k2 ? 'r2-' + fig.dataset.k2 : 'r1-' + fig.dataset.k;
     if (MARKS.some(q => q.id === id) || WORDS.some(q => q.id === id)) { const f2 = document.createElement('button'); f2.type = 'button'; f2.className = 'figdl'; f2.textContent = 'fx'; f2.setAttribute('aria-label', 'in effekte öffnen');
-      f2.onclick = e => { e.stopPropagation(); FXL.src = id; $('#fx-src').value = id; show('fx'); scrollTo(0, 0); drawFx(); }; $('figcaption span', fig).append(f2); } });
+      f2.onclick = e => { e.stopPropagation(); openInMotion(id); }; $('figcaption span', fig).append(f2); } });
   $('#r-logos').addEventListener('click', e => { const b = e.target.closest('.figdl'); if (!b) return; e.stopPropagation();
     const x = figItem(b.closest('figure'), b.dataset.n), name = slug(x.n.replace(/\s*·.*$/, '').replace(/\s*\(.*\)$/, '')) || 'logo', size = +$('#dl-size').value;
     zipUp(async zip => { dlStat.textContent = `${x.n.replace(/\s*·.*$/, '')} wird gezeichnet …`; Object.entries(await logoPngs(x, size)).forEach(([suf, blob]) => zip.file(`bbk-${name}/bbk-${name}_${suf}`, blob)); }, `bbk-${name}.zip`); });
@@ -2147,7 +2159,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     zipUp(async zip => { kbStat.textContent = 'kombi wird gezeichnet …';
       for (const grain of [false, true]) { const c = await kombiCanvas(grain, size); Object.entries(await inkify(c)).forEach(([n, blob]) => zip.file(`bbk-${name}/bbk-${name}_${n}${grain ? '_koernig' : ''}.png`, blob)); }
       kbStat.textContent = ''; }, `bbk-${name}.zip`, kbStat); };
-  $('#kb-fx').onclick = () => { FXL.src = 'kombi'; $('#fx-src').value = 'kombi'; FXCOMP.clear(); MOTIFS.clear(); show('fx'); scrollTo(0, 0); drawFx(); };
+  $('#kb-fx').onclick = () => { MOTIFS.clear(); FXCOMP.clear(); openInMotion('kombi'); };
   $('#kb-pal').onclick = () => zipUp(async zip => { const f = await paletteFiles(); Object.entries(f).forEach(([n, d]) => zip.file(n, d)); }, 'bbk-farbpalette.zip', kbStat);
   $$('[data-stamp]').forEach(b => b.onclick = () => { const on = !document.body.classList.contains('stamp-on'); document.body.classList.toggle('stamp-on', on); $$('[data-stamp]').forEach(x => x.setAttribute('aria-pressed', String(on))); });
   $('#dl-pal').onclick = () => zipUp(async zip => { const f = await paletteFiles(); Object.entries(f).forEach(([n, d]) => zip.file(n, d)); }, 'bbk-farbpalette.zip');
@@ -2222,9 +2234,10 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       x.putImageData(d, 0, 0); MOTIFS.set(key, c); FX_VER++; FXCOMP.clear(); drawFx(); })().catch(e => console.warn('effekte:', e));
     return null;
   }
-  const fxr = (v, i, k) => sr(FXL.seed * 7.31 + v * 1.93, i * 5 + k);
+  let FC = FXL;   // settings of the composition being built (the background uses FXL, the foreground its own)
+  const fxr = (v, i, k) => sr(FC.seed * 7.31 + v * 1.93, i * 5 + k);
   // one instance: motif at width w with the effect; returns { ink, tint, pad }
-  function fxInstance(m, w, press, seed, fx = FXL.fx, str = FXL.str) {
+  function fxInstance(m, w, press, seed, fx = FC.fx, str = FC.str) {
     const h = w * m.height / m.width, pad = Math.round(w * (fx === 'schliere' ? .6 : .28)), [c, x] = mk(); c.width = Math.ceil(w + 2 * pad); c.height = Math.ceil(h + 2 * pad);
     const k = str / 100; let tint = null;
     const put = (alpha, filt = 'none', dx = 0, dy = 0, cc = x) => { cc.save(); cc.globalAlpha = alpha; cc.filter = filt; cc.drawImage(m, pad + dx, pad + dy, w, h); cc.restore(); };
@@ -2262,17 +2275,17 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   // arrangement: boxes sized to the motif's aspect (cx, cy, w, rotation, pressure)
   function fxBoxes(W, H, ar, v) {
-    const n = FXL.n, b = [], fitW = (maxW, maxH) => Math.min(maxW, maxH * ar);
-    if (FXL.arr === 'einzeln') b.push({ cx: W / 2, cy: H / 2, w: fitW(W * .72, H * .55), r: 0, p: 1 });
-    else if (FXL.arr === 'mehrfach') { const w = fitW(W * .62, H * .45); for (let i = 0; i < Math.min(n, 8); i++) b.push({ cx: W / 2 + (fxr(v, i, 1) - .5) * w * .14, cy: H / 2 + (fxr(v, i, 2) - .5) * w * .14 / ar, w: w * (.96 + fxr(v, i, 3) * .08), r: (fxr(v, i, 4) - .5) * .14, p: .38 + .62 * (1 - i / Math.max(1, n)) }); }
-    else if (FXL.arr === 'reihe') { const vert = ar >= 1, step = (vert ? H * .84 : W * .84) / n;
+    const n = FC.n, b = [], fitW = (maxW, maxH) => Math.min(maxW, maxH * ar);
+    if (FC.arr === 'einzeln') b.push({ cx: W / 2, cy: H / 2, w: fitW(W * .72, H * .55), r: 0, p: 1 });
+    else if (FC.arr === 'mehrfach') { const w = fitW(W * .62, H * .45); for (let i = 0; i < Math.min(n, 8); i++) b.push({ cx: W / 2 + (fxr(v, i, 1) - .5) * w * .14, cy: H / 2 + (fxr(v, i, 2) - .5) * w * .14 / ar, w: w * (.96 + fxr(v, i, 3) * .08), r: (fxr(v, i, 4) - .5) * .14, p: .38 + .62 * (1 - i / Math.max(1, n)) }); }
+    else if (FC.arr === 'reihe') { const vert = ar >= 1, step = (vert ? H * .84 : W * .84) / n;
       for (let i = 0; i < n; i++) { const w = vert ? fitW(W * .7, step * .86) : Math.min(step * .86, H * .6 * ar); b.push({ cx: vert ? W / 2 : W * .08 + step * (i + .5), cy: vert ? H * .08 + step * (i + .5) : H / 2, w, r: (fxr(v, i, 4) - .5) * .05, p: 1 - .72 * i / Math.max(1, n - 1) }); } }
-    else if (FXL.arr === 'raster') { const cols = Math.max(1, Math.round(Math.sqrt(n * (W / H) / ar))), rows = Math.ceil(n / cols), cw = W * .9 / cols, ch = H * .9 / rows;
+    else if (FC.arr === 'raster') { const cols = Math.max(1, Math.round(Math.sqrt(n * (W / H) / ar))), rows = Math.ceil(n / cols), cw = W * .9 / cols, ch = H * .9 / rows;
       for (let i = 0; i < cols * rows; i++) { if (fxr(v, i, 9) < .1) continue; const col = i % cols, row = Math.floor(i / cols);
         b.push({ cx: W * .05 + cw * (col + .5), cy: H * .05 + ch * (row + .5), w: fitW(cw * .8, ch * .8), r: (fxr(v, i, 4) - .5) * .16, p: .4 + .6 * fxr(v, i, 5) }); } }
-    else if (FXL.arr === 'kreis') { const R = Math.min(W, H) * .33, w = Math.min(2 * Math.PI * R / n * .85, fitW(W * .4, H * .3));
+    else if (FC.arr === 'kreis') { const R = Math.min(W, H) * .33, w = Math.min(2 * Math.PI * R / n * .85, fitW(W * .4, H * .3));
       for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2 - Math.PI / 2; b.push({ cx: W / 2 + Math.cos(a) * R, cy: H / 2 + Math.sin(a) * R, w, r: a + Math.PI / 2, p: .55 + .45 * fxr(v, i, 5) }); } }
-    else if (FXL.arr === 'streuung') for (let i = 0; i < n; i++) { const w = fitW(W * (.16 + .3 * fxr(v, i, 1)), H * .3);
+    else if (FC.arr === 'streuung') for (let i = 0; i < n; i++) { const w = fitW(W * (.16 + .3 * fxr(v, i, 1)), H * .3);
       b.push({ cx: W * (-.05 + 1.1 * fxr(v, i, 2)), cy: H * (-.03 + 1.06 * fxr(v, i, 3)), w, r: (fxr(v, i, 4) - .5) * 1.3, p: .5 + .5 * fxr(v, i, 5) }); }
     else { b.push({ cx: W * .6, cy: H * .52, w: W * 1.55, r: -.06, p: 1 }); b.push({ cx: W * .2, cy: H * .86, w: fitW(W * .22, H * .1), r: 0, p: .9 }); }
     return b;
@@ -2280,24 +2293,25 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   function fxDetails(x, W, H, v) {   // micro typography in ink: labels, index, barcode, crop and registration marks
     const u = W / 1080, f = px => `400 ${Math.round(px * u)}px 'Martian Mono', monospace`, m = 46 * u;
     x.save(); x.fillStyle = '#fff'; x.strokeStyle = '#fff'; x.lineWidth = 1.4 * u;
-    x.font = f(15); x.fillText('bbk kollektiv · leipzig', m, m + 10 * u); x.textAlign = 'right'; x.fillText('nº ' + String(FXL.seed).padStart(3, '0'), W - m, m + 10 * u);
+    x.font = f(15); x.fillText('bbk kollektiv · leipzig', m, m + 10 * u); x.textAlign = 'right'; x.fillText('nº ' + String(FC.seed).padStart(3, '0'), W - m, m + 10 * u);
     x.textAlign = 'left'; x.fillText([MO.date, MO.title].filter(Boolean).join('  —  ').slice(0, 40), m, H - m);
-    x.font = f(11); x.fillText('fig. ' + (FXL.fx) + ' / ' + FXL.arr, m, H - m - 22 * u);
+    x.font = f(11); x.fillText('fig. ' + (FC.fx) + ' / ' + FC.arr, m, H - m - 22 * u);
     let bx = W - m - 150 * u; for (let i = 0; i < 34; i++) { const bw = (1 + Math.floor(fxr(v, i, 7) * 3)) * 1.6 * u; if (fxr(v, i, 8) > .3) x.fillRect(bx, H - m - 34 * u, bw, 34 * u); bx += bw + 1.6 * u; }
     [[m * .5, m * .5, 1, 1], [W - m * .5, m * .5, -1, 1], [m * .5, H - m * .5, 1, -1], [W - m * .5, H - m * .5, -1, -1]].forEach(([cx, cy, sx, sy]) => { x.beginPath(); x.moveTo(cx, cy + sy * 18 * u); x.lineTo(cx, cy); x.lineTo(cx + sx * 18 * u, cy); x.stroke(); });
     x.beginPath(); x.arc(W - m - 8 * u, H / 2, 7 * u, 0, Math.PI * 2); x.moveTo(W - m - 20 * u, H / 2); x.lineTo(W - m + 4 * u, H / 2); x.moveTo(W - m - 8 * u, H / 2 - 12 * u); x.lineTo(W - m - 8 * u, H / 2 + 12 * u); x.stroke();
     x.globalAlpha = .5; x.beginPath(); x.moveTo(W * .83, m * 2); x.lineTo(W * .83, H - m * 3); x.stroke();
     x.restore();
   }
-  function fxCompNow(W, H, v) {
-    const key = [JSON.stringify(FXL), W, H, v, FX_VER].join('|'); if (FXCOMP.has(key)) return FXCOMP.get(key);
-    const m = motifNow(FXL.src); if (!m) return null;
+  function fxCompNow(W, H, v, cfg = FXL) {
+    const key = [JSON.stringify(cfg), W, H, v, FX_VER].join('|'); if (FXCOMP.has(key)) return FXCOMP.get(key);
+    FC = cfg;
+    const m = motifNow(FC.src); if (!m) { FC = FXL; return null; }
     const [ink, ix] = mk(), [tint, tx3] = mk(); ink.width = tint.width = W; ink.height = tint.height = H; let hasTint = false;
-    fxBoxes(W, H, m.width / m.height, v).forEach((b, i) => { const it = fxInstance(m, b.w, b.p, 11 + i * 13 + v * 101 + FXL.seed * 7);
+    fxBoxes(W, H, m.width / m.height, v).forEach((b, i) => { const it = fxInstance(m, b.w, b.p, 11 + i * 13 + v * 101 + FC.seed * 7);
       for (const [cv, cx2] of [[it.ink, ix], [it.tint, tx3]]) { if (!cv) continue; if (cv === it.tint) hasTint = true;
         cx2.save(); cx2.translate(b.cx, b.cy); cx2.rotate(b.r); cx2.drawImage(cv, -it.w / 2 - it.pad, -it.h / 2 - it.pad); cx2.restore(); } });
-    if (FXL.det) fxDetails(ix, W, H, v);
-    const comp = { ink, tint: hasTint ? tint : null }; FXCOMP.set(key, comp); if (FXCOMP.size > 12) FXCOMP.delete(FXCOMP.keys().next().value); return comp;
+    if (FC.det) fxDetails(ix, W, H, v);
+    FC = FXL; const comp = { ink, tint: hasTint ? tint : null }; FXCOMP.set(key, comp); if (FXCOMP.size > 12) FXCOMP.delete(FXCOMP.keys().next().value); return comp;
   }
   function fxLight(x, W, H, col, v, add = true) {
     const lx = W * (.42 + .16 * fxr(v, 1, 11)), ys = [H * (.22 + .1 * fxr(v, 2, 11)), H * (.7 + .1 * fxr(v, 3, 11))];
@@ -2360,8 +2374,23 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('#mfx-n').oninput = e => { FXL.n = +e.target.value; fxChange(); };
     $$('[data-mfx-det]').forEach(b => b.onclick = () => { FXL.det = b.dataset.mfxDet === '1'; fxChange(); });
     $$('[data-mfx-light]').forEach(b => b.onclick = () => { FXL.light = !FXL.light; FX_VER++; fxChange(); });
-    fxSyncAll();
+    // anordnung in bewegt (foreground composition); shares motiv / anzahl / details / licht / zufall with the background
+    chips($('#mo-arr'), [['logo', 'logo']].concat(ARR_LIST), 'arr');
+    $('#marr-src').innerHTML = $('#fx-src').innerHTML; $('#marr-src').value = FXL.src;
+    const syncArr = () => { $('#marr-src').value = FXL.src; $('#marr-n').value = FXL.n; $('#marr-n-o').textContent = FXL.n;
+      $$('[data-marr-det]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.marrDet === '1') === FXL.det))); $$('[data-marr-light]').forEach(b => b.setAttribute('aria-pressed', String(FXL.light))); fxSyncAll(); };
+    $('#marr-src').onchange = e => { FXL.src = e.target.value; FXCOMP.clear(); syncArr(); };
+    $('#marr-n').oninput = e => { FXL.n = +e.target.value; syncArr(); };
+    $$('[data-marr-det]').forEach(b => b.onclick = () => { FXL.det = b.dataset.marrDet === '1'; syncArr(); });
+    $$('[data-marr-light]').forEach(b => b.onclick = () => { FXL.light = !FXL.light; FX_VER++; syncArr(); });
+    $('#marr-rnd').onclick = () => { FXL.seed = 1 + Math.floor(Math.random() * 998); FXCOMP.clear(); };
+    ['#mfx-src', '#fx-src'].forEach(id => $(id).addEventListener('change', syncArr));
+    seg('data-mo-frz', v => { MO.still = v === '1'; });
+    window.openInMotion = id => { FXL.src = id; FXCOMP.clear(); syncArr(); show('motion'); scrollTo(0, 0);
+      $('[data-mo-mode="logo"]').click(); if (MO.arr === 'logo') $('#mo-arr [data-k="einzeln"]').click(); };
+    syncArr();
   }
+  const openInMotion = id => window.openInMotion && window.openInMotion(id);
 
   // ---------- shirt: drawn tee with fabric shading; the print follows the folds ----------
   // everything is laid out in a 1000 x 1100 unit space (1 unit ~ 1 mm on a size-L tee) and drawn at 1.5x.
@@ -2526,9 +2555,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   function moLoop(now) {
     if (document.body.dataset.v === 'motion' || recOn) {
-      const f = Math.floor(Math.max(0, now - mt0) / 1000 * MO.fps) % frameCount();
+      const f = MO.still && !recOn ? 0 : Math.floor(Math.max(0, now - mt0) / 1000 * MO.fps) % frameCount();
       drawMotion(f); mLast = f;
-      mroom.classList.toggle('fxbg', MO.back === 'fx');
+      mroom.classList.toggle('fxbg', MO.back === 'fx'); mroom.classList.toggle('solo', MO.mode === 'logo'); mroom.classList.toggle('arr', MO.mode === 'logo' && MO.arr !== 'logo');
       if (!recOn) mstat.textContent = moWait ? 'logo wird gezeichnet …' : (mstat.textContent === 'logo wird gezeichnet …' ? '' : mstat.textContent);   // every rAF: assets finish loading asynchronously, and the recorder needs a steady stream
     }
     requestAnimationFrame(moLoop);
@@ -2566,7 +2595,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   sw.addEventListener('click', e => { const b = e.target.closest('button'); if (b) { show(b.dataset.v); scrollTo(0, 0); } });
   const h = location.hash.slice(1);
-  show(['logos', 'kombi', 'fx', 'motion', 'shirt', 'y2k'].includes(h) ? h : 'logos');
+  show(['logos', 'kombi', 'motion', 'shirt', 'y2k'].includes(h) ? h : 'logos');
 
   ready = true;
   setFonts('');
