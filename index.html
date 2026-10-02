@@ -111,6 +111,7 @@ text.lg{font-family:var(--lf,'Sniglet'),'Sniglet',sans-serif;font-weight:var(--l
 body.duo-on #r-logos .tile,body.duo-on .kombi .tile{filter:url(#duo)}
 body.stamp-on #r-logos .tile,body.stamp-on .kombi .tile{filter:url(#stamp0)!important}
 body.stamp-on .tile > *{filter:none!important}
+body.stamp-on:not(.grain-1):not(.grain-2) #r-logos .tile,body.stamp-on:not(.grain-1):not(.grain-2) .kombi .tile{filter:url(#stampS)!important}
 body.duo-on.paper-on #r-logos .tile,body.duo-on.paper-on .kombi .tile{filter:url(#paper) url(#duo)}
 .colctl{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:11px;color:var(--mute)}
 .colctl label{display:flex;gap:5px;align-items:center}
@@ -328,6 +329,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     <feComponentTransfer><feFuncR type="table" tableValues="0 1"/><feFuncG type="table" tableValues="0 1"/><feFuncB type="table" tableValues="0 1"/></feComponentTransfer></filter>
   <filter id="shirtwarp" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".004 .007" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter>
   <filter id="stamp0" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="m"/><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="3" result="fine"/><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="43" result="press"/><feComposite in="fine" in2="press" operator="arithmetic" k2=".5" k3=".85" result="mix"/><feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.1 0 0 0 -.9" result="dens"/><feComposite in="m" in2="dens" operator="in" result="ink"/><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="10" result="w"/><feDisplacementMap in="ink" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" result="inkd"/><feFlood flood-color="#2e2c29" result="col"/><feComposite in="col" in2="inkd" operator="in" result="inkc"/><feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="3" seed="93" result="mot"/><feColorMatrix in="mot" type="matrix" values=".1 0 0 0 .875  .1 0 0 0 .845  .1 0 0 0 .775  0 0 0 0 1" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="inkc"/></feMerge></filter><filter id="stamp1" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="m"/><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="20" result="fine"/><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="60" result="press"/><feComposite in="fine" in2="press" operator="arithmetic" k2=".5" k3=".85" result="mix"/><feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.1 0 0 0 -.9" result="dens"/><feComposite in="m" in2="dens" operator="in" result="ink"/><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="27" result="w"/><feDisplacementMap in="ink" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" result="inkd"/><feFlood flood-color="#2e2c29" result="col"/><feComposite in="col" in2="inkd" operator="in" result="inkc"/><feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="3" seed="110" result="mot"/><feColorMatrix in="mot" type="matrix" values=".1 0 0 0 .875  .1 0 0 0 .845  .1 0 0 0 .775  0 0 0 0 1" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="inkc"/></feMerge></filter><filter id="stamp2" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="m"/><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="37" result="fine"/><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="77" result="press"/><feComposite in="fine" in2="press" operator="arithmetic" k2=".5" k3=".85" result="mix"/><feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.1 0 0 0 -.9" result="dens"/><feComposite in="m" in2="dens" operator="in" result="ink"/><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="44" result="w"/><feDisplacementMap in="ink" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" result="inkd"/><feFlood flood-color="#2e2c29" result="col"/><feComposite in="col" in2="inkd" operator="in" result="inkc"/><feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="3" seed="127" result="mot"/><feColorMatrix in="mot" type="matrix" values=".1 0 0 0 .875  .1 0 0 0 .845  .1 0 0 0 .775  0 0 0 0 1" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="inkc"/></feMerge></filter><filter id="stamp3" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="m"/><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="54" result="fine"/><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="94" result="press"/><feComposite in="fine" in2="press" operator="arithmetic" k2=".5" k3=".85" result="mix"/><feColorMatrix in="mix" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.1 0 0 0 -.9" result="dens"/><feComposite in="m" in2="dens" operator="in" result="ink"/><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="61" result="w"/><feDisplacementMap in="ink" in2="w" scale="3.5" xChannelSelector="R" yChannelSelector="G" result="inkd"/><feFlood flood-color="#2e2c29" result="col"/><feComposite in="col" in2="inkd" operator="in" result="inkc"/><feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="3" seed="144" result="mot"/><feColorMatrix in="mot" type="matrix" values=".1 0 0 0 .875  .1 0 0 0 .845  .1 0 0 0 .775  0 0 0 0 1" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="inkc"/></feMerge></filter>
+  <filter id="stampS" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="m"/><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="3" seed="43" result="press"/><feColorMatrix in="press" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -.38" result="dens"/><feComposite in="m" in2="dens" operator="in" result="ink"/><feTurbulence type="fractalNoise" baseFrequency=".06" numOctaves="2" seed="10" result="w"/><feDisplacementMap in="ink" in2="w" scale="2" xChannelSelector="R" yChannelSelector="G" result="inkd"/><feFlood flood-color="#2e2c29" result="col"/><feComposite in="col" in2="inkd" operator="in" result="inkc"/><feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="3" seed="93" result="mot"/><feColorMatrix in="mot" type="matrix" values=".1 0 0 0 .875  .1 0 0 0 .845  .1 0 0 0 .775  0 0 0 0 1" result="paper"/><feMerge><feMergeNode in="paper"/><feMergeNode in="inkc"/></feMerge></filter>
   <filter id="l2a" color-interpolation-filters="sRGB"><feColorMatrix type="luminanceToAlpha"/></filter>
   <filter id="melt" x="-10%" y="-20%" width="120%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".012 .09" numOctaves="2" seed="5"/><feDisplacementMap in="SourceGraphic" scale="14"/></filter>
 </svg>
@@ -472,7 +474,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <label for="sh-size">größe <output id="sh-size-o"></output><input type="range" id="sh-size" min="40" max="333"></label>
       <div><span class="mo-lbl">druckfarbe</span><div class="sh-sw" id="sh-inks"></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Mockup-Hintergrund"><button data-sh-bg="papier" aria-pressed="true">papier</button><button data-sh-bg="clean" aria-pressed="false">2000er</button></div></div>
-      <div class="row"><div class="seg" role="group" aria-label="Druck"><button data-sh-grain="0" aria-pressed="true">glatt</button><button data-sh-grain="1" aria-pressed="false">körnig</button><button data-sh-grain="s" aria-pressed="false">stempel</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Druck"><button data-sh-grain="0" aria-pressed="true">glatt</button><button data-sh-grain="1" aria-pressed="false">körnig</button><button data-sh-grain="s" aria-pressed="false">stempel</button><button data-sh-grain="g" aria-pressed="false">stempel glatt</button></div></div>
       <div class="row"><button class="kb-btn" id="sh-mock" type="button">mockup ↓</button><button class="kb-btn ghost" id="sh-print" type="button">druck ↓</button></div>
       <p class="kb-empty" id="sh-stat" aria-live="polite" style="font-size:11px"></p>
     </aside>
@@ -1806,7 +1808,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.mode === 'lineup' ? PHOTO.view : MO.lay);
     if (MO.look === 'stamp' && !PHOTO_FRAME) {   // stempel: the light-on-dark frame becomes stamp ink on paper (texture changes with the flip-book)
       if (dcv.width !== W || dcv.height !== H) { dcv.width = W; dcv.height = H; } dcx.clearRect(0, 0, W, H); dcx.drawImage(CV, 0, 0);
-      mx.save(); mx.globalCompositeOperation = 'copy'; mx.filter = `url(#stamp${MO.boil ? f % 4 : 0})`; mx.drawImage(dcv, 0, 0); mx.restore();
+      mx.save(); mx.globalCompositeOperation = 'copy'; mx.filter = MO.grain ? `url(#stamp${MO.boil ? f % 4 : 0})` : 'url(#stampS)'; mx.drawImage(dcv, 0, 0); mx.restore();
       if (flash) { mx.globalCompositeOperation = 'difference'; mx.fillStyle = '#fff'; mx.fillRect(0, 0, W, H); } mx.globalCompositeOperation = 'source-over'; return; }
     if (CLEAN() && !PHOTO_FRAME) { if (flash) { mx.globalCompositeOperation = 'difference'; mx.fillStyle = '#fff'; mx.fillRect(0, 0, W, H); } mx.globalCompositeOperation = 'source-over'; return; }   // 2000er: clean, no print finish
     // print look: speckles, paper blotches, invert for light, then the yellowed-paper tint (same matrix as #paper)
@@ -2016,13 +2018,13 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   // stamp density mask: soft pressure blotches x fine speckle; multiplying a print's alpha with it gives the stamped look
   const STAMPS = new Map();
-  function stampMask(W, H, seed = 1) {
-    const key = W + 'x' + H + ':' + seed; if (STAMPS.has(key)) return STAMPS.get(key);
+  function stampMask(W, H, seed = 1, smooth = false) {
+    const key = W + 'x' + H + ':' + seed + (smooth ? 's' : ''); if (STAMPS.has(key)) return STAMPS.get(key);
     const gw = Math.ceil(W / 70) + 3, gh = Math.ceil(H / 70) + 3, [g, gx2] = mk(); g.width = gw; g.height = gh; const gd = gx2.createImageData(gw, gh);
     for (let i = 0; i < gd.data.length; i += 4) { gd.data[i] = gd.data[i + 1] = gd.data[i + 2] = 255 * (.35 + .65 * Math.random()); gd.data[i + 3] = 255; } gx2.putImageData(gd, 0, 0);
     const [c, x] = mk(); c.width = W; c.height = H; x.filter = `blur(${Math.round(Math.max(W, H) / 90)}px)`; x.drawImage(g, -70, -70, W + 140, H + 140); x.filter = 'none';
     const d = x.getImageData(0, 0, W, H), p = d.data;
-    for (let i = 0; i < p.length; i += 4) { const press = p[i] / 255, v = press * 1.15 + (Math.random() - .5) * .75 - .18; p[i] = p[i + 1] = p[i + 2] = 0; p[i + 3] = 255 * Math.max(0, Math.min(1, (v - .1) / .5)); }
+    for (let i = 0; i < p.length; i += 4) { const press = p[i] / 255, v = smooth ? press * 1.5 - .05 : press * 1.15 + (Math.random() - .5) * .75 - .18; p[i] = p[i + 1] = p[i + 2] = 0; p[i + 3] = 255 * Math.max(0, Math.min(1, (v - .1) / .5)); }
     x.putImageData(d, 0, 0); if (STAMPS.size > 6) STAMPS.delete(STAMPS.keys().next().value); STAMPS.set(key, c); return c;
   }
   async function logoPngs(it, size) {
@@ -2221,7 +2223,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       for (let yy = 0; yy < bh; yy++) for (let xx = 0; xx < bw; xx++) { const gi = (y0 + yy) * SHW + x0 + xx, sxp = Math.round(xx + M.gx[gi] * D), syp = Math.round(yy + M.gy[gi] * D);
         if (sxp < 0 || syp < 0 || sxp >= bw || syp >= bh) continue; const a = (syp * bw + sxp) * 4, b = (yy * bw + xx) * 4; od[b] = sd[a]; od[b + 1] = sd[a + 1]; od[b + 2] = sd[a + 2]; od[b + 3] = sd[a + 3]; }
       pwx.putImageData(out, x0, y0);
-      if (SH.grain === 'stamp') { pwx.globalCompositeOperation = 'destination-in'; pwx.drawImage(stampMask(SHW, SHH, 2), 0, 0); }
+      if (SH.grain === 'stamp' || SH.grain === 'stampS') { pwx.globalCompositeOperation = 'destination-in'; pwx.drawImage(stampMask(SHW, SHH, 2, SH.grain === 'stampS'), 0, 0); }
       else if (SH.grain) { pwx.globalCompositeOperation = 'destination-out'; pwx.drawImage(holes(SHW, SHH), 0, 0); }
       plx.clearRect(0, 0, SHW, SHH); plx.globalCompositeOperation = 'source-over'; plx.drawImage(pwc, 0, 0);
       pwx.globalCompositeOperation = 'multiply'; pwx.drawImage(M.shade, 0, 0); pwx.globalCompositeOperation = 'destination-in'; pwx.drawImage(plc, 0, 0); pwx.globalCompositeOperation = 'source-over';
@@ -2244,7 +2246,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('#sh-pos').innerHTML = SH_POS[SH.view].map(([n], i) => `<button type="button" data-shp="${i}" aria-pressed="false">${n}</button>`).join('');
     $('#sh-size').value = P.w; $('#sh-size-o').textContent = Math.round(P.w / SH_CM) + ' cm';
     $$('[data-sh-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shView === SH.view)));
-    $$('[data-sh-grain]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shGrain === (SH.grain === 'stamp' ? 's' : SH.grain ? '1' : '0'))));
+    $$('[data-sh-grain]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shGrain === (SH.grain === 'stamp' ? 's' : SH.grain === 'stampS' ? 'g' : SH.grain ? '1' : '0'))));
     $$('[data-sh-bg]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shBg === SH.bg)));
   };
   const shSet = () => { shUi(); drawShirt(); };
@@ -2252,7 +2254,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (t.dataset.shc) SH.color = t.dataset.shc; else if (t.dataset.shi !== undefined) SH.ink = t.dataset.shi || null;
     else if (t.dataset.shp !== undefined) { const [, cx, cy, w] = SH_POS[SH.view][+t.dataset.shp]; Object.assign(P, { cx, cy, w }); }
     else if (t.dataset.shBg) SH.bg = t.dataset.shBg;
-    else if (t.dataset.shView) SH.view = t.dataset.shView; else if (t.dataset.shGrain) SH.grain = t.dataset.shGrain === 's' ? 'stamp' : t.dataset.shGrain === '1'; else return;
+    else if (t.dataset.shView) SH.view = t.dataset.shView; else if (t.dataset.shGrain) SH.grain = t.dataset.shGrain === 's' ? 'stamp' : t.dataset.shGrain === 'g' ? 'stampS' : t.dataset.shGrain === '1'; else return;
     shSet(); });
   $('#r-shirt').addEventListener('input', e => { const P = SH[SH.view];
     if (e.target.id === 'sh-color') SH.color = e.target.value; else if (e.target.id === 'sh-ink') SH.ink = e.target.value;
@@ -2277,7 +2279,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     shStat.textContent = 'druckdatei wird gezeichnet …'; const ppu = 3543 / (A[2] - A[0]), W = 3543, H = 4724;
     try { const d = await designBitmap(P.src, Math.min(3600, Math.round(P.w * ppu))), [c, x] = mk(); c.width = W; c.height = H;
       const w = P.w * ppu, h = w * d.height / d.width; x.drawImage(d, (P.cx - A[0]) * ppu - w / 2, (P.cy - A[1]) * ppu - h / 2, w, h);
-      if (SH.grain === 'stamp') { x.globalCompositeOperation = 'destination-in'; x.drawImage(stampMask(W, H, 2), 0, 0); x.globalCompositeOperation = 'source-over'; }
+      if (SH.grain === 'stamp' || SH.grain === 'stampS') { x.globalCompositeOperation = 'destination-in'; x.drawImage(stampMask(W, H, 2, SH.grain === 'stampS'), 0, 0); x.globalCompositeOperation = 'source-over'; }
       else if (SH.grain) { x.globalCompositeOperation = 'destination-out'; x.drawImage(holes(W, H), 0, 0); x.globalCompositeOperation = 'source-over'; SHHOLES = null; }
       c.toBlob(b => { shStat.textContent = ''; save(b, `bbk-druck-${v === 'front' ? 'vorne' : 'hinten'}-30x40cm-300dpi.png`, shStat); }, 'image/png'); }
     catch (err) { console.warn(err); shStat.textContent = 'fehler. erneut versuchen.'; } };
