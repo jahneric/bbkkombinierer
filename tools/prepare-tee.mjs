@@ -17,4 +17,8 @@ const r = await send('Runtime.evaluate', { expression: `clean(${JSON.stringify(s
 if (r.result.exceptionDetails) { console.error(JSON.stringify(r.result.exceptionDetails).slice(0, 500)); process.exit(1); }
 const v = r.result.result.value, b64 = s => Buffer.from(s.split(',')[1], 'base64');
 writeFileSync(join(root, 'app/tee-front.webp'), b64(v.webp)); writeFileSync(join(root, 'tools/tee/preview.png'), b64(v.png)); writeFileSync(join(root, 'tools/tee/mask.png'), b64(v.mask));
-console.log('app/tee-front.webp', b64(v.webp).length, 'bytes'); ws.close(); chrome.kill();
+console.log('app/tee-front.webp', b64(v.webp).length, 'bytes');
+const rb = await send('Runtime.evaluate', { expression: `back(${JSON.stringify(v.png)}, ${SIZE})`, awaitPromise: true, returnByValue: true });
+if (rb.result.exceptionDetails) { console.error(JSON.stringify(rb.result.exceptionDetails).slice(0, 500)); process.exit(1); }
+writeFileSync(join(root, 'app/tee-back.webp'), b64(rb.result.result.value.webp)); writeFileSync(join(root, 'tools/tee/preview-back.png'), b64(rb.result.result.value.png));
+console.log('app/tee-back.webp', b64(rb.result.result.value.webp).length, 'bytes'); ws.close(); chrome.kill();
