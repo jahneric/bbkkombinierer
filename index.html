@@ -197,6 +197,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 #r-y2k.light{--dk:#ebe3cb;--ik:#1a1915;--mid:#6f6a5e}
 #r-y2k.pure{--dk:#050505;--ik:#f0f0f0;--mid:#8a8a8a}
 #r-y2k.pure.light{--dk:#fafafa;--ik:#0a0a0a;--mid:#777}
+#r-y2k.clean{--dk:#eef7f5;--ik:#0b0b0b;--mid:#3f8478}
+#r-y2k.clean .win{box-shadow:6px 6px 0 rgba(79,163,154,.45)}
+#r-y2k.clean .tb{background:#0b0b0b;color:#eef7f5}
 .marq{overflow:hidden;white-space:nowrap;border-bottom:1px solid var(--ik);font:12px/1 var(--f-pix);padding:7px 0;background:var(--dk);color:var(--ik)}
 .marq span{display:inline-block;animation:marq 30s linear infinite}
 @keyframes marq{to{transform:translateX(-50%)}}
@@ -320,6 +323,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <filter id="duo" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values=".3 .59 .11 0 0  .3 .59 .11 0 0  .3 .59 .11 0 0  0 0 0 1 0"/>
     <feComponentTransfer><feFuncR type="table" tableValues="0 1"/><feFuncG type="table" tableValues="0 1"/><feFuncB type="table" tableValues="0 1"/></feComponentTransfer></filter>
   <filter id="shirtwarp" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".004 .007" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="16" xChannelSelector="R" yChannelSelector="G"/></filter>
+  <filter id="l2a" color-interpolation-filters="sRGB"><feColorMatrix type="luminanceToAlpha"/></filter>
   <filter id="melt" x="-10%" y="-20%" width="120%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".012 .09" numOctaves="2" seed="5"/><feDisplacementMap in="SourceGraphic" scale="14"/></filter>
 </svg>
 
@@ -440,6 +444,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row"><div class="seg" role="group" aria-label="Hintergrund"><button data-mo-bg="0" aria-pressed="true">dunkel</button><button data-mo-bg="1" aria-pressed="false">hell</button></div>
         <div class="seg" role="group" aria-label="Körnung"><button data-mo-grain="0" aria-pressed="false">glatt</button><button data-mo-grain="1" aria-pressed="true">körnig</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Papier"><button data-mo-paper="1" aria-pressed="true">vergilbt</button><button data-mo-paper="0" aria-pressed="false">rein</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Look"><button data-mo-look="kopierer" aria-pressed="true">kopierer</button><button data-mo-look="clean" aria-pressed="false">2000er</button></div></div>
       <div class="row colctl"></div>
       <label class="mo-noreel" for="mo-len">länge<select id="mo-len"><option value="3">3 sekunden</option><option value="6" selected>6 sekunden</option><option value="10">10 sekunden</option><option value="15">15 sekunden</option></select></label>
       <div class="row"><button class="kb-btn" id="mo-rec">video ↓</button><button class="kb-btn ghost" id="mo-png">png ↓</button><button class="kb-btn ghost" id="mo-rnd">zufall</button></div>
@@ -461,6 +466,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div><span class="mo-lbl">position</span><div class="mo-chips" id="sh-pos" role="group" aria-label="Position"></div></div>
       <label for="sh-size">größe <output id="sh-size-o"></output><input type="range" id="sh-size" min="40" max="333"></label>
       <div><span class="mo-lbl">druckfarbe</span><div class="sh-sw" id="sh-inks"></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Mockup-Hintergrund"><button data-sh-bg="papier" aria-pressed="true">papier</button><button data-sh-bg="clean" aria-pressed="false">2000er</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Druck"><button data-sh-grain="0" aria-pressed="true">glatt</button><button data-sh-grain="1" aria-pressed="false">körnig</button></div></div>
       <div class="row"><button class="kb-btn" id="sh-mock" type="button">mockup ↓</button><button class="kb-btn ghost" id="sh-print" type="button">druck ↓</button></div>
       <p class="kb-empty" id="sh-stat" aria-live="polite" style="font-size:11px"></p>
@@ -509,7 +515,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <label for="w-boil">zittern<input type="range" id="w-boil" min="0" max="10"></label>
         <div class="full"><div class="seg" role="group" aria-label="Hintergrund hell oder dunkel"><button data-w-dark="1">dunkel</button><button data-w-dark="0">hell</button></div>
           <div class="seg" role="group" aria-label="Körnung"><button data-w-grain="1">körnig</button><button data-w-grain="0">glatt</button></div>
-          <div class="seg" role="group" aria-label="Papier"><button data-w-paper="1">vergilbt</button><button data-w-paper="0">rein</button></div></div>
+          <div class="seg" role="group" aria-label="Papier"><button data-w-paper="1">vergilbt</button><button data-w-paper="0">rein</button></div>
+          <div class="seg" role="group" aria-label="Look"><button data-w-look="kopierer">kopierer</button><button data-w-look="clean">2000er</button></div></div>
         <div class="full"><button class="wbtn" id="w-rnd" type="button">zufall</button><button class="wbtn" id="w-copy" type="button">einstellung kopieren</button></div>
         <p class="note" id="w-note"></p>
       </div>
@@ -1217,7 +1224,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // every logo is rasterised from its svg in 4 "drawings" (different boil seeds), cycled like a flip book.
   // everything is a pure function of the frame index f, so a recording of N frames loops seamlessly.
   const MO = { mode: 'logo', fmt: 'post', m: 'r4-kopfwelle', w: 'r2-guss', fx: 'ruhig', lay: 'plakat', boil: 4, amt: 55, fps: 8, size: 72,
-    dark: true, grain: true, paper: true, len: 6, back: 'kontur', bga: 45, wash: 45, p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
+    dark: true, grain: true, paper: true, len: 6, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
   const FMT = { post: [1080, 1350], story: [1080, 1920] };
   // own colour pair, shared by logo-labor, kombinierer and bewegt (and the png downloads)
   const COL = { on: false, ground: '#3b1a5c', ink: '#f5d33d' };
@@ -1235,7 +1242,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   try { (JSON.parse(localStorage.getItem('bbk-partner-logos') || '[]')).forEach(x => PARTNERS.push({ id: x.id, n: x.n, make: upSvg(x.src, x.w, x.h), up: x })); } catch (e) {}
   const findP = id => PARTNERS.find(x => x.id === id) || null;
   const MO_FX = [['ruhig', 'nur zittern'], ['wackeln', 'wackeln'], ['puls', 'puls'], ['echo', 'echo'], ['dreher', 'dreher'], ['strobe', 'stroboskop'], ['glitch', 'glitch'], ['raster', '1-bit'], ['kacheln', 'kacheln']];
-  const MO_BACK = [['-', 'keiner'], ['nebel', 'nebel'], ['schlieren', 'schlieren'], ['leck', 'lichtleck'], ['kontur', 'höhenlinien'], ['moire', 'moiré'], ['fluss', 'fluss'], ['morph', 'morph'], ['gitter', 'gitter'], ['spirale', 'spirale'],
+  const MO_BACK = [['-', 'keiner'], ['glas', 'glas'], ['nebel', 'nebel'], ['schlieren', 'schlieren'], ['leck', 'lichtleck'], ['kontur', 'höhenlinien'], ['moire', 'moiré'], ['fluss', 'fluss'], ['morph', 'morph'], ['gitter', 'gitter'], ['spirale', 'spirale'],
     ['tunnel', 'tunnel'], ['wellen', 'schallwellen'], ['punkte', 'punktwelle'], ['scan', 'scanlinien']];
   const MO_LAY = [['plakat', 'plakat'], ['ticker', 'ticker'], ['raster', 'raster'], ['zaehler', 'zähler']];
   // lineup posts: artists with a photo each; the photo gets a look + a colour pair, the name runs huge across the frame
@@ -1290,7 +1297,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   function asset(kind) {
     const id = MO[kind]; if (id === '-') return null;
     const it = kind === 'm' ? findM(id) : kind === 'w' ? findW(id) : findP(id); if (!it) return null;
-    const boil = MO.boil, grain = MO.grain, key = [id, it.font || '', grain, boil].join('|');
+    const boil = MO.boil, grain = MO.grain && MO.look !== 'clean', key = [id, it.font || '', grain, boil].join('|');
     if (!ASSET.has(key)) {
       ASSET.set(key, null);
       (async () => { const svg = it.make(), n = boil || grain ? 4 : 1, frames = [];
@@ -1344,7 +1351,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     s.split(/\s+/).filter(Boolean).forEach(w => { const t = line ? line + ' ' + w : w; if (line && c.measureText(t).width > maxW) { out.push(line); line = w; } else line = t; });
     if (line) out.push(line); return out; };
   function flush(f) {   // text layer -> main, with toner holes
-    if (MO.grain) { tx.globalCompositeOperation = 'destination-out'; tx.drawImage(NOISE.holes[f % 4], 0, 0); tx.globalCompositeOperation = 'source-over'; }
+    if (MO.grain && !CLEAN()) { tx.globalCompositeOperation = 'destination-out'; tx.drawImage(NOISE.holes[f % 4], 0, 0); tx.globalCompositeOperation = 'source-over'; }
     mx.drawImage(tcv, 0, 0); tx.clearRect(0, 0, tcv.width, tcv.height);
   }
 
@@ -1372,6 +1379,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     items.forEach(it => { if (it.cross) { const r = it.s / 2, j = (sr(f % 4, 77) - .5) * r * .15; gx.strokeStyle = '#f0f0f0'; gx.lineWidth = Math.max(2, it.s * .16); gx.lineCap = 'round';
         gx.beginPath(); gx.moveTo(it.x - r + j, it.y - r); gx.lineTo(it.x + r, it.y + r - j); gx.moveTo(it.x + r - j, it.y - r); gx.lineTo(it.x - r, it.y + r + j); gx.stroke(); return; }
       gx.drawImage(it.a.frames[f % it.a.frames.length], it.x, it.y, it.w, it.h); });
+    if (CLEAN() && !PHOTO_FRAME) { const im = gx.getImageData(0, 0, W, H), d = im.data;
+      for (let i = 0; i < d.length; i += 4) { const al = d[i + 3] * Math.max(d[i], d[i + 1], d[i + 2]) / 255; d[i] = d[i + 1] = d[i + 2] = 11; d[i + 3] = al; } gx.putImageData(im, 0, 0); }
     if (PHOTO_FRAME && PHOTO.lt.toLowerCase() !== '#f2f2f2') { if (lt.width !== W || lt.height !== H) { lt.width = W; lt.height = H; } ltx.clearRect(0, 0, W, H); ltx.drawImage(gcv, 0, 0);
       gx.globalCompositeOperation = 'multiply'; gx.fillStyle = PHOTO.lt; gx.fillRect(0, 0, W, H); gx.globalCompositeOperation = 'destination-in'; gx.drawImage(lt, 0, 0); gx.globalCompositeOperation = 'source-over'; }
     if (!rectsTaken) { rectsTaken = true; RECTS = items.filter(it => !it.cross).map(it => ({ id: it.a.id, x: box.x + it.x, y: box.y + it.y, w: it.w, h: it.h })); }
@@ -1410,7 +1419,12 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     const line = pts => { c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.stroke(); };
     const glow = (cx, cy, r, l, al) => { const gr = c.createRadialGradient(cx, cy, 0, cx, cy, r); gr.addColorStop(0, `rgba(${l},${l},${l},${al})`);
       gr.addColorStop(.55, `rgba(${l},${l},${l},${al * .35})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = gr; c.fillRect(cx - r, cy - r, r * 2, r * 2); };
-    if (MO.back === 'nebel') {   // drifting fog banks in different greys
+    if (MO.back === 'glas') {   // out-of-focus glass spheres drifting, each with a soft bright rim
+      for (let i = 0; i < 5; i++) { const r = Math.max(W, H) * (.16 + .14 * sr(i, 4)), cx = W * (.15 + .7 * sr(i, 1)) + W * .06 * Math.sin(a + i * 1.7), cy = H * (.15 + .75 * sr(i, 2)) + H * .04 * Math.cos(a + i);
+        c.save(); c.filter = `blur(${Math.round(r * .18)}px)`; const gr = c.createRadialGradient(cx - r * .3, cy - r * .35, r * .05, cx, cy, r);
+        gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(.5, 'rgba(160,160,160,.55)'); gr.addColorStop(1, 'rgba(60,60,60,0)'); c.fillStyle = gr; c.beginPath(); c.arc(cx, cy, r, 0, TAU); c.fill();
+        c.strokeStyle = 'rgba(255,255,255,.75)'; c.lineWidth = r * .05; c.beginPath(); c.arc(cx, cy, r * .86, Math.PI * 1.05, Math.PI * 1.6); c.stroke(); c.restore(); }
+    } else if (MO.back === 'nebel') {   // drifting fog banks in different greys
       c.globalCompositeOperation = 'lighter';
       for (let i = 0; i < 8; i++) glow(W * (.5 + .5 * Math.sin(a + i * 1.9) * Math.cos(i * .7)), H * (.5 + .42 * Math.cos(a + i * 2.3)),
         Math.max(W, H) * (.22 + .2 * sr(i, 3)), Math.round(70 + 150 * sr(i, 5)), .55 + .35 * Math.sin(a + i));
@@ -1513,11 +1527,30 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     bgx.globalCompositeOperation = 'multiply'; bgx.globalAlpha = 1; bgx.drawImage(tmc, 0, 0);
     bgx.globalCompositeOperation = 'source-over';
   }
+  const CLEAN = () => MO.look === 'clean';
+  function cleanBase(f, N) {
+    const W = CV.width, H = CV.height, a = (f % N) / N * Math.PI * 2, x = mx;
+    const g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#f1f8f6'); g.addColorStop(.6, '#ddefea'); g.addColorStop(1, '#cfe6e0'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.save(); const cx = W * (.55 + .07 * Math.sin(a)), cy = H * (1.04 + .015 * Math.cos(a)), rx = W * .78, ry = H * .3;
+    x.filter = `blur(${Math.round(W * .035)}px)`; const rg = x.createRadialGradient(cx - rx * .2, cy - ry * .45, ry * .05, cx, cy, rx);
+    rg.addColorStop(0, '#7cbcb1'); rg.addColorStop(.35, '#3f8478'); rg.addColorStop(.7, 'rgba(31,59,45,.85)'); rg.addColorStop(1, 'rgba(31,59,45,0)');
+    x.fillStyle = rg; x.beginPath(); x.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); x.fill();
+    x.filter = `blur(${Math.round(W * .012)}px)`; x.strokeStyle = 'rgba(255,255,255,.6)'; x.lineWidth = W * .014; x.beginPath(); x.ellipse(cx, cy, rx * .9, ry * .9, 0, Math.PI * 1.1, Math.PI * 1.55); x.stroke();
+    x.restore();
+  }
+  const [bgt, bgtx] = mk();
   function drawBack(f, N) {
     if (MO.back === '-') return;
     const W = CV.width, H = CV.height, key = [MO.back, f % N, N, W, H, MO.wash].join('|');
     if (key !== bgKey) { bgKey = key; if (bgc.width !== W || bgc.height !== H) { bgc.width = W; bgc.height = H; }
       bgx.globalCompositeOperation = 'source-over'; bgx.globalAlpha = 1; bgx.fillStyle = '#000'; bgx.fillRect(0, 0, W, H); paintBack(bgx, W, H, f, N); wash(W, H, f, N); }
+    if (CLEAN()) {   // the motif as petrol-to-teal ink on the pale ground
+      if (bgt.width !== W || bgt.height !== H) { bgt.width = W; bgt.height = H; } else bgtx.clearRect(0, 0, W, H);
+      bgtx.globalCompositeOperation = 'source-over'; bgtx.filter = 'url(#l2a)'; bgtx.drawImage(bgc, 0, 0); bgtx.filter = 'none';
+      const cg = bgtx.createLinearGradient(0, 0, 0, H); cg.addColorStop(0, '#4fa39a'); cg.addColorStop(1, '#1f5c5a');
+      bgtx.globalCompositeOperation = 'source-in'; bgtx.fillStyle = cg; bgtx.fillRect(0, 0, W, H); bgtx.globalCompositeOperation = 'source-over';
+      mx.save(); mx.globalAlpha = Math.min(1, MO.bga / 100 * 1.3); mx.drawImage(bgt, 0, 0); mx.restore(); return;
+    }
     mx.save(); mx.globalCompositeOperation = 'lighter'; mx.globalAlpha = MO.bga / 100; mx.drawImage(bgc, 0, 0); mx.restore();
   }
 
@@ -1607,11 +1640,11 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // content of one scene onto mx (no background, no print finish). f and N are local to the scene.
   function drawContent(f, N, kind) {
     const W = CV.width, H = CV.height, M = 72, story = MO.fmt === 'story';
-    const TF = TFONTS[MO.font] || TFONTS.archivo, INK = '#f0f0f0';
+    const TF = TFONTS[MO.font] || TFONTS.archivo, INK = CLEAN() ? '#0b0b0b' : '#f0f0f0', GROUND = CLEAN() ? '#eef7f5' : '#000';
     tx.fillStyle = INK; tx.strokeStyle = INK;
     LM = { schriftzug: 'schriftzug', zeichen: 'zeichen', kollabo: 'kollabo', partner: 'partner' }[kind] || null;
     const band = (y, h, s, dir = 1, px = 34) => {   // scrolling ticker band, step-moved, loops over N frames
-      mx.fillStyle = '#000'; mx.fillRect(0, y, W, h); tx.fillRect(0, y, W, 3); tx.fillRect(0, y + h - 3, W, 3);
+      mx.fillStyle = GROUND; mx.fillRect(0, y, W, h); tx.fillRect(0, y, W, 3); tx.fillRect(0, y + h - 3, W, 3);
       setFont(tx, MONO, px); const uw = tx.measureText(s).width || 1, loops = Math.max(1, Math.round(N * (6 + MO.amt / 8) / uw));
       let x = -(((f % N) / N * loops * uw) % uw); if (dir < 0) x = -uw - x;
       for (; x < W; x += uw) jtext(tx, s, x, y + h / 2 + px * .36, px, MONO, 'left', f);
@@ -1667,7 +1700,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         }
         flush(f);
         const bx0 = M, bw = W - 2 * M, bh = H * (story ? .5 : .6), by = (H - bh) / 2;
-        mx.fillStyle = '#000'; mx.fillRect(bx0, by, bw, bh); tx.lineWidth = 4; tx.strokeRect(bx0, by, bw, bh);
+        mx.fillStyle = GROUND; mx.fillRect(bx0, by, bw, bh); tx.lineWidth = 4; tx.strokeRect(bx0, by, bw, bh);
         logoBlock({ x: bx0 + 50, y: by + 40, w: bw - 100, h: bh * .5 }, f);
         let y = by + bh * .5 + 60;
         if (date) { const dp = fitPx(tx, date, MONO, bw - 100, 110); y += dp * .8; jtext(tx, date, W / 2, y, dp, MONO, 'center', f); }
@@ -1763,9 +1796,10 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   function drawMotion(F) {
     setSize(); flash = false; moWait = false; PHOTO_FRAME = false;
     const W = CV.width, H = CV.height, N = frameCount(), f = F;
-    mx = CVX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H);
+    mx = CVX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; if (CLEAN()) cleanBase(F, N); else { mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H); }
     drawBack(F, N);
     if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.mode === 'lineup' ? PHOTO.view : MO.lay);
+    if (CLEAN() && !PHOTO_FRAME) { if (flash) { mx.globalCompositeOperation = 'difference'; mx.fillStyle = '#fff'; mx.fillRect(0, 0, W, H); } mx.globalCompositeOperation = 'source-over'; return; }   // 2000er: clean, no print finish
     // print look: speckles, paper blotches, invert for light, then the yellowed-paper tint (same matrix as #paper)
     if (MO.grain) { mx.globalCompositeOperation = 'lighter'; mx.drawImage(NOISE.specks[f % 4], 0, 0); }
     if (MO.paper) { mx.globalCompositeOperation = 'lighter'; mx.globalAlpha = .09; mx.drawImage(NOISE.clouds, 0, 0); mx.globalAlpha = 1; }
@@ -1794,6 +1828,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   seg('data-mo-bg', v => { MO.dark = v === '0'; });
   seg('data-mo-grain', v => { MO.grain = v === '1'; });
   seg('data-mo-paper', v => { MO.paper = v === '1'; });
+  seg('data-mo-look', v => { MO.look = v; });
   seg('data-mo-blend', v => { PHOTO.blend = v; });
   seg('data-mo-view', v => { PHOTO.view = v; });
   seg('data-mo-still', v => { PHOTO.still = v === '1'; });
@@ -1859,7 +1894,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   fmtNote(); loadFont(MO.font); document.fonts.load(fontStr(MONO, 100)).catch(() => {}); document.fonts.load(fontStr(MONO_L, 100)).catch(() => {});
 
   // ---------- own colours ui (same control in three places) ----------
-  const COL_PRE = [['lila × gelb', '#3b1a5c', '#f5d33d'], ['blau × orange', '#10225e', '#ff8a3d'], ['rot × creme', '#7a1414', '#f3e6cf'],
+  const COL_PRE = [['2000er mint', '#dff1ee', '#0b0b0b'], ['2000er petrol', '#1f5c5a', '#eef7f5'], ['2000er flasche', '#1f3b2d', '#a9dcd3'], ['lila × gelb', '#3b1a5c', '#f5d33d'], ['blau × orange', '#10225e', '#ff8a3d'], ['rot × creme', '#7a1414', '#f3e6cf'],
     ['grün × pink', '#0f3d2e', '#ff8fc7'], ['nacht × neon', '#050505', '#c8ff3d'], ['beton × rot', '#cfc9bb', '#c8241c'], ['tinte × knochen', '#12110f', '#e6dfc8']];
   const hexRgb = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16) / 255);
   function applyCol() {
@@ -1880,7 +1915,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   applyCol();
 
   // ---------- website wallpaper: same engine, own settings ----------
-  const WALL_DEF = { m: 'r4-kopfwelle', w: 'r2-guss', p: '-', pmode: 'kollabo', back: 'kontur', fx: 'ruhig', size: 46, bga: 50, wash: 50, boil: 3, amt: 40, fps: 8, len: 8, dark: true, grain: true, paper: true };
+  const WALL_DEF = { look: 'kopierer', m: 'r4-kopfwelle', w: 'r2-guss', p: '-', pmode: 'kollabo', back: 'kontur', fx: 'ruhig', size: 46, bga: 50, wash: 50, boil: 3, amt: 40, fps: 8, len: 8, dark: true, grain: true, paper: true };
   let WALL = { ...WALL_DEF };
   try { Object.assign(WALL, JSON.parse(localStorage.getItem('bbk-wall') || '{}')); } catch (e) {}
   const wcv = $('#wall'), wcx = wcv.getContext('2d'), wroom = $('#r-y2k');
@@ -1903,12 +1938,14 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('#w-back').innerHTML = wPairs(MO_BACK, WALL.back); $('#w-fx').innerHTML = wPairs(MO_FX, WALL.fx);
     ['size', 'bga', 'wash', 'boil'].forEach(k => { $('#w-' + k).value = WALL[k]; });
     [['dark', 'data-w-dark'], ['grain', 'data-w-grain'], ['paper', 'data-w-paper']].forEach(([k, at]) => $$(`[${at}]`).forEach(b => b.setAttribute('aria-pressed', String((b.getAttribute(at) === '1') === WALL[k]))));
+    wroom.classList.toggle('clean', WALL.look === 'clean'); $$('[data-w-look]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.wLook === WALL.look)));
     wroom.classList.toggle('light', !WALL.dark); wroom.classList.toggle('pure', !WALL.paper); wroom.classList.toggle('nograin', !WALL.grain);
   }
   // with reduced motion the frame loop never runs: draw a still, and redraw until the logos have finished loading
   const wallStill = () => { if (!reduce) return; wLast = ''; drawWall(performance.now()); if (moWait) setTimeout(wallStill, 400); };
   const wSave = () => { try { localStorage.setItem('bbk-wall', JSON.stringify(WALL)); } catch (e) {} wallUi(); wallStill(); };
   [['m', 'm'], ['w', 'w'], ['p', 'p'], ['pm', 'pmode'], ['back', 'back'], ['fx', 'fx']].forEach(([id, k]) => { $('#w-' + id).onchange = e => { WALL[k] = e.target.value; wSave(); }; });
+  $$('[data-w-look]').forEach(b => { b.onclick = () => { WALL.look = b.dataset.wLook; wSave(); }; });
   ['size', 'bga', 'wash', 'boil'].forEach(k => { $('#w-' + k).oninput = e => { WALL[k] = +e.target.value; wSave(); }; });
   [['dark', 'data-w-dark'], ['grain', 'data-w-grain'], ['paper', 'data-w-paper']].forEach(([k, at]) => $$(`[${at}]`).forEach(b => { b.onclick = () => { WALL[k] = b.getAttribute(at) === '1'; wSave(); }; }));
   $('#w-rnd').onclick = () => { const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -1929,22 +1966,28 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     ['vergilbt', '#ebe3cb', 'website', 'grund hell, fenster hell'],
     ['asche', '#2c2c2a', 'website', 'rahmen und linien auf dunkel'],
     ['staub', '#8f887a', 'website', 'nebentext, gedämpfte infos'],
+    ['eis', '#eef7f5', 'y2k', 'cleaner grund, fenster hell'],
+    ['nebel', '#dff1ee', 'y2k', 'blasser mint-grund'],
+    ['mint', '#a9dcd3', 'y2k', 'akzent hell'],
+    ['teal', '#4fa39a', 'y2k', 'akzent, linien'],
+    ['petrol', '#1f5c5a', 'y2k', 'akzent dunkel'],
+    ['flasche', '#1f3b2d', 'y2k', 'glas-kugel, tiefe']
   ];
   const FONTS_USED = 'schriften: archivo (breit, 900, fonts.google.com/specimen/Archivo) · martian mono (fonts.google.com/specimen/Martian+Mono) · silkscreen (pixel)';
   const dlStat = $('#dl-status');
   const swatch = ([n, hex]) => `<button class="sw" type="button" data-hex="${hex}"><i style="background:${hex}"></i><span>${n} · ${hex}</span></button>`;
-  $('#dl-palette').innerHTML = `<p class="pal-h">für logos</p>${PALETTE.filter(c => c[2] === 'logo').map(swatch).join('')}<p class="pal-h">für die website</p>${PALETTE.filter(c => c[2] === 'website').map(swatch).join('')}`;
-  $('#dl-inks').innerHTML = PALETTE.filter(c => c[2] === 'logo').map(([n, hex], i) => `<label><input type="checkbox" value="${n}"${i < 2 ? ' checked' : ''}><i style="background:${hex}"></i>${n}</label>`).join('');
+  $('#dl-palette').innerHTML = `<p class="pal-h">für logos</p>${PALETTE.filter(c => c[2] === 'logo').map(swatch).join('')}<p class="pal-h">für die website</p>${PALETTE.filter(c => c[2] === 'website').map(swatch).join('')}<p class="pal-h">2000er</p>${PALETTE.filter(c => c[2] === 'y2k').map(swatch).join('')}`;
+  $('#dl-inks').innerHTML = PALETTE.filter(c => c[2] === 'logo' || ['teal', 'petrol', 'mint'].includes(c[0])).map(([n, hex], i) => `<label><input type="checkbox" value="${n}"${i < 2 ? ' checked' : ''}><i style="background:${hex}"></i>${n}</label>`).join('');
   $('#dl-palette').onclick = e => { const b = e.target.closest('.sw'); if (!b) return; const hex = b.dataset.hex;
     const done = () => { dlStat.textContent = `${hex} kopiert`; };
     if (navigator.clipboard) navigator.clipboard.writeText(hex).then(done, () => { dlStat.textContent = hex; }); else dlStat.textContent = hex; };
   function paletteFiles() {
     const grp = g => PALETTE.filter(c => c[2] === g);
-    const css = '/* bbk farbpalette */\n:root{\n  /* logos */\n' + grp('logo').map(([n, hex]) => `  --bbk-${n}: ${hex};`).join('\n') + '\n  /* website */\n' + grp('website').map(([n, hex]) => `  --bbk-${n}: ${hex};`).join('\n') + '\n}\n';
+    const css = '/* bbk farbpalette */\n:root{\n  /* logos */\n' + grp('logo').map(([n, hex]) => `  --bbk-${n}: ${hex};`).join('\n') + '\n  /* website */\n' + grp('website').map(([n, hex]) => `  --bbk-${n}: ${hex};`).join('\n') + '\n  /* 2000er */\n' + grp('y2k').map(([n, hex]) => `  --bbk-${n}: ${hex};`).join('\n') + '\n}\n';
     const line = ([n, hex, , d]) => { const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); return `${n.padEnd(10)} ${hex}  rgb(${r}, ${g}, ${b})  ${d}`; };
-    const txt = 'bbk farbpalette\n\nfür logos\n' + grp('logo').map(line).join('\n') + '\n\nfür die website\n' + grp('website').map(line).join('\n')
+    const txt = 'bbk farbpalette\n\nfür logos\n' + grp('logo').map(line).join('\n') + '\n\nfür die website\n' + grp('website').map(line).join('\n') + '\n\n2000er\n' + grp('y2k').map(line).join('\n')
       + '\n\nwebsite-kombis: dunkel = grund toner, schrift knochen · hell = grund vergilbt, schrift tinte · rein = nacht / kreide\n\n' + FONTS_USED + '\n';
-    const json = JSON.stringify({ logos: grp('logo').map(([name, hex, , use]) => ({ name, hex, use })), website: grp('website').map(([name, hex, , use]) => ({ name, hex, use })) }, null, 2);
+    const json = JSON.stringify({ logos: grp('logo').map(([name, hex, , use]) => ({ name, hex, use })), website: grp('website').map(([name, hex, , use]) => ({ name, hex, use })), y2k: grp('y2k').map(([name, hex, , use]) => ({ name, hex, use })) }, null, 2);
     const [c, x] = mk(); c.width = 1600; c.height = 900; x.fillStyle = '#12110f'; x.fillRect(0, 0, 1600, 900);
     x.fillStyle = '#8f887a'; x.font = "400 22px 'Martian Mono', monospace"; x.fillText('FÜR LOGOS', 60, 44); x.fillText('FÜR DIE WEBSITE', 60, 454);
     PALETTE.forEach(([n, hex], i) => { const cx = 60 + (i % 4) * 380, cy = 60 + Math.floor(i / 4) * 410;
@@ -2082,9 +2125,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const SH_AREA = { front: [333, 235, 667, 679], back: [333, 200, 667, 644] };   // printable box per side (30 x 40 cm on the photo)
   const SH_CM = 11.1;   // photo units per cm
   const SH_POS = { front: [['brust', 628, 300, 100], ['mitte', 500, 400, 280], ['groß', 500, 455, 333]], back: [['nacken', 500, 235, 110], ['rücken', 500, 410, 300], ['voll', 500, 460, 333]] };
-  const SH_COLORS = [['schwarz', '#151515'], ['weiß', '#f4f4f2'], ['creme', '#ece4cf'], ['asche', '#3a3a38'], ['grau', '#a9a8a4'], ['toner', '#12110f'], ['lila', '#3b1a5c'], ['rot', '#8e1b16']];
-  const SH_INKS = [['original', null], ['knochen', '#e6dfc8'], ['kreide', '#f0f0f0'], ['tinte', '#1a1915'], ['nacht', '#050505'], ['rot', '#c8241c'], ['orange', '#e4531c'], ['gelb', '#f5d33d']];
-  const SH = { view: 'front', color: '#151515', ink: '#e6dfc8', grain: false,
+  const SH_COLORS = [['schwarz', '#151515'], ['weiß', '#f4f4f2'], ['creme', '#ece4cf'], ['asche', '#3a3a38'], ['grau', '#a9a8a4'], ['toner', '#12110f'], ['lila', '#3b1a5c'], ['rot', '#8e1b16'], ['mint', '#cfe9e3'], ['petrol', '#1f5c5a'], ['flasche', '#1f3b2d']];
+  const SH_INKS = [['original', null], ['knochen', '#e6dfc8'], ['kreide', '#f0f0f0'], ['tinte', '#1a1915'], ['nacht', '#050505'], ['rot', '#c8241c'], ['orange', '#e4531c'], ['gelb', '#f5d33d'], ['teal', '#4fa39a'], ['mint', '#a9dcd3']];
+  const SH = { bg: 'papier', view: 'front', color: '#151515', ink: '#e6dfc8', grain: false,
     front: { src: 'r4-kopfwellebbk', cx: 500, cy: 400, w: 280 }, back: { src: 'r4-kopfwellesiegel', cx: 500, cy: 410, w: 300 } };
   const shcv = $('#sh-cv'), shx = shcv.getContext('2d'), shStat = $('#sh-stat'), SHUP = {};
   const pathU = d => { const p2 = new Path2D(); p2.addPath(new Path2D(d), new DOMMatrix().scale(SHU)); return p2; };
@@ -2135,7 +2178,10 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     await teeReady; if (ticket !== shBusy) return;
     const x = shx, M = shadeMap(v), dark = lumOf(SH.color) < .3;
     x.setTransform(1, 0, 0, 1, 0, 0); x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.filter = 'none';
-    const bg = x.createRadialGradient(SHW / 2, SHH * .42, 80, SHW / 2, SHH / 2, SHH * .8); bg.addColorStop(0, '#f1eee8'); bg.addColorStop(1, '#d4d0c7'); x.fillStyle = bg; x.fillRect(0, 0, SHW, SHH);
+    if (SH.bg === 'clean') { const g = x.createLinearGradient(0, 0, 0, SHH); g.addColorStop(0, '#f1f8f6'); g.addColorStop(.6, '#ddefea'); g.addColorStop(1, '#cfe6e0'); x.fillStyle = g; x.fillRect(0, 0, SHW, SHH);
+      x.save(); x.filter = 'blur(55px)'; const rg = x.createRadialGradient(SHW * .45, SHH * .95, 40, SHW * .55, SHH * 1.05, SHW * .8); rg.addColorStop(0, '#7cbcb1'); rg.addColorStop(.4, '#3f8478'); rg.addColorStop(.75, 'rgba(31,59,45,.8)'); rg.addColorStop(1, 'rgba(31,59,45,0)');
+      x.fillStyle = rg; x.beginPath(); x.ellipse(SHW * .55, SHH * 1.05, SHW * .8, SHH * .32, 0, 0, Math.PI * 2); x.fill(); x.restore(); }
+    else { const bg = x.createRadialGradient(SHW / 2, SHH * .42, 80, SHW / 2, SHH / 2, SHH * .8); bg.addColorStop(0, '#f1eee8'); bg.addColorStop(1, '#d4d0c7'); x.fillStyle = bg; x.fillRect(0, 0, SHW, SHH); }
     x.save(); x.filter = 'brightness(0) blur(30px)'; x.globalAlpha = .28; x.drawImage(M.base, 10, 28); x.filter = 'brightness(0) blur(5px)'; x.globalAlpha = .18; x.drawImage(M.base, 2, 5); x.restore();
     // coloured shirt = colour x photo light (+ sheen on dark colours), clipped to the photo
     if (tcc.width !== SHW || tcc.height !== SHH) { tcc.width = SHW; tcc.height = SHH; }
@@ -2175,11 +2221,13 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('#sh-size').value = P.w; $('#sh-size-o').textContent = Math.round(P.w / SH_CM) + ' cm';
     $$('[data-sh-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shView === SH.view)));
     $$('[data-sh-grain]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.shGrain === '1') === SH.grain)));
+    $$('[data-sh-bg]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.shBg === SH.bg)));
   };
   const shSet = () => { shUi(); drawShirt(); };
   $('#r-shirt').addEventListener('click', e => { const t = e.target.closest('button'); if (!t) return; const P = SH[SH.view];
     if (t.dataset.shc) SH.color = t.dataset.shc; else if (t.dataset.shi !== undefined) SH.ink = t.dataset.shi || null;
     else if (t.dataset.shp !== undefined) { const [, cx, cy, w] = SH_POS[SH.view][+t.dataset.shp]; Object.assign(P, { cx, cy, w }); }
+    else if (t.dataset.shBg) SH.bg = t.dataset.shBg;
     else if (t.dataset.shView) SH.view = t.dataset.shView; else if (t.dataset.shGrain) SH.grain = t.dataset.shGrain === '1'; else return;
     shSet(); });
   $('#r-shirt').addEventListener('input', e => { const P = SH[SH.view];
