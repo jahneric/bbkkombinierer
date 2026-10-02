@@ -165,7 +165,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-chips button[aria-pressed="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .mo-ctl output{color:var(--bone)}
 .mo-note{margin:0;font-size:11px;color:var(--mute)}
-#r-motion:not(.fxbg) .mo-fxbg,#r-motion:not(.solo) .mo-onlylogo,#r-motion:not(.arr) .mo-arrbox,#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
+#r-motion:not(.fxbg) .mo-fxbg,#r-motion:not(.solo) .mo-onlylogo,#r-motion:not(.arr) .mo-arrbox,#r-motion:not(.let) .mo-let,#r-motion.let .mo-notlet,#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
 .mo-sc{display:grid;grid-template-columns:minmax(0,1.3fr) 58px minmax(0,1fr) auto;gap:5px;align-items:center;margin-bottom:6px}
 .mo-sc select,.mo-sc input{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px 5px;font:11px var(--f-min)}
 .mo-sc button{background:none;border:1px solid #555;color:var(--mute);cursor:pointer;padding:5px 8px}
@@ -439,7 +439,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <div class="seg" role="group" aria-label="Mischmodus"><button data-mo-blend="normal" aria-pressed="true">normal</button><button data-mo-blend="differenz" aria-pressed="false">differenz</button></div></div>
       <div class="mo-reel"><span class="mo-lbl">szenen</span><div id="mo-scenes"></div>
         <div class="row"><button class="kb-btn ghost" id="mo-add">+ szene</button></div></div>
-      <div class="mo-post mo-noreel"><span class="mo-lbl">layout</span><div class="mo-chips" id="mo-lay" role="group" aria-label="Layout"></div></div>
+      <div class="mo-noreel"><span class="mo-lbl">layout</span><div class="mo-chips" id="mo-lay" role="group" aria-label="Layout"></div></div>
       <div class="mo-post"><label for="mo-ev">termin übernehmen<select id="mo-ev"></select></label></div>
       <div class="mo-post"><label for="mo-title">titel<input type="text" id="mo-title"></label></div>
       <div class="mo-post"><label for="mo-date">datum<input type="text" id="mo-date"></label></div>
@@ -452,8 +452,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row"><div class="seg" role="group" aria-label="Partner-Anordnung"><button data-mo-pmode="kollabo" aria-pressed="true">bbk × partner</button><button data-mo-pmode="partner" aria-pressed="false">nur partner</button></div>
         <label class="kb-btn ghost mo-up">logo hochladen<input type="file" id="mo-up" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden></label></div>
       <div><span class="mo-lbl">effekt</span><div class="mo-chips" id="mo-fx" role="group" aria-label="Effekt"></div></div>
-      <div class="mo-onlylogo"><span class="mo-lbl">anordnung</span><div class="mo-chips" id="mo-arr" role="group" aria-label="Anordnung"></div></div>
-      <div class="mo-onlylogo mo-arrbox"><label for="marr-src">motiv<select id="marr-src"></select></label>
+      <div class="mo-arrbox"><label class="mo-notlet" for="marr-src">motiv<select id="marr-src"></select></label>
+        <label class="mo-let" for="marr-text">buchstaben<input type="text" id="marr-text" value="bbk" style="width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px;font:11px var(--f-min)"></label>
+        <label class="mo-let" for="marr-font">schrift<select id="marr-font"></select></label>
         <label for="marr-n">anzahl <output id="marr-n-o"></output><input type="range" id="marr-n" min="2" max="24" value="5"></label>
         <div class="row"><div class="seg" role="group" aria-label="Details"><button data-marr-det="1" aria-pressed="true">details</button><button data-marr-det="0" aria-pressed="false">ohne</button></div><div class="seg"><button data-marr-light aria-pressed="false">licht</button></div><button class="kb-btn ghost" id="marr-rnd" type="button">zufall</button></div></div>
       <div><span class="mo-lbl">druck</span><div class="mo-chips" id="mo-pfx" role="group" aria-label="Druck-Effekt"></div></div>
@@ -1274,7 +1275,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // every logo is rasterised from its svg in 4 "drawings" (different boil seeds), cycled like a flip book.
   // everything is a pure function of the frame index f, so a recording of N frames loops seamlessly.
   const MO = { mode: 'logo', fmt: 'post', m: 'r4-kopfwelle', w: 'r2-guss', fx: 'ruhig', lay: 'plakat', boil: 4, amt: 55, fps: 8, size: 72,
-    dark: true, grain: true, paper: true, len: 6, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', pfx: 'sauber', pstr: 60, arr: 'logo', still: false, p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
+    dark: true, grain: true, paper: true, len: 6, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', pfx: 'sauber', pstr: 60, arr: 'logo', still: false, btext: 'bbk', p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
   const FMT = { post: [1080, 1350], story: [1080, 1920] };
   // own colour pair, shared by logo-labor, kombinierer and bewegt (and the png downloads)
   const COL = { on: false, ground: '#3b1a5c', ink: '#f5d33d' };
@@ -1622,6 +1623,55 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const reelScenes = () => REEL.map(sc => ({ ...sc, n: Math.max(3, Math.round(sc.d * MO.fps)) }));
   const frameCount = () => MO.mode === 'reel' ? reelScenes().reduce((a, sc) => a + sc.n, 0) : Math.max(8, Math.round(MO.len * MO.fps / 8) * 8);
   const LOGO_KINDS = ['logo', 'schriftzug', 'zeichen', 'kollabo', 'partner'];
+  const COMP_LAY = [['buchstaben', 'buchstaben'], ['einzeln', 'einzeln'], ['mehrfach', 'mehrfach'], ['reihe', 'reihe'], ['kachel', 'kachel'], ['kreis', 'kreis'], ['streuung', 'streuung'], ['anschnitt', 'anschnitt']];
+  const COMP_KEYS = COMP_LAY.map(q => q[0]).filter(k => k !== 'buchstaben');
+  // the event in small type next to a big composition: event logos small at the top, title / date / line-up / place as a block
+  function announce(W, H, M, f, withLogo) {
+    const story = MO.fmt === 'story', u = W / 1080, TF = TFONTS[MO.font] || TFONTS.archivo;
+    if (withLogo) logoBlock({ x: M, y: M + 40 * u, w: W * .22, h: H * .07 }, f, 'ruhig');
+    const lines = [[MO.title || '', TF, 34], [MO.date || '', MONO, 30]].concat(wrap(tx, MO.info || '', MONO_L, 20, W * .42).slice(0, 4).map(l => [l, MONO_L, 20]), MO.extra ? [[MO.extra, MONO_L, 20]] : []);
+    let y = H - M - (story ? 230 : 120) * u - lines.reduce((a, q) => a + q[2] * 1.35 * u, 0);
+    const bh = lines.reduce((a, q) => a + q[2] * 1.35 * u, 0) + 36 * u; mx.save(); mx.globalAlpha = .82; mx.fillStyle = CLEAN() ? '#eef7f5' : '#000'; mx.fillRect(M - 16 * u, y - 8 * u, W * .5, bh); mx.restore();   // plate so the small type stays readable
+    lines.forEach(([t, F, px]) => { if (!t) return; y += px * 1.35 * u; jtext(tx, t, M, y, px * u, F, 'left', f); });
+    flush(f);
+  }
+  // buchstaben: big letters of a word stacked diagonally, a ghost and a blue edge behind them, frosted panels that cut
+  // and shift slices of the letters, tiny codes inside the panels
+  const LETC = new Map();
+  function drawLetters(W, H, v, f) {
+    const TF = TFONTS[MO.font] || TFONTS.archivo, text = (MO.btext || 'bbk').replace(/\s+/g, ''), n = Math.max(3, Math.min(9, FXL.n)), seed = FXL.seed;
+    const ink = CLEAN() ? '#0b0b0b' : '#f0f0f0', ground = CLEAN() ? '#eef7f5' : '#000', accent = '#3b6fe0';
+    const key = [W, H, v, text, MO.font, n, seed, MO.pfx, MO.pstr, MO.look].join('|');
+    let L = LETC.get(key);
+    if (!L) {
+      const [a, ax] = mk(); a.width = W; a.height = H; ax.fillStyle = '#fff'; ax.textAlign = 'center'; ax.textBaseline = 'middle';
+      const px = H * (MO.fmt === 'story' ? .26 : .33), chars = [...text]; const pos = [];
+      for (let i = 0; i < n; i++) { const ch = chars[i % chars.length], cx = W * (.42 + .24 * Math.sin(i * 1.7 + seed)) + (sr(v, i) - .5) * 10, cy = H * (.1 + .8 * i / (n - 1)) + (sr(v, i + 9) - .5) * 10;
+        setFont(ax, TF, px * (.85 + .3 * sr(seed, i))); ax.save(); ax.translate(cx, cy); ax.rotate((sr(seed, i + 3) - .5) * .25); ax.fillText(ch, 0, 0); ax.restore(); pos.push([cx, cy]); }
+      let sharp = a, pad = 0;
+      if (MO.pfx !== 'sauber') { const it = fxInstance(a, W, 1, 31 + v * 17 + seed, MO.pfx, MO.pstr); sharp = it.ink; pad = it.pad; }
+      const tint = (c, col) => { const [t, tx5] = mk(); t.width = c.width; t.height = c.height; tx5.drawImage(c, 0, 0); tx5.globalCompositeOperation = 'source-in'; tx5.fillStyle = col; tx5.fillRect(0, 0, t.width, t.height); return t; };
+      L = { sharp: tint(sharp, ink), pad, ghost: tint(a, ink), blue: tint(a, accent) };
+      LETC.set(key, L); if (LETC.size > 12) LETC.delete(LETC.keys().next().value);
+    }
+    const x = mx;
+    x.save(); x.filter = `blur(${Math.round(W * .03)}px)`; x.globalAlpha = .45; x.drawImage(L.ghost, -W * .06, H * .02); x.restore();
+    x.save(); x.filter = `blur(${Math.round(W * .006)}px)`; x.globalCompositeOperation = CLEAN() ? 'multiply' : 'lighter'; x.globalAlpha = .9; x.drawImage(L.blue, W * .012, -W * .006); x.restore();
+    x.drawImage(L.sharp, -L.pad, -L.pad);
+    // frosted panels: a slice of the letters, shifted, under a veil of the ground colour
+    const np = 9 + Math.round(FXL.n / 2), codes = ['copy', 'c6936', 'cc-182683', 'center', 'send', 'bbk', '25a', '66', 'fig.', 'nº ' + String(seed).padStart(3, '0')];
+    const u = W / 1080; x.font = `400 ${Math.round(15 * u)}px 'Martian Mono', monospace`;
+    for (let i = 0; i < np; i++) { const pw = W * (.12 + .3 * sr(seed + 3, i)), ph = H * (.04 + .14 * sr(seed + 5, i)), px0 = W * (.05 + .8 * sr(seed + 7, i)) - pw * .3, py0 = H * (.04 + .9 * sr(seed + 11, i)), dx = (sr(seed + 13, i + v) - .5) * W * .08;
+      x.save(); x.beginPath(); x.rect(px0, py0, pw, ph); x.clip();
+      x.globalAlpha = .55; x.fillStyle = ground; x.fillRect(px0, py0, pw, ph);
+      x.globalAlpha = .85; x.drawImage(L.sharp, -L.pad + dx, -L.pad + (sr(seed, i) - .5) * 6);
+      x.globalAlpha = .25; x.fillStyle = ink; x.fillRect(px0, py0, pw, 1);
+      if (sr(seed + 17, i) > .45) { x.globalAlpha = .85; x.fillText(codes[i % codes.length], px0 + 10 * u, py0 + ph - 10 * u); }
+      x.restore(); }
+    // a few bright bars like in a scan
+    for (let i = 0; i < 2; i++) { x.save(); x.globalAlpha = .6; x.fillStyle = CLEAN() ? '#ffffff' : '#f0f0f0'; x.fillRect(0, H * (.82 + .06 * i) + (sr(seed, 40 + i) - .5) * 40, W * (.35 + .3 * sr(seed, 50 + i)), H * (.02 + .02 * sr(seed, 60 + i))); x.restore(); }
+    if (FXL.light) fxLight(x, W, H, '#ff6a2b', 0, !CLEAN());
+  }
   // photo: cover-cropped, graded (contrast / brightness), turned into a look and mapped onto the colour pair.
   // 4 variants (slight shift, fresh noise) cycle with the flip-book frames. cached per settings.
   const PCACHE = new Map(); let PHOTO_FRAME = false;
@@ -1715,14 +1765,17 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     };
     const title = MO.title || 'bbk', date = MO.date || '', info = MO.info || '', extra = MO.extra || '';
     const unit = ` ${title} ✱ ${date} ✱ bbk kollektiv ✱`;
-    if (kind === 'logo' && MO.arr !== 'logo') {   // anordnung: the effekte composition as the main motif
-      const cfg = { ...FXL, arr: MO.arr, fx: MO.pfx, str: MO.pstr }, comp = fxCompNow(W, H, MO.boil && !MO.still ? f % 4 : 0, cfg);
+    const lay = kind === 'logo' ? MO.arr : kind;
+    if (lay === 'buchstaben') { drawLetters(W, H, MO.boil && !MO.still ? f % 4 : 0, f); if (kind !== 'logo') announce(W, H, M, f, true); }
+    else if (COMP_KEYS.includes(lay)) {   // layout from the effekte compositions
+      const cfg = { ...FXL, arr: lay === 'kachel' ? 'raster' : lay, fx: MO.pfx, str: MO.pstr, det: FXL.det }, comp = fxCompNow(W, H, MO.boil && !MO.still ? f % 4 : 0, cfg);
       if (!comp) moWait = true;
       else { let ink = comp.ink;
         if (CLEAN()) { if (!comp.black) { const [bc, bx3] = mk(); bc.width = W; bc.height = H; bx3.drawImage(comp.ink, 0, 0); bx3.globalCompositeOperation = 'source-in'; bx3.fillStyle = '#0b0b0b'; bx3.fillRect(0, 0, W, H); comp.black = bc; } ink = comp.black; }
         mx.drawImage(ink, 0, 0);
         if (comp.tint) { mx.save(); mx.globalCompositeOperation = CLEAN() ? 'multiply' : 'lighter'; mx.globalAlpha = .6; mx.drawImage(comp.tint, 0, 0); mx.restore(); }
         if (FXL.light) fxLight(mx, W, H, '#ff6a2b', 0, !CLEAN()); }
+      if (kind !== 'logo') announce(W, H, M, f, false);
     } else if (LOGO_KINDS.includes(kind)) {
       const s = MO.size / 100, bw = (W - 2 * M) * s, bh = (H - 2 * M) * s * (story ? .55 : .75);
       logoBlock({ x: (W - bw) / 2, y: (H - bh) / 2, w: bw, h: bh }, f);
@@ -2375,7 +2428,12 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $$('[data-mfx-det]').forEach(b => b.onclick = () => { FXL.det = b.dataset.mfxDet === '1'; fxChange(); });
     $$('[data-mfx-light]').forEach(b => b.onclick = () => { FXL.light = !FXL.light; FX_VER++; fxChange(); });
     // anordnung in bewegt (foreground composition); shares motiv / anzahl / details / licht / zufall with the background
-    chips($('#mo-arr'), [['logo', 'logo']].concat(ARR_LIST), 'arr');
+    const layChips = () => { if (MO.mode === 'logo') chips($('#mo-lay'), [['logo', 'logo']].concat(COMP_LAY), 'arr'); else chips($('#mo-lay'), MO_LAY.concat(COMP_LAY), 'lay'); };
+    $$('[data-mo-mode]').forEach(b => b.addEventListener('click', layChips)); layChips();
+    $('#marr-font').innerHTML = Object.entries(TFONTS).map(([k, F]) => `<option value="${k}">${esc(F.n)}</option>`).join(''); $('#marr-font').value = MO.font;
+    $('#marr-font').onchange = e => { MO.font = e.target.value; $('#mo-font').value = MO.font; document.fonts.load(fontStr(TFONTS[MO.font], 100)).catch(() => {}); };
+    $('#mo-font').addEventListener('change', () => { $('#marr-font').value = MO.font; });
+    $('#marr-text').oninput = e => { MO.btext = e.target.value; };
     $('#marr-src').innerHTML = $('#fx-src').innerHTML; $('#marr-src').value = FXL.src;
     const syncArr = () => { $('#marr-src').value = FXL.src; $('#marr-n').value = FXL.n; $('#marr-n-o').textContent = FXL.n;
       $$('[data-marr-det]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.marrDet === '1') === FXL.det))); $$('[data-marr-light]').forEach(b => b.setAttribute('aria-pressed', String(FXL.light))); fxSyncAll(); };
@@ -2387,7 +2445,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     ['#mfx-src', '#fx-src'].forEach(id => $(id).addEventListener('change', syncArr));
     seg('data-mo-frz', v => { MO.still = v === '1'; });
     window.openInMotion = id => { FXL.src = id; FXCOMP.clear(); syncArr(); show('motion'); scrollTo(0, 0);
-      $('[data-mo-mode="logo"]').click(); if (MO.arr === 'logo') $('#mo-arr [data-k="einzeln"]').click(); };
+      $('[data-mo-mode="logo"]').click(); if (MO.arr === 'logo') MO.arr = 'einzeln'; layChips(); };
     syncArr();
   }
   const openInMotion = id => window.openInMotion && window.openInMotion(id);
@@ -2557,7 +2615,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (document.body.dataset.v === 'motion' || recOn) {
       const f = MO.still && !recOn ? 0 : Math.floor(Math.max(0, now - mt0) / 1000 * MO.fps) % frameCount();
       drawMotion(f); mLast = f;
-      mroom.classList.toggle('fxbg', MO.back === 'fx'); mroom.classList.toggle('solo', MO.mode === 'logo'); mroom.classList.toggle('arr', MO.mode === 'logo' && MO.arr !== 'logo');
+      mroom.classList.toggle('fxbg', MO.back === 'fx'); mroom.classList.toggle('solo', MO.mode === 'logo'); const curLay = MO.mode === 'logo' ? MO.arr : MO.mode === 'post' ? MO.lay : ''; mroom.classList.toggle('arr', curLay === 'buchstaben' || COMP_KEYS.includes(curLay)); mroom.classList.toggle('let', curLay === 'buchstaben');
       if (!recOn) mstat.textContent = moWait ? 'logo wird gezeichnet …' : (mstat.textContent === 'logo wird gezeichnet …' ? '' : mstat.textContent);   // every rAF: assets finish loading asynchronously, and the recorder needs a steady stream
     }
     requestAnimationFrame(moLoop);
