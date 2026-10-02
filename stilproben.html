@@ -32,7 +32,7 @@ button{font:inherit;color:inherit}
 .grain{position:fixed;inset:0;pointer-events:none;z-index:70;background-image:var(--noise);opacity:.08;mix-blend-mode:screen;animation:grain .5s steps(4) infinite}
 @keyframes grain{0%{background-position:0 0}25%{background-position:-37px 21px}50%{background-position:14px -48px}75%{background-position:-22px -9px}}
 .room{display:none}
-body[data-v="logos"] #r-logos,body[data-v="kombi"] #r-kombi,body[data-v="motion"] #r-motion,body[data-v="shirt"] #r-shirt,body[data-v="y2k"] #r-y2k{display:block}
+body[data-v="logos"] #r-logos,body[data-v="kombi"] #r-kombi,body[data-v="motion"] #r-motion,body[data-v="fx"] #r-fx,body[data-v="shirt"] #r-shirt,body[data-v="y2k"] #r-y2k{display:block}
 
 /* ---------- logo lab ---------- */
 #r-logos{max-width:1240px;margin:0 auto;padding:36px 16px 80px}
@@ -165,6 +165,14 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-art .kb-btn{padding:6px 8px;font-size:11px}
 .mo-art input[type=radio]{accent-color:var(--bone)}
 .kb-btn:disabled{opacity:.5;cursor:wait}
+
+/* ---------- effekte ---------- */
+#r-fx{max-width:1240px;margin:0 auto;padding:30px 16px 80px}
+#r-fx h1{font:800 clamp(30px,5vw,54px)/.9 var(--f-min);font-stretch:112.5%;letter-spacing:-.05em;margin:0 0 18px}
+.fx-main{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:20px;align-items:start}
+@media (max-width:900px){.fx-main{grid-template-columns:minmax(0,1fr)}}
+#fx-cv{display:block;width:auto;height:auto;max-width:100%;max-height:calc(100vh - 140px);margin:0 auto;border:1px solid var(--ash)}
+.fx-ctl select{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:7px 8px;font:12px var(--f-min)}
 
 /* ---------- shirt ---------- */
 #r-shirt{max-width:1240px;margin:0 auto;padding:30px 16px 80px}
@@ -325,6 +333,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <b>bbk · kombinierer</b>
   <button data-v="logos" aria-pressed="true">logo-labor</button>
   <button data-v="kombi" aria-pressed="false">kombinierer</button>
+  <button data-v="fx" aria-pressed="false">effekte</button>
   <button data-v="motion" aria-pressed="false">bewegt</button>
   <button data-v="shirt" aria-pressed="false">shirt</button>
   <button data-v="y2k" aria-pressed="false">website</button>
@@ -384,7 +393,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="row colctl"></div>
       <div class="row"><button class="kb-btn" id="kb-rnd">zufall</button><button class="kb-btn" id="kb-fav">merken</button><button class="kb-btn ghost" id="kb-copy">liste kopieren</button></div>
       <textarea id="kb-copytxt" hidden aria-label="Favoritenliste zum Kopieren"></textarea>
-      <div class="kb-dlrow"><button class="kb-btn" id="kb-png" type="button">png ↓</button><button class="kb-btn ghost" id="kb-pal" type="button">farben ↓</button></div>
+      <div class="kb-dlrow"><button class="kb-btn" id="kb-png" type="button">png ↓</button><button class="kb-btn ghost" id="kb-pal" type="button">farben ↓</button><button class="kb-btn ghost" id="kb-fx" type="button">→ effekte</button></div>
       <p class="kb-empty" id="kb-dlstat" aria-live="polite" style="font-size:11px"></p>
     </aside>
   </div>
@@ -443,6 +452,27 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <label class="mo-noreel" for="mo-len">länge<select id="mo-len"><option value="3">3 sekunden</option><option value="6" selected>6 sekunden</option><option value="10">10 sekunden</option><option value="15">15 sekunden</option></select></label>
       <div class="row"><button class="kb-btn" id="mo-rec">video ↓</button><button class="kb-btn ghost" id="mo-png">png ↓</button><button class="kb-btn ghost" id="mo-rnd">zufall</button></div>
       <p class="mo-note" id="mo-fmtnote"></p>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= EFFEKTE ================= -->
+<div class="room" id="r-fx">
+  <h1>bbk effekte</h1>
+  <div class="fx-main">
+    <div><canvas id="fx-cv" width="1080" height="1350" aria-label="Effekt-Vorschau"></canvas></div>
+    <aside class="kb-ctl fx-ctl">
+      <label for="fx-src">motiv<select id="fx-src"></select></label>
+      <div><span class="mo-lbl">effekt</span><div class="mo-chips" id="fx-fx" role="group" aria-label="Effekt"></div></div>
+      <div><span class="mo-lbl">anordnung</span><div class="mo-chips" id="fx-arr" role="group" aria-label="Anordnung"></div></div>
+      <label for="fx-n">anzahl <output id="fx-n-o"></output><input type="range" id="fx-n" min="2" max="24" value="5"></label>
+      <label for="fx-str">stärke <output id="fx-str-o"></output><input type="range" id="fx-str" min="10" max="100" value="60"></label>
+      <div class="row"><div class="seg" role="group" aria-label="Details"><button data-fx-det="1" aria-pressed="true">details</button><button data-fx-det="0" aria-pressed="false">ohne</button></div><div class="seg" role="group" aria-label="Licht"><button data-fx-light aria-pressed="false">licht</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Format"><button data-fx-fmt="post" aria-pressed="true">4:5</button><button data-fx-fmt="story" aria-pressed="false">9:16</button><button data-fx-fmt="quadrat" aria-pressed="false">1:1</button></div></div>
+      <div><span class="mo-lbl">papier</span><div class="sh-sw" id="fx-paper"></div></div>
+      <div><span class="mo-lbl">tinte</span><div class="sh-sw" id="fx-ink"></div></div>
+      <div class="row"><button class="kb-btn ghost" id="fx-rnd" type="button">zufall</button><button class="kb-btn" id="fx-png" type="button">png ↓</button></div>
+      <p class="kb-empty" id="fx-stat" aria-live="polite" style="font-size:11px"></p>
     </aside>
   </div>
 </div>
@@ -1236,7 +1266,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   try { (JSON.parse(localStorage.getItem('bbk-partner-logos') || '[]')).forEach(x => PARTNERS.push({ id: x.id, n: x.n, make: upSvg(x.src, x.w, x.h), up: x })); } catch (e) {}
   const findP = id => PARTNERS.find(x => x.id === id) || null;
   const MO_FX = [['ruhig', 'nur zittern'], ['wackeln', 'wackeln'], ['puls', 'puls'], ['echo', 'echo'], ['dreher', 'dreher'], ['strobe', 'stroboskop'], ['glitch', 'glitch'], ['raster', '1-bit'], ['kacheln', 'kacheln']];
-  const MO_BACK = [['-', 'keiner'], ['glas', 'glas'], ['nebel', 'nebel'], ['schlieren', 'schlieren'], ['leck', 'lichtleck'], ['kontur', 'höhenlinien'], ['moire', 'moiré'], ['fluss', 'fluss'], ['morph', 'morph'], ['gitter', 'gitter'], ['spirale', 'spirale'],
+  const MO_BACK = [['-', 'keiner'], ['fx', 'effekt-motiv'], ['glas', 'glas'], ['nebel', 'nebel'], ['schlieren', 'schlieren'], ['leck', 'lichtleck'], ['kontur', 'höhenlinien'], ['moire', 'moiré'], ['fluss', 'fluss'], ['morph', 'morph'], ['gitter', 'gitter'], ['spirale', 'spirale'],
     ['tunnel', 'tunnel'], ['wellen', 'schallwellen'], ['punkte', 'punktwelle'], ['scan', 'scanlinien']];
   const MO_LAY = [['plakat', 'plakat'], ['ticker', 'ticker'], ['raster', 'raster'], ['zaehler', 'zähler']];
   // lineup posts: artists with a photo each; the photo gets a look + a colour pair, the name runs huge across the frame
@@ -1413,7 +1443,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     const line = pts => { c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.stroke(); };
     const glow = (cx, cy, r, l, al) => { const gr = c.createRadialGradient(cx, cy, 0, cx, cy, r); gr.addColorStop(0, `rgba(${l},${l},${l},${al})`);
       gr.addColorStop(.55, `rgba(${l},${l},${l},${al * .35})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = gr; c.fillRect(cx - r, cy - r, r * 2, r * 2); };
-    if (MO.back === 'glas') {   // out-of-focus glass spheres drifting, each with a soft bright rim
+    if (MO.back === 'fx') {   // the composition from the effekte tab, as light ink on the dark ground
+      const comp = fxCompNow(W, H, MO.boil ? f % 4 : 0); if (comp) { c.drawImage(comp.ink, 0, 0); if (FXL.light) fxLight(c, W, H, '#ffffff', 0); } else moWait = true;
+    } else if (MO.back === 'glas') {   // out-of-focus glass spheres drifting, each with a soft bright rim
       for (let i = 0; i < 5; i++) { const r = Math.max(W, H) * (.16 + .14 * sr(i, 4)), cx = W * (.15 + .7 * sr(i, 1)) + W * .06 * Math.sin(a + i * 1.7), cy = H * (.15 + .75 * sr(i, 2)) + H * .04 * Math.cos(a + i);
         c.save(); c.filter = `blur(${Math.round(r * .18)}px)`; const gr = c.createRadialGradient(cx - r * .3, cy - r * .35, r * .05, cx, cy, r);
         gr.addColorStop(0, 'rgba(255,255,255,.9)'); gr.addColorStop(.5, 'rgba(160,160,160,.55)'); gr.addColorStop(1, 'rgba(60,60,60,0)'); c.fillStyle = gr; c.beginPath(); c.arc(cx, cy, r, 0, TAU); c.fill();
@@ -1535,7 +1567,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const [bgt, bgtx] = mk();
   function drawBack(f, N) {
     if (MO.back === '-') return;
-    const W = CV.width, H = CV.height, key = [MO.back, f % N, N, W, H, MO.wash].join('|');
+    const W = CV.width, H = CV.height, key = [MO.back, f % N, N, W, H, MO.wash, MO.back === 'fx' ? FX_VER : 0].join('|');
     if (key !== bgKey) { bgKey = key; if (bgc.width !== W || bgc.height !== H) { bgc.width = W; bgc.height = H; }
       bgx.globalCompositeOperation = 'source-over'; bgx.globalAlpha = 1; bgx.fillStyle = '#000'; bgx.fillRect(0, 0, W, H); paintBack(bgx, W, H, f, N); wash(W, H, f, N); }
     if (CLEAN()) {   // the motif as petrol-to-teal ink on the pale ground
@@ -2049,7 +2081,10 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   $$('#r-logos .logos figure').forEach(fig => { if ($('.tile canvas, .tile .iso', fig)) return;
     const b = document.createElement('button'); b.type = 'button'; b.className = 'figdl'; b.dataset.n = $('figcaption span', fig).textContent.replace(/\s*·.*$/, '').trim(); b.textContent = 'png ↓'; b.setAttribute('aria-label', 'als png laden');
-    $('figcaption span', fig).append(b); });
+    $('figcaption span', fig).append(b);
+    const id = fig.dataset.k5 ? 'r5-' + fig.dataset.k5 : fig.dataset.k4 ? 'r4-' + fig.dataset.k4 : fig.dataset.k3 ? 'r3-' + fig.dataset.k3 : fig.dataset.k2 ? 'r2-' + fig.dataset.k2 : 'r1-' + fig.dataset.k;
+    if (MARKS.some(q => q.id === id) || WORDS.some(q => q.id === id)) { const f2 = document.createElement('button'); f2.type = 'button'; f2.className = 'figdl'; f2.textContent = 'fx'; f2.setAttribute('aria-label', 'in effekte öffnen');
+      f2.onclick = e => { e.stopPropagation(); FXL.src = id; $('#fx-src').value = id; show('fx'); scrollTo(0, 0); drawFx(); }; $('figcaption span', fig).append(f2); } });
   $('#r-logos').addEventListener('click', e => { const b = e.target.closest('.figdl'); if (!b) return; e.stopPropagation();
     const x = figItem(b.closest('figure'), b.dataset.n), name = slug(x.n.replace(/\s*·.*$/, '').replace(/\s*\(.*\)$/, '')) || 'logo', size = +$('#dl-size').value;
     zipUp(async zip => { dlStat.textContent = `${x.n.replace(/\s*·.*$/, '')} wird gezeichnet …`; Object.entries(await logoPngs(x, size)).forEach(([suf, blob]) => zip.file(`bbk-${name}/bbk-${name}_${suf}`, blob)); }, `bbk-${name}.zip`); });
@@ -2078,6 +2113,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     zipUp(async zip => { kbStat.textContent = 'kombi wird gezeichnet …';
       for (const grain of [false, true]) { const c = await kombiCanvas(grain, size); Object.entries(await inkify(c)).forEach(([n, blob]) => zip.file(`bbk-${name}/bbk-${name}_${n}${grain ? '_koernig' : ''}.png`, blob)); }
       kbStat.textContent = ''; }, `bbk-${name}.zip`, kbStat); };
+  $('#kb-fx').onclick = () => { FXL.src = 'kombi'; $('#fx-src').value = 'kombi'; FXCOMP.clear(); MOTIFS.clear(); show('fx'); scrollTo(0, 0); drawFx(); };
   $('#kb-pal').onclick = () => zipUp(async zip => { const f = await paletteFiles(); Object.entries(f).forEach(([n, d]) => zip.file(n, d)); }, 'bbk-farbpalette.zip', kbStat);
   $$('[data-stamp]').forEach(b => b.onclick = () => { const on = !document.body.classList.contains('stamp-on'); document.body.classList.toggle('stamp-on', on); $$('[data-stamp]').forEach(x => x.setAttribute('aria-pressed', String(on))); });
   $('#dl-pal').onclick = () => zipUp(async zip => { const f = await paletteFiles(); Object.entries(f).forEach(([n, d]) => zip.file(n, d)); }, 'bbk-farbpalette.zip');
@@ -2124,6 +2160,159 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     ARTISTS.forEach((a, j) => REEL.push({ k: 'artist:' + j, d: 2.5, t: tr[j % tr.length] }));
     REEL.push({ k: 'lineup', d: 4, t: 'blende' }); drawScenes(); };
   drawArtists(); loadFont(PHOTO.nfont);
+
+  // ---------- effekte: modular print effects x arrangements on any motif ----------
+  // the motif becomes white ink on transparent; an arrangement places instances sized to the motif's aspect; every instance
+  // gets the effect with its own seed and pressure; details add micro typography. the result is ink (+ an optional colour tint)
+  // that the effekte tab prints on paper, and that bewegt uses as a background (light ink on the dark ground).
+  const FXL = { src: 'r4-kopfwelle', fx: 'stempel', arr: 'mehrfach', n: 5, str: 60, det: true, light: false, seed: 1, fmt: 'post', paper: 'auto', ink: 'auto' };
+  const FX_LIST = [['sauber', 'sauber'], ['stempel', 'stempel'], ['kopie', 'kopie'], ['spray', 'spray'], ['schliere', 'schliere'], ['raster', 'punktraster']];
+  const ARR_LIST = [['einzeln', 'einzeln'], ['mehrfach', 'mehrfach'], ['reihe', 'reihe'], ['raster', 'raster'], ['kreis', 'kreis'], ['streuung', 'streuung'], ['anschnitt', 'anschnitt']];
+  const FX_PAPER = { sauber: '#f4f2ee', stempel: '#ebe3cf', kopie: '#d5d9d8', spray: '#f6f5f2', schliere: '#f6f5f2', raster: '#dbe8ef' };
+  const FX_INK = { sauber: '#0b0b0b', stempel: '#2e2c29', kopie: '#151515', spray: '#0b0b0b', schliere: '#0b0b0b', raster: '#0b0b0b' };
+  const FX_PAPERS = [['auto', null], ['creme', '#ebe3cf'], ['kopie', '#d5d9d8'], ['weiß', '#f6f5f2'], ['nebel', '#dff1ee'], ['eisblau', '#dbe8ef'], ['toner', '#12110f'], ['petrol', '#1f5c5a']];
+  const FX_INKS = [['auto', null], ['nacht', '#0b0b0b'], ['stempel', '#2e2c29'], ['knochen', '#e6dfc8'], ['rot', '#c8241c'], ['teal', '#4fa39a'], ['petrol', '#1f5c5a'], ['orange', '#ff6a2b']];
+  const FXFMT = { post: [1080, 1350], story: [1080, 1920], quadrat: [1080, 1080] };
+  let FX_VER = 0; const MOTIFS = new Map(), FXCOMP = new Map();
+  const fxItem = id => id === 'kombi' ? { id: 'kombi' } : MARKS.find(q => q.id === id) || WORDS.find(q => q.id === id) || findP(id);
+  // motif as white ink with alpha (black cut-outs become see-through), at a fixed working width
+  function motifNow(src) {
+    const key = src + '|' + (src === 'kombi' ? JSON.stringify(KB) : '');
+    if (MOTIFS.has(key)) return MOTIFS.get(key);
+    MOTIFS.set(key, null);
+    (async () => { const it = fxItem(src); let c;
+      if (!it) return; if (it.id === 'kombi') c = await kombiCanvas(false, 1200);
+      else { const bmp = await svgImage(it.make(), 1200, it.font, 3, 0, false); [c] = mk(); c.width = bmp.width; c.height = bmp.height; c.getContext('2d').drawImage(bmp, 0, 0); }
+      const x = c.getContext('2d', { willReadFrequently: true }), d = x.getImageData(0, 0, c.width, c.height);
+      for (let i = 0; i < d.data.length; i += 4) { const a = d.data[i + 3] * Math.max(d.data[i], d.data[i + 1], d.data[i + 2]) / 255; d.data[i] = d.data[i + 1] = d.data[i + 2] = 255; d.data[i + 3] = a; }
+      x.putImageData(d, 0, 0); MOTIFS.set(key, c); FX_VER++; FXCOMP.clear(); drawFx(); })().catch(e => console.warn('effekte:', e));
+    return null;
+  }
+  const fxr = (v, i, k) => sr(FXL.seed * 7.31 + v * 1.93, i * 5 + k);
+  // one instance: motif at width w with the effect; returns { ink, tint, pad }
+  function fxInstance(m, w, press, seed) {
+    const h = w * m.height / m.width, pad = Math.round(w * (FXL.fx === 'schliere' ? .6 : .28)), [c, x] = mk(); c.width = Math.ceil(w + 2 * pad); c.height = Math.ceil(h + 2 * pad);
+    const k = FXL.str / 100; let tint = null;
+    const put = (alpha, filt = 'none', dx = 0, dy = 0, cc = x) => { cc.save(); cc.globalAlpha = alpha; cc.filter = filt; cc.drawImage(m, pad + dx, pad + dy, w, h); cc.restore(); };
+    if (FXL.fx === 'spray') {
+      put(.85 * k + .1, `blur(${(w * .05 * k).toFixed(1)}px)`); put(1, `blur(${(w * .016).toFixed(1)}px)`); put(.75, `blur(${(w * .004).toFixed(1)}px)`);
+      x.globalCompositeOperation = 'destination-in'; x.drawImage(stampMask(c.width, c.height, seed, true), 0, 0); x.globalCompositeOperation = 'source-over';
+      const [t, tx2] = mk(); t.width = c.width; t.height = c.height; tint = t;
+      [['#f29a55', w * .012, w * .01], ['#6fc4d6', -w * .012, -w * .006]].forEach(([col, dx, dy]) => { const [q, qx] = mk(); q.width = c.width; q.height = c.height;
+        put(.55 * k, `blur(${(w * .06).toFixed(1)}px)`, dx, dy, qx); qx.globalCompositeOperation = 'source-in'; qx.fillStyle = col; qx.fillRect(0, 0, q.width, q.height); tx2.drawImage(q, 0, 0); });
+    } else if (FXL.fx === 'raster') {
+      const [b2, bx2] = mk(); b2.width = c.width; b2.height = c.height; put(1, `blur(${(w * .018 * (.5 + k)).toFixed(1)}px)`, 0, 0, bx2);
+      const d = bx2.getImageData(0, 0, c.width, c.height).data, g = Math.max(6, w / 44); x.fillStyle = '#fff';
+      for (let yy = g / 2; yy < c.height; yy += g) for (let xx = g / 2; xx < c.width; xx += g) { const a = d[((yy | 0) * c.width + (xx | 0)) * 4 + 3] / 255;
+        if (a > .04) { x.beginPath(); x.arc(xx, yy, Math.sqrt(a) * g * .56, 0, Math.PI * 2); x.fill(); } }
+      const [t, tx2] = mk(); t.width = c.width; t.height = c.height; tint = t;
+      put(.75, `blur(${(w * .05).toFixed(1)}px)`, w * .02, w * .03, tx2); tx2.globalCompositeOperation = 'source-in'; tx2.fillStyle = '#7fa6c6'; tx2.fillRect(0, 0, t.width, t.height);
+    } else if (FXL.fx === 'schliere') {
+      const len = h * (.25 + .6 * k), steps = 14;
+      for (let i = steps; i >= 1; i--) put((1 - i / steps) * .32, `blur(${(1 + i * w * .002).toFixed(1)}px)`, 0, len * i / steps);
+      put(1, `blur(${(w * .003).toFixed(1)}px)`);
+      const [t, tx2] = mk(); t.width = c.width; t.height = c.height; tint = t;
+      [['#5fd3e0', -w * .018, len * .12], ['#f08cc8', w * .016, len * .05]].forEach(([col, dx, dy]) => { const [q, qx] = mk(); q.width = c.width; q.height = c.height;
+        put(.7, `blur(${(w * .012).toFixed(1)}px)`, dx, dy, qx); qx.globalCompositeOperation = 'source-in'; qx.fillStyle = col; qx.fillRect(0, 0, q.width, q.height); tx2.drawImage(q, 0, 0); });
+    } else {
+      put(1);
+      if (FXL.fx === 'stempel') { x.globalCompositeOperation = 'destination-in'; x.drawImage(stampMask(c.width, c.height, seed), 0, 0); x.globalCompositeOperation = 'source-over'; }
+      if (FXL.fx === 'kopie') {   // toner: hard threshold, dropouts, a faint smeared double
+        const d = x.getImageData(0, 0, c.width, c.height), p2 = d.data;
+        for (let i = 0; i < p2.length; i += 4) { const a = p2[i + 3] / 255 + (Math.random() - .5) * .5 * k; p2[i + 3] = a > .5 ? (Math.random() < .06 * k ? 60 : 255) : 0; }
+        x.putImageData(d, 0, 0); put(.18 * k, `blur(${(w * .004).toFixed(1)}px)`, w * .012, 0);
+      }
+    }
+    if (press < 1) { x.globalCompositeOperation = 'destination-in'; x.fillStyle = `rgba(0,0,0,${press})`; x.fillRect(0, 0, c.width, c.height); x.globalCompositeOperation = 'source-over'; }
+    return { ink: c, tint, pad, w, h };
+  }
+  // arrangement: boxes sized to the motif's aspect (cx, cy, w, rotation, pressure)
+  function fxBoxes(W, H, ar, v) {
+    const n = FXL.n, b = [], fitW = (maxW, maxH) => Math.min(maxW, maxH * ar);
+    if (FXL.arr === 'einzeln') b.push({ cx: W / 2, cy: H / 2, w: fitW(W * .72, H * .55), r: 0, p: 1 });
+    else if (FXL.arr === 'mehrfach') { const w = fitW(W * .62, H * .45); for (let i = 0; i < Math.min(n, 8); i++) b.push({ cx: W / 2 + (fxr(v, i, 1) - .5) * w * .14, cy: H / 2 + (fxr(v, i, 2) - .5) * w * .14 / ar, w: w * (.96 + fxr(v, i, 3) * .08), r: (fxr(v, i, 4) - .5) * .14, p: .38 + .62 * (1 - i / Math.max(1, n)) }); }
+    else if (FXL.arr === 'reihe') { const vert = ar >= 1, step = (vert ? H * .84 : W * .84) / n;
+      for (let i = 0; i < n; i++) { const w = vert ? fitW(W * .7, step * .86) : Math.min(step * .86, H * .6 * ar); b.push({ cx: vert ? W / 2 : W * .08 + step * (i + .5), cy: vert ? H * .08 + step * (i + .5) : H / 2, w, r: (fxr(v, i, 4) - .5) * .05, p: 1 - .72 * i / Math.max(1, n - 1) }); } }
+    else if (FXL.arr === 'raster') { const cols = Math.max(1, Math.round(Math.sqrt(n * (W / H) / ar))), rows = Math.ceil(n / cols), cw = W * .9 / cols, ch = H * .9 / rows;
+      for (let i = 0; i < cols * rows; i++) { if (fxr(v, i, 9) < .1) continue; const col = i % cols, row = Math.floor(i / cols);
+        b.push({ cx: W * .05 + cw * (col + .5), cy: H * .05 + ch * (row + .5), w: fitW(cw * .8, ch * .8), r: (fxr(v, i, 4) - .5) * .16, p: .4 + .6 * fxr(v, i, 5) }); } }
+    else if (FXL.arr === 'kreis') { const R = Math.min(W, H) * .33, w = Math.min(2 * Math.PI * R / n * .85, fitW(W * .4, H * .3));
+      for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2 - Math.PI / 2; b.push({ cx: W / 2 + Math.cos(a) * R, cy: H / 2 + Math.sin(a) * R, w, r: a + Math.PI / 2, p: .55 + .45 * fxr(v, i, 5) }); } }
+    else if (FXL.arr === 'streuung') for (let i = 0; i < n; i++) { const w = fitW(W * (.16 + .3 * fxr(v, i, 1)), H * .3);
+      b.push({ cx: W * (-.05 + 1.1 * fxr(v, i, 2)), cy: H * (-.03 + 1.06 * fxr(v, i, 3)), w, r: (fxr(v, i, 4) - .5) * 1.3, p: .5 + .5 * fxr(v, i, 5) }); }
+    else { b.push({ cx: W * .6, cy: H * .52, w: W * 1.55, r: -.06, p: 1 }); b.push({ cx: W * .2, cy: H * .86, w: fitW(W * .22, H * .1), r: 0, p: .9 }); }
+    return b;
+  }
+  function fxDetails(x, W, H, v) {   // micro typography in ink: labels, index, barcode, crop and registration marks
+    const u = W / 1080, f = px => `400 ${Math.round(px * u)}px 'Martian Mono', monospace`, m = 46 * u;
+    x.save(); x.fillStyle = '#fff'; x.strokeStyle = '#fff'; x.lineWidth = 1.4 * u;
+    x.font = f(15); x.fillText('bbk kollektiv · leipzig', m, m + 10 * u); x.textAlign = 'right'; x.fillText('nº ' + String(FXL.seed).padStart(3, '0'), W - m, m + 10 * u);
+    x.textAlign = 'left'; x.fillText([MO.date, MO.title].filter(Boolean).join('  —  ').slice(0, 40), m, H - m);
+    x.font = f(11); x.fillText('fig. ' + (FXL.fx) + ' / ' + FXL.arr, m, H - m - 22 * u);
+    let bx = W - m - 150 * u; for (let i = 0; i < 34; i++) { const bw = (1 + Math.floor(fxr(v, i, 7) * 3)) * 1.6 * u; if (fxr(v, i, 8) > .3) x.fillRect(bx, H - m - 34 * u, bw, 34 * u); bx += bw + 1.6 * u; }
+    [[m * .5, m * .5, 1, 1], [W - m * .5, m * .5, -1, 1], [m * .5, H - m * .5, 1, -1], [W - m * .5, H - m * .5, -1, -1]].forEach(([cx, cy, sx, sy]) => { x.beginPath(); x.moveTo(cx, cy + sy * 18 * u); x.lineTo(cx, cy); x.lineTo(cx + sx * 18 * u, cy); x.stroke(); });
+    x.beginPath(); x.arc(W - m - 8 * u, H / 2, 7 * u, 0, Math.PI * 2); x.moveTo(W - m - 20 * u, H / 2); x.lineTo(W - m + 4 * u, H / 2); x.moveTo(W - m - 8 * u, H / 2 - 12 * u); x.lineTo(W - m - 8 * u, H / 2 + 12 * u); x.stroke();
+    x.globalAlpha = .5; x.beginPath(); x.moveTo(W * .83, m * 2); x.lineTo(W * .83, H - m * 3); x.stroke();
+    x.restore();
+  }
+  function fxCompNow(W, H, v) {
+    const key = [JSON.stringify(FXL), W, H, v, FX_VER].join('|'); if (FXCOMP.has(key)) return FXCOMP.get(key);
+    const m = motifNow(FXL.src); if (!m) return null;
+    const [ink, ix] = mk(), [tint, tx3] = mk(); ink.width = tint.width = W; ink.height = tint.height = H; let hasTint = false;
+    fxBoxes(W, H, m.width / m.height, v).forEach((b, i) => { const it = fxInstance(m, b.w, b.p, 11 + i * 13 + v * 101 + FXL.seed * 7);
+      for (const [cv, cx2] of [[it.ink, ix], [it.tint, tx3]]) { if (!cv) continue; if (cv === it.tint) hasTint = true;
+        cx2.save(); cx2.translate(b.cx, b.cy); cx2.rotate(b.r); cx2.drawImage(cv, -it.w / 2 - it.pad, -it.h / 2 - it.pad); cx2.restore(); } });
+    if (FXL.det) fxDetails(ix, W, H, v);
+    const comp = { ink, tint: hasTint ? tint : null }; FXCOMP.set(key, comp); if (FXCOMP.size > 12) FXCOMP.delete(FXCOMP.keys().next().value); return comp;
+  }
+  function fxLight(x, W, H, col, v, add = true) {
+    const lx = W * (.42 + .16 * fxr(v, 1, 11)), ys = [H * (.22 + .1 * fxr(v, 2, 11)), H * (.7 + .1 * fxr(v, 3, 11))];
+    x.save(); x.globalCompositeOperation = add ? 'lighter' : 'source-over';
+    const lg = x.createLinearGradient(lx - W * .05, 0, lx + W * .05, 0); const clear = col + '00'; lg.addColorStop(0, clear); lg.addColorStop(.5, col); lg.addColorStop(1, clear);
+    x.globalAlpha = .55; x.fillStyle = lg; x.fillRect(lx - W * .05, 0, W * .1, H); x.globalAlpha = .9; x.fillStyle = col; x.fillRect(lx - 1.5, 0, 3, H);
+    ys.forEach(y => { x.globalAlpha = .35; x.fillRect(0, y - 1, W, 2);
+      const rg = x.createRadialGradient(lx, y, 0, lx, y, W * .14); rg.addColorStop(0, add ? '#fff7d0' : '#ffd27a'); rg.addColorStop(.12, col); rg.addColorStop(1, col + '00'); x.globalAlpha = .9; x.fillStyle = rg; x.fillRect(lx - W * .14, y - W * .14, W * .28, W * .28);
+      x.globalAlpha = .8; x.beginPath(); x.moveTo(lx - W * .09, y); x.lineTo(lx, y - 3); x.lineTo(lx + W * .09, y); x.lineTo(lx, y + 3); x.closePath(); x.fillStyle = '#ffe6b8'; x.fill(); });
+    x.restore();
+  }
+  // effekte tab: print the composition on paper
+  const fxcv = $('#fx-cv'), fxx = fxcv.getContext('2d'), fxStat = $('#fx-stat');
+  function drawFx() {
+    if (!fxcv) return; const [W, H] = FXFMT[FXL.fmt]; if (fxcv.width !== W || fxcv.height !== H) { fxcv.width = W; fxcv.height = H; }
+    const paper = (FX_PAPERS.find(q => q[0] === FXL.paper) || [])[1] || FX_PAPER[FXL.fx], ink = (FX_INKS.find(q => q[0] === FXL.ink) || [])[1] || FX_INK[FXL.fx], darkPaper = (h => { const [r, g, b] = [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16)); return (r * .3 + g * .59 + b * .11) / 255; })(paper) < .4;
+    const x = fxx; x.globalCompositeOperation = 'source-over'; x.globalAlpha = 1; x.filter = 'none'; x.fillStyle = paper; x.fillRect(0, 0, W, H);
+    // paper character per effect
+    x.save(); x.globalCompositeOperation = darkPaper ? 'screen' : 'multiply';
+    const blot = stampMask(Math.round(W / 4), Math.round(H / 4), 77 + FXL.seed, true); x.globalAlpha = FXL.fx === 'kopie' ? .22 : .08; x.filter = 'blur(6px) invert(1)'; x.drawImage(blot, 0, 0, W, H); x.filter = 'none';
+    if (FXL.fx === 'kopie') { x.globalAlpha = 1; for (let i = 0; i < 900; i++) { const r = Math.random() < .03 ? 2.4 : .9; x.fillStyle = darkPaper ? '#bbb' : '#555'; x.globalAlpha = .35 + Math.random() * .4; x.beginPath(); x.arc(Math.random() * W, Math.random() * H, r, 0, 7); x.fill(); }
+      x.globalAlpha = .18; const band = x.createLinearGradient(0, 0, W, 0); [0, .12, .3, .47, .66, .81, 1].forEach((t, i) => band.addColorStop(t, i % 2 ? '#9aa' : '#fff')); x.fillStyle = band; x.fillRect(0, 0, W, H);
+      x.globalAlpha = .55; x.fillStyle = '#333'; x.fillRect(W * .965, 0, 3, H); }
+    if (FXL.fx === 'raster' || FXL.paper === 'eisblau') { x.globalAlpha = .4; x.fillStyle = darkPaper ? '#9aa' : '#2b3a44'; for (let yy = 9; yy < H; yy += 18) for (let xx = 9; xx < W; xx += 18) x.fillRect(xx, yy, 1.6, 1.6); }
+    x.restore();
+    const comp = fxCompNow(W, H, 0);
+    if (!comp) { fxStat.textContent = 'motiv wird gezeichnet …'; return; } fxStat.textContent = '';
+    if (comp.tint) { x.save(); x.globalCompositeOperation = darkPaper ? 'screen' : 'multiply'; x.drawImage(comp.tint, 0, 0); x.restore(); }
+    const [t, tx4] = mk(); t.width = W; t.height = H; tx4.drawImage(comp.ink, 0, 0); tx4.globalCompositeOperation = 'source-in'; tx4.fillStyle = ink; tx4.fillRect(0, 0, W, H); x.drawImage(t, 0, 0);
+    if (FXL.light) fxLight(x, W, H, '#ff6a2b', 0, darkPaper);
+  }
+  // controls
+  const fxChips = (box, list, key) => { box.innerHTML = list.map(([k, n]) => `<button type="button" data-k="${k}" aria-pressed="${k === FXL[key]}">${n}</button>`).join('');
+    box.onclick = e => { const b = e.target.closest('button'); if (!b) return; FXL[key] = b.dataset.k; $$('button', box).forEach(q => q.setAttribute('aria-pressed', String(q === b))); drawFx(); }; };
+  const fxSw = (box, list, key) => { box.innerHTML = list.map(([n, c]) => c ? `<button type="button" data-k="${n}" title="${n}" aria-label="${n}" aria-pressed="${n === FXL[key]}" style="background:${c}"></button>` : `<button type="button" class="txt" data-k="${n}" aria-pressed="${n === FXL[key]}">${n}</button>`).join('');
+    box.onclick = e => { const b = e.target.closest('button'); if (!b) return; FXL[key] = b.dataset.k; $$('button', box).forEach(q => q.setAttribute('aria-pressed', String(q === b))); drawFx(); }; };
+  if (fxcv) {
+    fxChips($('#fx-fx'), FX_LIST, 'fx'); fxChips($('#fx-arr'), ARR_LIST, 'arr'); fxSw($('#fx-paper'), FX_PAPERS, 'paper'); fxSw($('#fx-ink'), FX_INKS, 'ink');
+    $('#fx-src').innerHTML = `<option value="kombi">kombi aus dem kombinierer</option><optgroup label="zeichen">${MARKS.filter(q => q.id !== '-').map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup>`
+      + `<optgroup label="schriftzüge">${WORDS.filter(q => q.id !== '-').map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup><optgroup label="partner">${PARTNERS.map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup>`;
+    $('#fx-src').value = FXL.src; $('#fx-src').onchange = e => { FXL.src = e.target.value; drawFx(); };
+    [['n', 'n'], ['str', 'str']].forEach(([id, k]) => { const el = $('#fx-' + id), o = $(`#fx-${id}-o`); o.textContent = el.value; el.oninput = () => { o.textContent = el.value; FXL[k] = +el.value; drawFx(); }; });
+    $$('[data-fx-det]').forEach(b => b.onclick = () => { FXL.det = b.dataset.fxDet === '1'; $$('[data-fx-det]').forEach(q => q.setAttribute('aria-pressed', String(q === b))); drawFx(); });
+    $$('[data-fx-light]').forEach(b => b.onclick = () => { FXL.light = !FXL.light; b.setAttribute('aria-pressed', String(FXL.light)); FXCOMP.clear(); FX_VER++; drawFx(); });
+    $$('[data-fx-fmt]').forEach(b => b.onclick = () => { FXL.fmt = b.dataset.fxFmt; $$('[data-fx-fmt]').forEach(q => q.setAttribute('aria-pressed', String(q === b))); drawFx(); });
+    $('#fx-rnd').onclick = () => { FXL.seed = 1 + Math.floor(Math.random() * 998); drawFx(); };
+    $('#fx-png').onclick = () => fxcv.toBlob(bl => save(bl, `bbk-effekt-${FXL.fx}-${FXL.arr}-${String(FXL.seed).padStart(3, '0')}.png`, fxStat), 'image/png');
+    drawFx();
+  }
 
   // ---------- shirt: drawn tee with fabric shading; the print follows the folds ----------
   // everything is laid out in a 1000 x 1100 unit space (1 unit ~ 1 mm on a size-L tee) and drawn at 1.5x.
@@ -2173,10 +2362,11 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // motif as a one-colour (or original) bitmap, cached
   const SHD = new Map(), shItem = id => id === 'kombi' ? 'kombi' : MARKS.find(q => q.id === id) || WORDS.find(q => q.id === id) || findP(id);
   async function designBitmap(src, width) {
-    const key = [src, width, SH.ink, src === 'kombi' ? JSON.stringify(KB) : '', (SHUP[src] || {}).v || 0].join('|');
+    const key = [src, width, SH.ink, src === 'kombi' ? JSON.stringify(KB) : src === 'fxcomp' ? JSON.stringify(FXL) + FX_VER : '', (SHUP[src] || {}).v || 0].join('|');
     if (SHD.has(key)) return SHD.get(key);
     let c;
-    if (SHUP[src]) { c = SHUP[src].canvas; }
+    if (src === 'fxcomp') { const comp = fxCompNow(1200, 1500, 0); if (!comp) { setTimeout(drawShirt, 600); return null; } c = comp.ink; }
+    else if (SHUP[src]) { c = SHUP[src].canvas; }
     else if (src === 'kombi') c = await kombiCanvas(false, width);
     else { const it = shItem(src); if (!it || it === 'kombi' || it.id === '-') return null; const bmp = await svgImage(it.make(), width, it.font, 3, 0, false); const [cc, xx] = mk(); cc.width = bmp.width; cc.height = bmp.height; xx.drawImage(bmp, 0, 0); c = cc; }
     if (!c) return null;
@@ -2226,7 +2416,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $('#sh-colors').innerHTML = SH_COLORS.map(([n, c]) => `<button type="button" data-shc="${c}" title="${n}" aria-label="${n}" aria-pressed="${c === SH.color}" style="background:${c}"></button>`).join('') + `<input type="color" id="sh-color" value="${SH.color}" aria-label="eigene shirtfarbe">`;
     $('#sh-inks').innerHTML = SH_INKS.map(([n, c]) => c ? `<button type="button" data-shi="${c}" title="${n}" aria-label="${n}" aria-pressed="${c === SH.ink}" style="background:${c}"></button>` : `<button type="button" class="txt" data-shi="" aria-pressed="${!SH.ink}">original</button>`).join('') + `<input type="color" id="sh-ink" value="${SH.ink || '#e6dfc8'}" aria-label="eigene druckfarbe">`;
     const P = SH[SH.view];
-    $('#sh-src').innerHTML = `<option value="-">kein motiv</option><option value="kombi">kombi aus dem kombinierer</option><optgroup label="zeichen">${MARKS.filter(q => q.id !== '-').map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup>`
+    $('#sh-src').innerHTML = `<option value="-">kein motiv</option><option value="kombi">kombi aus dem kombinierer</option><option value="fxcomp">effekt-komposition</option><optgroup label="zeichen">${MARKS.filter(q => q.id !== '-').map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup>`
       + `<optgroup label="schriftzüge">${WORDS.filter(q => q.id !== '-').map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup>`
       + `<optgroup label="partner">${PARTNERS.map(q => `<option value="${q.id}">${esc(q.n)}</option>`).join('')}</optgroup>`
       + (Object.keys(SHUP).length ? `<optgroup label="eigene">${Object.entries(SHUP).map(([k, u]) => `<option value="${k}">${esc(u.n)}</option>`).join('')}</optgroup>` : '');
@@ -2326,7 +2516,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   sw.addEventListener('click', e => { const b = e.target.closest('button'); if (b) { show(b.dataset.v); scrollTo(0, 0); } });
   const h = location.hash.slice(1);
-  show(['logos', 'kombi', 'motion', 'shirt', 'y2k'].includes(h) ? h : 'logos');
+  show(['logos', 'kombi', 'fx', 'motion', 'shirt', 'y2k'].includes(h) ? h : 'logos');
 
   ready = true;
   setFonts('');
