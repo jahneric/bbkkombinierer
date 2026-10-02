@@ -1639,38 +1639,64 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // and shift slices of the letters, tiny codes inside the panels
   const LETC = new Map();
   function drawLetters(W, H, v, f) {
+    // 2000er glass type: each letter is shaded (dark core, blue-violet towards the edge, a cool highlight on the upper
+    // left rim, a deep blue rim lower right), every third letter is out of focus, all sit on an icy backdrop
     const TF = TFONTS[MO.font] || TFONTS.archivo, text = (MO.btext || 'bbk').replace(/\s+/g, ''), n = Math.max(3, Math.min(9, FXL.n)), seed = FXL.seed;
-    const ink = CLEAN() ? '#0b0b0b' : '#f0f0f0', ground = CLEAN() ? '#eef7f5' : '#000', accent = '#3b6fe0';
+    const dark = !CLEAN(), ink = dark ? '#f0f0f0' : '#0b0b0b', ground = dark ? '#05070c' : '#f2f6f8';
     const key = [W, H, v, text, MO.font, n, seed, MO.pfx, MO.pstr, MO.look].join('|');
     let L = LETC.get(key);
     if (!L) {
-      const [a, ax] = mk(); a.width = W; a.height = H; ax.fillStyle = '#fff'; ax.textAlign = 'center'; ax.textBaseline = 'middle';
-      const px = H * (MO.fmt === 'story' ? .26 : .33), chars = [...text]; const pos = [];
-      for (let i = 0; i < n; i++) { const ch = chars[i % chars.length], cx = W * (.42 + .24 * Math.sin(i * 1.7 + seed)) + (sr(v, i) - .5) * 10, cy = H * (.1 + .8 * i / (n - 1)) + (sr(v, i + 9) - .5) * 10;
-        setFont(ax, TF, px * (.85 + .3 * sr(seed, i))); ax.save(); ax.translate(cx, cy); ax.rotate((sr(seed, i + 3) - .5) * .25); ax.fillText(ch, 0, 0); ax.restore(); pos.push([cx, cy]); }
-      let sharp = a, pad = 0;
-      if (MO.pfx !== 'sauber') { const it = fxInstance(a, W, 1, 31 + v * 17 + seed, MO.pfx, MO.pstr); sharp = it.ink; pad = it.pad; }
-      const tint = (c, col) => { const [t, tx5] = mk(); t.width = c.width; t.height = c.height; tx5.drawImage(c, 0, 0); tx5.globalCompositeOperation = 'source-in'; tx5.fillStyle = col; tx5.fillRect(0, 0, t.width, t.height); return t; };
-      L = { sharp: tint(sharp, ink), pad, ghost: tint(a, ink), blue: tint(a, accent) };
-      LETC.set(key, L); if (LETC.size > 12) LETC.delete(LETC.keys().next().value);
+      const px = H * (MO.fmt === 'story' ? .26 : .33), chars = [...text];
+      const [sh, shx] = mk(), [bl, blx] = mk(), [gh, ghx] = mk(), [tmp, tmx] = mk(), [tmp2, tm2] = mk();
+      for (const c of [sh, bl, gh, tmp, tmp2]) { c.width = W; c.height = H; }
+      const letter = (cx2, ch, cx, cy, sz, rot, style) => { cx2.save(); cx2.translate(cx, cy); cx2.rotate(rot); setFont(cx2, TF, sz); cx2.textAlign = 'center'; cx2.textBaseline = 'middle'; cx2.fillStyle = style; cx2.fillText(ch, 0, 0); cx2.restore(); };
+      for (let i = 0; i < n; i++) {
+        const ch = chars[i % chars.length], cx = W * (.42 + .24 * Math.sin(i * 1.7 + seed)) + (sr(v, i) - .5) * 10, cy = H * (.1 + .8 * i / (n - 1)) + (sr(v, i + 9) - .5) * 10;
+        const sz = px * (.85 + .3 * sr(seed, i)), rot = (sr(seed, i + 3) - .5) * .25;
+        letter(ghx, ch, cx, cy + sz * .12, sz, rot, '#fff');   // streak ghost
+        if (i % 3 === 1) { letter(blx, ch, cx + (sr(seed, i + 20) - .5) * W * .2, cy, sz * 1.25, rot, dark ? '#9fb2d6' : '#26314d'); continue; }   // out of focus
+        const g = shx.createLinearGradient(-sz * .45, -sz * .5, sz * .45, sz * .5);   // local coords: letter() draws translated
+        if (dark) { g.addColorStop(0, '#f4f7ff'); g.addColorStop(.35, '#b8c6e6'); g.addColorStop(.7, '#e9eefb'); g.addColorStop(1, '#5d7fe0'); }
+        else { g.addColorStop(0, '#3a4766'); g.addColorStop(.3, '#06070b'); g.addColorStop(.65, '#10162a'); g.addColorStop(1, '#2d4fd6'); }
+        letter(shx, ch, cx, cy, sz, rot, g);
+        // rims: the letter minus a shifted copy of itself
+        const d = sz * .028;
+        for (const [sx, col, op] of [[1, dark ? '#ffffff' : '#a9c4ff', 'screen'], [-1, '#2a4be0', dark ? 'multiply' : 'screen']]) {
+          tmx.clearRect(0, 0, W, H); letter(tmx, ch, cx, cy, sz, rot, '#fff'); tmx.globalCompositeOperation = 'destination-out'; tmx.filter = `blur(${(d * .6).toFixed(1)}px)`;
+          letter(tmx, ch, cx + d * sx, cy + d * sx, sz, rot, '#fff'); tmx.filter = 'none'; tmx.globalCompositeOperation = 'source-in'; tmx.fillStyle = col; tmx.fillRect(0, 0, W, H); tmx.globalCompositeOperation = 'source-over';
+          shx.save(); shx.globalCompositeOperation = op; shx.globalAlpha = .85; shx.drawImage(tmp, 0, 0); shx.restore(); }
+        // soft inner shade: a blurred dark blob inside the lower half of the letter
+        tm2.clearRect(0, 0, W, H); letter(tm2, ch, cx, cy, sz, rot, '#fff'); tm2.globalCompositeOperation = 'source-in'; const ig = tm2.createRadialGradient(cx + sz * .1, cy + sz * .2, 0, cx + sz * .1, cy + sz * .2, sz * .6);
+        ig.addColorStop(0, dark ? 'rgba(40,60,120,.55)' : 'rgba(80,110,200,.35)'); ig.addColorStop(1, 'rgba(0,0,0,0)'); tm2.fillStyle = ig; tm2.fillRect(0, 0, W, H); tm2.globalCompositeOperation = 'source-over';
+        shx.drawImage(tmp2, 0, 0);
+      }
+      let sharp = sh, pad = 0;
+      if (MO.pfx !== 'sauber') { const it = fxInstance(sh, W, 1, 31 + v * 17 + seed, MO.pfx, MO.pstr); sharp = it.ink; pad = it.pad;
+        if (MO.pfx === 'raster') { const c3 = sharp.getContext('2d'); c3.globalCompositeOperation = 'source-in'; c3.fillStyle = ink; c3.fillRect(0, 0, sharp.width, sharp.height); c3.globalCompositeOperation = 'source-over'; } }
+      ghx.globalCompositeOperation = 'source-in'; ghx.fillStyle = dark ? '#8fa3cc' : '#5d6f96'; ghx.fillRect(0, 0, W, H);
+      L = { sharp, pad, blur: bl, ghost: gh };
+      LETC.set(key, L); if (LETC.size > 10) LETC.delete(LETC.keys().next().value);
     }
     const x = mx;
-    x.save(); x.filter = `blur(${Math.round(W * .03)}px)`; x.globalAlpha = .45; x.drawImage(L.ghost, -W * .06, H * .02); x.restore();
-    x.save(); x.filter = `blur(${Math.round(W * .006)}px)`; x.globalCompositeOperation = CLEAN() ? 'multiply' : 'lighter'; x.globalAlpha = .9; x.drawImage(L.blue, W * .012, -W * .006); x.restore();
+    // icy backdrop over whatever background runs, so the glass look carries
+    x.save(); const bg = x.createLinearGradient(0, 0, W * .3, H); if (dark) { bg.addColorStop(0, 'rgba(8,12,24,.82)'); bg.addColorStop(1, 'rgba(14,22,44,.82)'); } else { bg.addColorStop(0, 'rgba(236,243,247,.82)'); bg.addColorStop(1, 'rgba(214,226,234,.82)'); }
+    x.fillStyle = bg; x.fillRect(0, 0, W, H); x.restore();
+    x.save(); x.filter = `blur(${Math.round(W * .045)}px)`; x.globalAlpha = .7; x.drawImage(L.blur, 0, 0); x.restore();
+    x.save(); x.filter = `blur(${Math.round(W * .02)}px)`; x.globalAlpha = .55; x.drawImage(L.ghost, -W * .02, H * .03); x.restore();
+    x.save(); x.filter = `blur(${Math.round(W * .004)}px)`; x.globalAlpha = .5; x.drawImage(L.sharp, -L.pad + W * .01, -L.pad - W * .004); x.restore();   // slight double, like a scan
     x.drawImage(L.sharp, -L.pad, -L.pad);
-    // frosted panels: a slice of the letters, shifted, under a veil of the ground colour
+    // frosted panels: a slice of the letters, shifted, under a veil
     const np = 9 + Math.round(FXL.n / 2), codes = ['copy', 'c6936', 'cc-182683', 'center', 'send', 'bbk', '25a', '66', 'fig.', 'nº ' + String(seed).padStart(3, '0')];
     const u = W / 1080; x.font = `400 ${Math.round(15 * u)}px 'Martian Mono', monospace`;
     for (let i = 0; i < np; i++) { const pw = W * (.12 + .3 * sr(seed + 3, i)), ph = H * (.04 + .14 * sr(seed + 5, i)), px0 = W * (.05 + .8 * sr(seed + 7, i)) - pw * .3, py0 = H * (.04 + .9 * sr(seed + 11, i)), dx = (sr(seed + 13, i + v) - .5) * W * .08;
       x.save(); x.beginPath(); x.rect(px0, py0, pw, ph); x.clip();
-      x.globalAlpha = .55; x.fillStyle = ground; x.fillRect(px0, py0, pw, ph);
-      x.globalAlpha = .85; x.drawImage(L.sharp, -L.pad + dx, -L.pad + (sr(seed, i) - .5) * 6);
-      x.globalAlpha = .25; x.fillStyle = ink; x.fillRect(px0, py0, pw, 1);
+      x.globalAlpha = .5; x.fillStyle = ground; x.fillRect(px0, py0, pw, ph);
+      x.globalAlpha = .8; x.filter = sr(seed + 19, i) > .5 ? `blur(${Math.round(3 * u)}px)` : 'none'; x.drawImage(L.sharp, -L.pad + dx, -L.pad + (sr(seed, i) - .5) * 6); x.filter = 'none';
+      x.globalAlpha = .3; x.fillStyle = ink; x.fillRect(px0, py0, pw, 1);
       if (sr(seed + 17, i) > .45) { x.globalAlpha = .85; x.fillText(codes[i % codes.length], px0 + 10 * u, py0 + ph - 10 * u); }
       x.restore(); }
-    // a few bright bars like in a scan
-    for (let i = 0; i < 2; i++) { x.save(); x.globalAlpha = .6; x.fillStyle = CLEAN() ? '#ffffff' : '#f0f0f0'; x.fillRect(0, H * (.82 + .06 * i) + (sr(seed, 40 + i) - .5) * 40, W * (.35 + .3 * sr(seed, 50 + i)), H * (.02 + .02 * sr(seed, 60 + i))); x.restore(); }
-    if (FXL.light) fxLight(x, W, H, '#ff6a2b', 0, !CLEAN());
+    for (let i = 0; i < 2; i++) { x.save(); x.globalAlpha = .7; x.fillStyle = dark ? '#dfe7f5' : '#ffffff'; x.fillRect(0, H * (.82 + .06 * i) + (sr(seed, 40 + i) - .5) * 40, W * (.35 + .3 * sr(seed, 50 + i)), H * (.02 + .02 * sr(seed, 60 + i))); x.restore(); }
+    if (FXL.light) fxLight(x, W, H, '#ff6a2b', 0, dark);
   }
   // photo: cover-cropped, graded (contrast / brightness), turned into a look and mapped onto the colour pair.
   // 4 variants (slight shift, fresh noise) cycle with the flip-book frames. cached per settings.
@@ -2430,6 +2456,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     // anordnung in bewegt (foreground composition); shares motiv / anzahl / details / licht / zufall with the background
     const layChips = () => { if (MO.mode === 'logo') chips($('#mo-lay'), [['logo', 'logo']].concat(COMP_LAY), 'arr'); else chips($('#mo-lay'), MO_LAY.concat(COMP_LAY), 'lay'); };
     $$('[data-mo-mode]').forEach(b => b.addEventListener('click', layChips)); layChips();
+    $('#mo-lay').addEventListener('click', e => { const b = e.target.closest('[data-k="buchstaben"]'); if (b && MO.look === 'kopierer') { const c = $('[data-mo-look="clean"]'); if (c) c.click(); } });
     $('#marr-font').innerHTML = Object.entries(TFONTS).map(([k, F]) => `<option value="${k}">${esc(F.n)}</option>`).join(''); $('#marr-font').value = MO.font;
     $('#marr-font').onchange = e => { MO.font = e.target.value; $('#mo-font').value = MO.font; document.fonts.load(fontStr(TFONTS[MO.font], 100)).catch(() => {}); };
     $('#mo-font').addEventListener('change', () => { $('#marr-font').value = MO.font; });
