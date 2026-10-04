@@ -165,7 +165,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-chips button[aria-pressed="true"]{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .mo-ctl output{color:var(--bone)}
 .mo-note{margin:0;font-size:11px;color:var(--mute)}
-#r-motion:not(.fxbg) .mo-fxbg,#r-motion:not(.solo) .mo-onlylogo,#r-motion:not(.arr) .mo-arrbox,#r-motion:not(.let) .mo-let,#r-motion.let .mo-notlet,#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
+#r-motion:not(.collage) .mo-col,#r-motion.collage .mo-noreel,#r-motion.collage .mo-lu,#r-motion:not(.solo) .mo-onlylogo,#r-motion:not(.arr) .mo-arrbox,#r-motion:not(.let) .mo-let,#r-motion.let .mo-notlet,#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel{display:none}
 .mo-sc{display:grid;grid-template-columns:minmax(0,1.3fr) 58px minmax(0,1fr) auto;gap:5px;align-items:center;margin-bottom:6px}
 .mo-sc select,.mo-sc input{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px 5px;font:11px var(--f-min)}
 .mo-sc button{background:none;border:1px solid #555;color:var(--mute);cursor:pointer;padding:5px 8px}
@@ -422,7 +422,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <div class="mo-main">
     <div class="mo-view"><canvas id="mo-cv" width="1080" height="1350" aria-label="Vorschau des bewegten Posts"></canvas><div id="mo-status" aria-live="polite"></div></div>
     <aside class="kb-ctl mo-ctl">
-      <div class="row"><div class="seg" role="group" aria-label="Modus"><button data-mo-mode="logo" aria-pressed="true">logo-effekt</button><button data-mo-mode="post" aria-pressed="false">event-post</button><button data-mo-mode="lineup" aria-pressed="false">lineup</button><button data-mo-mode="reel" aria-pressed="false">reel</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Modus"><button data-mo-mode="logo" aria-pressed="true">logo-effekt</button><button data-mo-mode="post" aria-pressed="false">event-post</button><button data-mo-mode="lineup" aria-pressed="false">lineup</button><button data-mo-mode="collage" aria-pressed="false">collage</button><button data-mo-mode="reel" aria-pressed="false">reel</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Bewegung"><button data-mo-frz="0" aria-pressed="true">läuft</button><button data-mo-frz="1" aria-pressed="false">still</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Format"><button data-mo-fmt="post" aria-pressed="true">post 4:5</button><button data-mo-fmt="story" aria-pressed="false">story / reel 9:16</button></div></div>
       <div class="mo-lu mo-luonly"><div class="seg" role="group" aria-label="Ansicht"><button data-mo-view="artist" aria-pressed="true">einzeln</button><button data-mo-view="lineup" aria-pressed="false">alle</button></div></div>
@@ -437,6 +437,14 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       <div class="mo-lu"><label for="mo-nfont">schrift name<select id="mo-nfont"></select></label></div>
       <div class="mo-lu row"><label class="mo-lbl" style="display:flex;gap:6px;align-items:center;margin:0">textfarbe <input type="color" id="mo-lt" value="#e4531c" style="width:34px;height:26px;padding:0;border:1px solid #555;background:none"></label>
         <div class="seg" role="group" aria-label="Mischmodus"><button data-mo-blend="normal" aria-pressed="true">normal</button><button data-mo-blend="differenz" aria-pressed="false">differenz</button></div></div>
+      <div class="mo-col"><span class="mo-lbl">bilder</span>
+        <div class="row"><label class="kb-btn ghost mo-up">bild 1 · farbe<input type="file" id="col-up1" accept="image/*" hidden></label><label class="kb-btn ghost mo-up">bild 2 · leute<input type="file" id="col-up2" accept="image/*" hidden></label></div>
+        <p class="kb-empty" id="col-stat" style="font-size:11px">bilder auch einfach auf die vorschau ziehen.</p></div>
+      <div class="mo-col"><span class="mo-lbl">layout</span><div class="mo-chips" id="col-lay" role="group" aria-label="Collage-Layout"></div></div>
+      <div class="mo-col"><span class="mo-lbl">bild 1</span><div class="mo-chips" id="col-c1" role="group" aria-label="Farbe Bild 1"></div></div>
+      <div class="mo-col"><span class="mo-lbl">bild 2</span><div class="mo-chips" id="col-l2" role="group" aria-label="Look Bild 2"></div><div class="mo-chips" id="col-c2" role="group" aria-label="Farbe Bild 2" style="margin-top:5px"></div></div>
+      <div class="mo-col row"><div class="seg" role="group" aria-label="Freistellen"><button data-col-cut="1" aria-pressed="true">leute freistellen</button><button data-col-cut="0" aria-pressed="false">ganzes bild</button></div></div>
+      <div class="mo-col"><label for="col-con">kontrast <output id="col-con-o"></output><input type="range" id="col-con" min="60" max="220" value="130"></label></div>
       <div class="mo-reel"><span class="mo-lbl">szenen</span><div id="mo-scenes"></div>
         <div class="row"><button class="kb-btn ghost" id="mo-add">+ szene</button></div></div>
       <div class="mo-noreel"><span class="mo-lbl">layout</span><div class="mo-chips" id="mo-lay" role="group" aria-label="Layout"></div></div>
@@ -1443,7 +1451,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         r = { c: it.ink, pad: it.pad, tint: it.tint }; PFX.set(key, r); if (PFX.size > 24) PFX.delete(PFX.keys().next().value); }
       SRC = r.c; SP = r.pad; TINT = r.tint;
     } else if (CLEAN() && !PHOTO_FRAME) toBlack(gcv);
-    if (PHOTO_FRAME && PHOTO.lt.toLowerCase() !== '#f2f2f2') { if (lt.width !== W || lt.height !== H) { lt.width = W; lt.height = H; } ltx.clearRect(0, 0, W, H); ltx.drawImage(gcv, 0, 0);
+    if (PHOTO_FRAME && MO.mode !== 'collage' && PHOTO.lt.toLowerCase() !== '#f2f2f2') { if (lt.width !== W || lt.height !== H) { lt.width = W; lt.height = H; } ltx.clearRect(0, 0, W, H); ltx.drawImage(gcv, 0, 0);
       gx.globalCompositeOperation = 'multiply'; gx.fillStyle = PHOTO.lt; gx.fillRect(0, 0, W, H); gx.globalCompositeOperation = 'destination-in'; gx.drawImage(lt, 0, 0); gx.globalCompositeOperation = 'source-over'; }
     if (!rectsTaken) { rectsTaken = true; RECTS = items.filter(it => !it.cross).map(it => ({ id: it.a.id, x: box.x + it.x, y: box.y + it.y, w: it.w, h: it.h })); }
     const a = MO.amt / 100, cx = box.x + box.w / 2, cy = box.y + box.h / 2, c = mx;
@@ -1623,6 +1631,108 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const reelScenes = () => REEL.map(sc => ({ ...sc, n: Math.max(3, Math.round(sc.d * MO.fps)) }));
   const frameCount = () => MO.mode === 'reel' ? reelScenes().reduce((a, sc) => a + sc.n, 0) : Math.max(8, Math.round(MO.len * MO.fps / 8) * 8);
   const LOGO_KINDS = ['logo', 'schriftzug', 'zeichen', 'kollabo', 'partner'];
+  // ---------- collage: bild 1 under a colour filter, the people of bild 2 cut out (auto) and rastered, big type on top ----------
+  const CLG = { img1: null, img2: null, v1: 0, v2: 0, lay: 'freisteller', c1: 'braun', l2: 'raster', c2: 'blau', cut: true, con: 130, mask: null, maskV: -1, busy: false };
+  const COL_C1 = [['braun', '#5a2416', '#d9b49f'], ['pink', '#c25d8f', '#f6c6dc'], ['blau', '#152a5c', '#9fb7e8'], ['teal', '#0f4a52', '#7fd1d6'], ['lila', '#3b1a5c', '#f5d33d'], ['s/w', '#0b0b0b', '#f2f2f2'], ['eigene', null, null]];
+  const COL_L2 = [['raster', 'punktraster'], ['sw', 's/w körnig'], ['duo', 'duoton']];
+  const COL_C2 = [['blau', '#18284f', '#e4e9f0'], ['teal', '#0e3f4a', '#8fe0e6'], ['s/w', '#0b0b0b', '#f2f2f2'], ['pink', '#9c3f72', '#f8d2e4']];
+  const COL_LAY = [['freisteller', 'freisteller'], ['geteilt', 'geteilt']];
+  const CCACHE = new Map();
+  const cpick = (list, k) => list.find(q => q[0] === k) || list[0];
+  function coverCanvas(img, W, H, fx = 0, fy = 0, fw = W, fh = H) {   // img cover-fitted into the box (fx, fy, fw, fh) of a W x H canvas
+    const [c, x] = mk(); c.width = W; c.height = H; const sc = Math.max(fw / img.width, fh / img.height);
+    x.drawImage(img, fx + (fw - img.width * sc) / 2, fy + (fh - img.height * sc) / 2, img.width * sc, img.height * sc); return c;
+  }
+  function lumOfPx(d, i) { return (d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11) / 255; }
+  function duoCanvas(src, dk, lt, con) {
+    const [c, x] = mk(); c.width = src.width; c.height = src.height; x.drawImage(src, 0, 0); const im = x.getImageData(0, 0, c.width, c.height), d = im.data, A = rgbOf(dk), B = rgbOf(lt), k = con / 100;
+    for (let i = 0; i < d.length; i += 4) { if (!d[i + 3]) continue; const t = Math.max(0, Math.min(1, (lumOfPx(d, i) - .5) * k + .5)); for (let j = 0; j < 3; j++) d[i + j] = A[j] + (B[j] - A[j]) * t; }
+    x.putImageData(im, 0, 0); return c;
+  }
+  function rasterCanvas(src, dk, lt, con, g) {   // light paper colour + dark dots sized by darkness; keeps the source alpha
+    const W = src.width, H = src.height, sd = src.getContext('2d').getImageData(0, 0, W, H).data, [c, x] = mk(), k = con / 100; c.width = W; c.height = H;
+    x.fillStyle = lt; x.fillRect(0, 0, W, H); x.fillStyle = dk;
+    for (let y = g / 2, r = 0; y < H; y += g, r++) for (let xx = (r % 2) * g / 2; xx < W; xx += g) { const i = ((y | 0) * W + (xx | 0)) * 4; if (sd[i + 3] < 20) continue;
+      const t = 1 - Math.max(0, Math.min(1, (lumOfPx(sd, i) - .5) * k + .5)); if (t > .04) { x.beginPath(); x.arc(xx, y, Math.sqrt(t) * g * .62, 0, Math.PI * 2); x.fill(); } }
+    x.globalCompositeOperation = 'destination-in'; x.drawImage(src, 0, 0); return c;
+  }
+  function swCanvas(src, con) { const c = duoCanvas(src, '#080808', '#f4f4f4', con), x = c.getContext('2d'), im = x.getImageData(0, 0, c.width, c.height), d = im.data;
+    for (let i = 0; i < d.length; i += 4) { if (!d[i + 3]) continue; const n = (Math.random() - .5) * 70; d[i] = d[i + 1] = d[i + 2] = Math.max(0, Math.min(255, d[i] + n)); } x.putImageData(im, 0, 0); return c; }
+  // people detection: mediapipe deeplab (person class) in the browser; model from the app folder, else from google
+  let SEG = null;
+  async function segmenter() {
+    if (SEG) return SEG;
+    SEG = (async () => { const V = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14', vision = await import(V + '/vision_bundle.mjs'), files = await vision.FilesetResolver.forVisionTasks(V + '/wasm');
+      const mk2 = path => vision.ImageSegmenter.createFromOptions(files, { baseOptions: { modelAssetPath: path, delegate: 'CPU' }, runningMode: 'IMAGE', outputCategoryMask: false, outputConfidenceMasks: true });
+      try { return await mk2('app/deeplab_v3.tflite'); } catch (e) { return mk2('https://storage.googleapis.com/mediapipe-models/image_segmenter/deeplab_v3/float32/1/deeplab_v3.tflite'); } })();
+    SEG.catch(() => { SEG = null; }); return SEG;
+  }
+  async function personMask(img) {
+    const seg = await segmenter(), sc = Math.min(1, 1024 / Math.max(img.width, img.height)), [c, x] = mk(); c.width = Math.round(img.width * sc); c.height = Math.round(img.height * sc); x.drawImage(img, 0, 0, c.width, c.height);
+    const res = seg.segment(c), m = res.confidenceMasks[15], mw = m.width, mh = m.height, fl = m.getAsFloat32Array(), [o, ox] = mk(); o.width = mw; o.height = mh; const od = ox.createImageData(mw, mh);
+    for (let i = 0; i < fl.length; i++) { od.data[i * 4] = od.data[i * 4 + 1] = od.data[i * 4 + 2] = 255; od.data[i * 4 + 3] = Math.max(0, Math.min(1, (fl[i] - .35) / .3)) * 255; }
+    ox.putImageData(od, 0, 0); res.close && res.close();
+    const [f2, fx2] = mk(); f2.width = img.width; f2.height = img.height; fx2.filter = `blur(${Math.max(1, Math.round(img.width / 500))}px)`; fx2.drawImage(o, 0, 0, img.width, img.height); return f2;
+  }
+  function ensureMask() {
+    if (!CLG.img2 || !CLG.cut || CLG.maskV === CLG.v2 || CLG.busy) return;
+    CLG.busy = true; const v = CLG.v2, st = $('#col-stat'); if (st) st.textContent = 'leute werden erkannt …';
+    personMask(CLG.img2).then(m => { if (v === CLG.v2) { CLG.mask = m; CLG.maskV = v; CCACHE.clear(); if (st) st.textContent = 'leute erkannt.'; } })
+      .catch(e => { console.warn('freistellen:', e); CLG.mask = null; CLG.maskV = v; if (st) st.textContent = 'freistellen hier nicht möglich, ganzes bild wird genutzt.'; })
+      .finally(() => { CLG.busy = false; });
+  }
+  function personLayer(W, H, box) {   // bild 2 inside box, cut out if a mask exists, in the chosen look
+    const key = ['p', W, H, box.join(','), CLG.v2, CLG.maskV, CLG.cut, CLG.l2, CLG.c2, CLG.con].join('|'); if (CCACHE.has(key)) return CCACHE.get(key);
+    let c = coverCanvas(CLG.img2, W, H, ...box);
+    if (CLG.cut && CLG.mask && CLG.maskV === CLG.v2) { const mc = coverCanvas(CLG.mask, W, H, ...box), x = c.getContext('2d'); x.globalCompositeOperation = 'destination-in'; x.drawImage(mc, 0, 0); }
+    else { const x = c.getContext('2d'); x.globalCompositeOperation = 'destination-in'; x.fillRect(box[0], box[1], box[2], box[3]); }
+    const [, dk, lt] = cpick(COL_C2, CLG.c2);
+    c = CLG.l2 === 'raster' ? rasterCanvas(c, dk, lt, CLG.con, Math.max(6, W / 120)) : CLG.l2 === 'sw' ? swCanvas(c, CLG.con) : duoCanvas(c, dk, lt, CLG.con);
+    CCACHE.set(key, c); if (CCACHE.size > 10) CCACHE.delete(CCACHE.keys().next().value); return c;
+  }
+  function colorLayer(img, W, H, box, con) {
+    const c1 = cpick(COL_C1, CLG.c1), dk = c1[1] || COL.ground, lt = c1[2] || COL.ink, key = ['c', W, H, box.join(','), CLG.v1, dk, lt, con].join('|');
+    if (CCACHE.has(key)) return CCACHE.get(key);
+    const c = duoCanvas(coverCanvas(img, W, H, ...box), dk, lt, con); CCACHE.set(key, c); if (CCACHE.size > 10) CCACHE.delete(CCACHE.keys().next().value); return c;
+  }
+  let FGRAIN = null;
+  function filmGrain(x, W, H) { if (!MO.grain) return; if (!FGRAIN) { const [g, gx3] = mk(); g.width = g.height = 256; const d = gx3.createImageData(256, 256); for (let i = 0; i < d.data.length; i += 4) { d.data[i] = d.data[i + 1] = d.data[i + 2] = 128 + (Math.random() - .5) * 140; d.data[i + 3] = 255; } gx3.putImageData(d, 0, 0); FGRAIN = g; }
+    x.save(); x.globalCompositeOperation = 'overlay'; x.globalAlpha = .35; x.fillStyle = x.createPattern(FGRAIN, 'repeat'); x.fillRect(0, 0, W, H); x.restore(); }
+  function drawCollage(W, H, M, f) {
+    const x = mx, u = W / 1080, TF = TFONTS[MO.font] || TFONTS.archivo, IT = { f: "'Archivo'", w: 800, s: 'italic' }, title = MO.title || 'bbk', date = MO.date || '', info = MO.info || '', extra = MO.extra || '';
+    ensureMask();
+    const c1 = cpick(COL_C1, CLG.c1), base = c1[1] || COL.ground;
+    x.fillStyle = base; x.fillRect(0, 0, W, H);
+    tx.fillStyle = '#ffffff'; tx.strokeStyle = '#ffffff';
+    if (!CLG.img1 && !CLG.img2) { jtext(tx, 'bild 1 + bild 2 hier reinziehen', W / 2, H / 2, 34 * u, MONO, 'center', f); flush(f); return; }
+    if (CLG.lay === 'geteilt') {
+      const sx = Math.round(W * .7), img1 = CLG.img1 || CLG.img2, img2 = CLG.img2 || CLG.img1;
+      x.drawImage(colorLayer(img1, W, H, [0, 0, sx, H], CLG.con), 0, 0);
+      const [, dk, lt] = cpick(COL_C2, CLG.c2), [rc] = mk(); rc.width = W; rc.height = H;
+      const full = coverCanvas(img2, W, H, sx, 0, W - sx, H), rr = rasterCanvas(full, dk, lt, CLG.con, Math.max(6, W / 110)); x.drawImage(rr, 0, 0);
+      if (CLG.cut && CLG.img2 && CLG.mask && CLG.maskV === CLG.v2) x.drawImage(personLayer(W, H, [0, 0, W, H]), 0, 0);
+      filmGrain(x, W, H);
+      // huge title: words stacked, each across the full width
+      const words = title.split(/\s+/).filter(w => /[a-z0-9äöü]/i.test(w)).flatMap(w => w.length > 6 ? [w.slice(0, Math.ceil(w.length / 2)), w.slice(Math.ceil(w.length / 2))] : [w]);
+      let y = M * .4; words.forEach(w => { const px = fitPx(tx, w.toUpperCase(), TF, W * .98, H * .42); y += px * .82; jtext(tx, w.toUpperCase(), W * .01, y, px, TF, 'left', f); });
+      flush(f);
+      logoBlock({ x: W * .38, y: H * .2, w: W * .55, h: H * .14 }, f, 'ruhig');
+      tx.fillStyle = '#ffffff'; let yy = H - M - 90 * u;
+      if (date) { jtext(tx, date, M * .5, yy, 70 * u, IT, 'left', f); yy += 76 * u; }
+      if (extra) jtext(tx, extra, M * .5, yy, 70 * u, IT, 'left', f);
+      flush(f);
+    } else {
+      if (CLG.img1) x.drawImage(colorLayer(CLG.img1, W, H, [0, 0, W, H], CLG.con), 0, 0);
+      if (CLG.img2) { const box = CLG.cut && CLG.mask ? [0, 0, W, H] : [0, H * .42, W, H * .58]; x.drawImage(personLayer(W, H, box), 0, 0); }
+      filmGrain(x, W, H);
+      const tp = fitPx(tx, title, TF, W * .62, 150 * u); jtext(tx, title, W / 2, H * .17, tp, TF, 'center', f);
+      if (date) jtext(tx, date, M * .4, H * .3, 62 * u, IT, 'left', f);
+      if (extra) jtext(tx, extra, W - M * .4, H * .3, 62 * u, IT, 'right', f);
+      wrap(tx, info, IT, 44 * u, W * .8).slice(0, 2).forEach((l, i) => jtext(tx, l, W / 2, H * .24 + i * 52 * u, 44 * u, IT, 'center', f));
+      flush(f);
+      logoBlock({ x: W * .52, y: H * .84, w: W * .44, h: H * .12 }, f, 'ruhig');
+    }
+  }
   const COMP_LAY = [['buchstaben', 'buchstaben'], ['einzeln', 'einzeln'], ['mehrfach', 'mehrfach'], ['reihe', 'reihe'], ['kachel', 'kachel'], ['kreis', 'kreis'], ['streuung', 'streuung'], ['anschnitt', 'anschnitt']];
   const COMP_KEYS = COMP_LAY.map(q => q[0]).filter(k => k !== 'buchstaben');
   // the event in small type next to a big composition: event logos small at the top, title / date / line-up / place as a block
@@ -1808,6 +1918,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     } else if (kind === 'titel') {
       const tp = fitPx(tx, title, TF, W - 2 * M, story ? 230 : 200); jtext(tx, title, W / 2, H * .5 + tp * .3, tp, TF, 'center', f);
       if (date) jtext(tx, date, W / 2, H * .5 + tp * .3 + 90, 56, MONO, 'center', f);
+    } else if (kind === 'collage') {
+      PHOTO_FRAME = true; drawCollage(W, H, M, f);
     } else if (kind === 'artist' || kind.startsWith('artist:') || kind === 'lineup') {
       const ai = kind.startsWith('artist:') ? +kind.slice(7) : PHOTO.ai, a = ARTISTS[ai] || ARTISTS[0];
       PHOTO_FRAME = true; tx.fillStyle = PHOTO.lt; tx.strokeStyle = PHOTO.lt;
@@ -1949,7 +2061,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     const W = CV.width, H = CV.height, N = frameCount(), f = F;
     mx = CVX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; if (CLEAN()) cleanBase(F, N); else { mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H); }
     drawBack(F, N);
-    if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.mode === 'lineup' ? PHOTO.view : MO.lay);
+    if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.mode === 'collage' ? 'collage' : MO.mode === 'lineup' ? PHOTO.view : MO.lay);
     if (MO.look === 'stamp' && !PHOTO_FRAME) {   // stempel: the light-on-dark frame becomes stamp ink on paper (texture changes with the flip-book)
       if (dcv.width !== W || dcv.height !== H) { dcv.width = W; dcv.height = H; } dcx.clearRect(0, 0, W, H); dcx.drawImage(CV, 0, 0);
       mx.save(); mx.globalCompositeOperation = 'copy'; mx.filter = MO.grain ? `url(#stamp${MO.boil ? f % 4 : 0})` : 'url(#stampS)'; mx.drawImage(dcv, 0, 0); mx.restore();
@@ -1978,7 +2090,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   chips($('#mo-fx'), MO_FX, 'fx'); chips($('#mo-lay'), MO_LAY, 'lay'); chips($('#mo-back'), MO_BACK, 'back');
   const seg = (attr, fn) => $$(`[${attr}]`).forEach(b => b.onclick = () => { fn(b.getAttribute(attr)); $$(`[${attr}]`).forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
   const fmtNote = () => { const [W, H] = FMT[MO.fmt], n = frameCount(); $('#mo-fmtnote').textContent = `${W} × ${H} · ${(n / MO.fps).toFixed(1)} s`; };
-  seg('data-mo-mode', v => { MO.mode = v; mroom.classList.toggle('post', v !== 'logo'); mroom.classList.toggle('reel', v === 'reel'); mroom.classList.toggle('lineup', v === 'lineup'); mroom.classList.toggle('lu', v === 'lineup' || v === 'reel'); fmtNote(); });
+  seg('data-mo-mode', v => { MO.mode = v; mroom.classList.toggle('post', v !== 'logo'); mroom.classList.toggle('reel', v === 'reel'); mroom.classList.toggle('lineup', v === 'lineup'); mroom.classList.toggle('collage', v === 'collage'); if (v === 'collage') segmenter().catch(() => {}); mroom.classList.toggle('lu', v === 'lineup' || v === 'reel'); fmtNote(); });
   seg('data-mo-fmt', v => { MO.fmt = v; fmtNote(); });
   seg('data-mo-bg', v => { MO.dark = v === '0'; });
   seg('data-mo-grain', v => { MO.grain = v === '1'; });
@@ -2625,6 +2737,24 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       c.toBlob(b => { shStat.textContent = ''; save(b, `bbk-druck-${v === 'front' ? 'vorne' : 'hinten'}-30x40cm-300dpi.png`, shStat); }, 'image/png'); }
     catch (err) { console.warn(err); shStat.textContent = 'fehler. erneut versuchen.'; } };
   shUi(); drawShirt();
+
+  // collage controls
+  { const chipsC = (box, list, key, lab = q => q[1]) => { box.innerHTML = list.map(q => `<button type="button" data-k="${q[0]}" aria-pressed="${q[0] === CLG[key]}"${q[1] && q[1][0] === '#' ? ` style="border-left:14px solid ${q[1]}"` : ''}>${q[1] && q[1][0] === '#' ? q[0] : lab(q)}</button>`).join('');
+      box.onclick = e => { const b = e.target.closest('button'); if (!b) return; CLG[key] = b.dataset.k; CCACHE.clear(); $$('button', box).forEach(q => q.setAttribute('aria-pressed', String(q === b))); }; };
+    chipsC($('#col-lay'), COL_LAY, 'lay'); chipsC($('#col-c1'), COL_C1, 'c1'); chipsC($('#col-l2'), COL_L2, 'l2'); chipsC($('#col-c2'), COL_C2, 'c2');
+    $$('[data-col-cut]').forEach(b => b.onclick = () => { CLG.cut = b.dataset.colCut === '1'; CCACHE.clear(); $$('[data-col-cut]').forEach(q => q.setAttribute('aria-pressed', String(q === b))); });
+    { const el = $('#col-con'), o = $('#col-con-o'); o.textContent = el.value; el.oninput = () => { o.textContent = el.value; CLG.con = +el.value; }; }
+    const load = async (file, slot) => { if (!file || !file.type.startsWith('image/')) return; const url = URL.createObjectURL(file), img = new Image(); img.src = url; await img.decode();
+      const sc = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight)), [c, x] = mk(); c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc); x.drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+      if (slot === 1) { CLG.img1 = c; CLG.v1++; } else { CLG.img2 = c; CLG.v2++; CLG.mask = null; } CCACHE.clear(); $('#col-stat').textContent = `bild ${slot} geladen.`; };
+    $('#col-up1').onchange = e => { load(e.target.files[0], 1); e.target.value = ''; };
+    $('#col-up2').onchange = e => { load(e.target.files[0], 2); e.target.value = ''; };
+    mcv.addEventListener('dragover', e => { e.preventDefault(); });
+    mcv.addEventListener('drop', e => { e.preventDefault(); const fs = [...(e.dataTransfer.files || [])].filter(q => q.type.startsWith('image/')); if (!fs.length) return;
+      if (MO.mode !== 'collage') $('[data-mo-mode="collage"]').click();
+      if (fs.length > 1) { load(fs[0], 1); load(fs[1], 2); } else load(fs[0], CLG.img1 && !CLG.img2 ? 2 : 1); });
+    window.__col = { CLG, load };
+  }
 
   // loop + export
   let mt0 = performance.now(), mLast = -1, recOn = false;

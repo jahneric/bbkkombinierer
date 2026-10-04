@@ -22,3 +22,8 @@ PNG-Export neu erzeugen: `node tools/export-logos.mjs logos all`
 Der Shirt-Reiter nutzt ein echtes Produktfoto eines weißen T-Shirts:
 „Wikimania2023 Attendee T-Shirt Mockup“ von Adien Gunarta & Naila Rahmah, Wikimedia Commons, **CC0** (gemeinfrei).
 Der ursprüngliche Aufdruck wurde mit `node tools/prepare-tee.mjs` entfernt (Ergebnis: `app/tee-front.webp`).
+
+## Collage / Leute freistellen
+
+Der Modus „collage“ in bewegt erkennt Personen automatisch mit MediaPipe (DeepLab v3, Klasse „person“, Apache 2.0).
+Das Modell liegt unter `app/deeplab_v3.tflite`, die Laufzeit kommt von cdn.jsdelivr.net.
