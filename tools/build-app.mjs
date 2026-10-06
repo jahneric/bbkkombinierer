@@ -7,6 +7,8 @@ import { join } from 'node:path';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 let body = readFileSync(join(root, 'stilproben.html'), 'utf8').replace('<title>bbk Stilproben</title>', '');
+// the meeting tool is its own page (treffen.html) and only exists in the app, not in the artifact
+body = body.replace(/(website<\/button>\r?\n)(<\/div>)/, '$1  <a href="treffen.html" style="border:1px solid #555;padding:7px 11px;text-decoration:none">treffen</a>\n$2');
 const head = `<!doctype html>
 <html lang="de">
 <head>
