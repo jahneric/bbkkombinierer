@@ -130,6 +130,7 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
 </header>
 
 <main id="main">
+<div id="noroom" class="empty" style="display:none;margin-bottom:24px;border-color:var(--warn)"><p><b>du bist noch in keinem raum.</b> was du hier einträgst, bleibt nur auf diesem gerät und niemand sonst sieht es. füg den einladungslink aus der gruppe ein:</p><form class="line join"><input placeholder="einladungslink" autocomplete="off" aria-label="einladungslink"><button class="btn main">beitreten</button></form></div>
 <div id="iam" class="line" style="display:none"><label>wer bist du? <select class="me" aria-label="wer bist du"></select></label><span class="mute">damit die anderen sehen, dass du dabei bist.</span></div>
 <section id="v-meet" class="room"><div id="meet"></div></section>
 <section id="v-ev" class="room"><div id="ev"></div></section>
@@ -292,8 +293,9 @@ async function roomKeys(pass) {
 }
 const SYNC_TEXT = { local: 'nur dieses gerät', connecting: 'verbinde …', live: 'synchron', offline: 'offline · wird nachgetragen', error: 'sync-fehler' };
 const sync = {
-  state: 'local', col: null, key: null, fs: null, space: '', flying: {}, queue: Promise.resolve(),
-  set(s, detail) { this.state = s; const n = $('#sync'); n.dataset.s = s; n.textContent = SYNC_TEXT[s] + (detail ? ' · ' + detail : ''); drawSyncBox(); },
+  state: 'local', col: null, key: null, fs: null, space: '', ready: false, merging: false, flying: {}, queue: Promise.resolve(),
+  // the short room tag in the status lets two people check they are in the same room
+  set(s, detail) { this.state = s; const n = $('#sync'); n.dataset.s = s; n.textContent = SYNC_TEXT[s] + (this.space ? ' · raum ' + this.space.slice(0, 4) : '') + (detail ? ' · ' + detail : ''); drawSyncBox(); },
   async enc(it) { const iv = crypto.getRandomValues(new Uint8Array(12)); return { iv: b64(iv), c: b64(new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, this.key, te.encode(JSON.stringify(it))))), u: it.u }; },
   async dec(d) { return JSON.parse(td.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(d.iv) }, this.key, unb64(d.c)))); },
   async start() {
@@ -307,6 +309,7 @@ const sync = {
       this.fs = fs; this.key = k.key; this.space = k.space; this.col = fs.collection(fs.getFirestore(app), 'spaces', k.space, 'items');
       let seen = {}; try { seen = JSON.parse(localStorage[LSS] || '{}'); } catch {}
       const since = seen.space === k.space ? seen.t : 0;
+      this.merging = seen.space !== k.space; // first visit to this room: what the device brings along is merged in, not written over the room
       fs.onSnapshot(fs.query(this.col, fs.where('s', '>', fs.Timestamp.fromMillis(since))), { includeMetadataChanges: true },
         snap => { this.queue = this.queue.then(() => this.apply(snap)).catch(e => console.error(e)); },
         err => this.set('error', err.code));
@@ -315,7 +318,7 @@ const sync = {
     } catch (e) { console.error(e); this.set(navigator.onLine ? 'error' : 'offline', navigator.onLine ? String(e.code || e.message || e).slice(0, 60) : ''); }
   },
   async push() {
-    if (!this.col) return;
+    if (!this.col || !this.ready) return; // nothing goes up before the server's state has been seen once
     for (const id of Object.keys(S.dirty)) {
       const it = S.items.get(id), stamp = it ? it.u : 0;
       if (this.flying[id] === stamp) continue;
@@ -332,15 +335,22 @@ const sync = {
     for (const ch of snap.docChanges()) {
       if (ch.type === 'removed') continue;
       const id = ch.doc.id, loc = S.items.get(id), d = ch.doc.data();
+      if (id === 'cfg' && loc && this.merging && !d.x) { // people and groups of both sides are kept
+        try { const r = await this.dec(d), uni = (a = [], b = []) => [...new Set([...a, ...b])], D = GROUPS.map(n => ({ n, m: [] })), gr = r.groups || D, gl = loc.groups || D;
+          loc.members = uni(r.members, loc.members);
+          if (r.groups || loc.groups) loc.groups = uni(gr.map(g => g.n), gl.map(g => g.n)).map(n => ({ n, m: uni(gr.find(g => g.n === n)?.m, gl.find(g => g.n === n)?.m) }));
+          loc.u = Math.max(loc.u, r.u) + 1; S.dirty[id] = 1; changed = true; } catch (e) {}
+        continue;
+      }
       if (loc ? loc.u >= d.u : S.dirty[id] >= d.u) continue; // our copy is as new or newer, or we deleted it after that
       if (d.x) { if (loc) { S.items.delete(id); changed = true; } continue; }
-      try { S.items.set(id, await this.dec(d)); changed = true; } catch (e) { console.warn('nicht lesbar', id); }
+      try { S.items.set(id, await this.dec(d)); delete S.dirty[id]; changed = true; } catch (e) { console.warn('nicht lesbar', id); }
     }
     for (const d of snap.docs) if (!d.metadata.hasPendingWrites) last = Math.max(last, d.data().s?.toMillis() || 0);
     // a few seconds of overlap cost a handful of reads and make sure nothing written at the same moment is skipped
     if (last && !snap.metadata.fromCache) try { localStorage[LSS] = JSON.stringify({ space: this.space, t: last - 5000 }); } catch {}
     this.set(snap.metadata.fromCache ? 'offline' : 'live');
-    if (!snap.metadata.fromCache) announce();
+    if (!snap.metadata.fromCache) { this.merging = false; if (!this.ready) { this.ready = true; this.push(); } announce(); }
     if (changed) { S.idx = null; persist(); render(); }
   }
 };
@@ -477,8 +487,8 @@ function drawSyncBox() {
   const box = $('#sync-box'); if (!box || box.contains(document.activeElement)) return;
   const pass = localStorage[LSK];
   box.innerHTML = !window.BBK_FIREBASE ? '<p>sync ist noch nicht eingerichtet (der firebase-zugang fehlt in <code>app/treffen-config.js</code>). bis dahin bleibt alles, was du einträgst, nur auf diesem gerät.</p>'
-    : !pass ? '<p>noch kein raum. erstell einen raum und schick den einladungslink in die gruppe, oder öffne den link, den du bekommen hast. was schon auf diesem gerät steht, wandert mit in den raum.</p><div class="line"><button class="btn main" id="room-new">raum erstellen</button></div><form id="room-form" class="line"><input id="room-in" placeholder="einladungslink oder code" autocomplete="off" aria-label="einladungslink"><button class="btn">beitreten</button></form>'
-    : `<p>im raum: ${esc(all('d').sort((a, b) => b.at.localeCompare(a.at)).map(d => `${d.name || 'gerät ohne namen'} (${d.at === today() ? 'heute' : fmt(d.at)})`).join(', ') || 'noch niemand gemeldet')}</p><p>status: ${esc($('#sync').textContent)}. wer den einladungslink hat, kann alles lesen und ändern. die inhalte liegen verschlüsselt auf dem server, der schlüssel steckt nur im link.</p><div class="line"><button class="btn main" id="room-copy">einladungslink kopieren</button><button class="btn bad" id="room-leave">raum auf diesem gerät verlassen</button></div>`;
+    : !pass ? '<p>du bist noch in keinem raum. füg den einladungslink aus der gruppe ein. was schon auf diesem gerät steht, wandert mit in den raum.</p><form class="line join"><input placeholder="einladungslink" autocomplete="off" aria-label="einladungslink"><button class="btn main">beitreten</button></form><p class="mute" style="margin-top:18px">einen neuen raum braucht es nur ein einziges mal für das ganze kollektiv. wer einen eigenen erstellt, sieht nichts von den anderen.</p><div class="line"><button class="btn" id="room-new">neuen raum erstellen</button></div>'
+    : `<p>im raum: ${esc(all('d').sort((a, b) => b.at.localeCompare(a.at)).map(d => `${d.name || 'gerät ohne namen'} (${d.at === today() ? 'heute' : fmt(d.at)})`).join(', ') || 'noch niemand gemeldet')}</p><p>status: ${esc($('#sync').textContent)}. wer den einladungslink hat, kann alles lesen und ändern. die inhalte liegen verschlüsselt auf dem server, der schlüssel steckt nur im link.</p><div class="line"><button class="btn main" id="room-copy">einladungslink kopieren</button><button class="btn bad" id="room-leave">raum auf diesem gerät verlassen</button></div><p class="mute" style="margin-top:18px">falsch gelandet? mit dem einladungslink in den richtigen raum wechseln:</p><form class="line join"><input placeholder="einladungslink" autocomplete="off" aria-label="einladungslink"><button class="btn">wechseln</button></form>`;
 }
 function autosize(root) { for (const ta of root.querySelectorAll('.tx')) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; } }
 function render() {
@@ -487,6 +497,7 @@ function render() {
   document.body.dataset.v = S.view;
   const me = localStorage[LSME] || '';
   for (const s of document.querySelectorAll('select.me')) if (s !== document.activeElement) s.innerHTML = ['', ...members()].map(n => `<option value="${esc(n)}"${n === me ? ' selected' : ''}>${esc(n || '–')}</option>`).join('');
+  $('#noroom').style.display = window.BBK_FIREBASE && !localStorage[LSK] && S.view !== 'set' ? '' : 'none';
   $('#iam').style.display = localStorage[LSK] && !members().includes(me) && members().length && S.view !== 'set' ? '' : 'none';
   for (const b of document.querySelectorAll('.switch button')) b.setAttribute('aria-pressed', b.dataset.v === S.view);
   $('#n-open').textContent = all('e').filter(e => e.k && !e.d).length || '';
@@ -578,7 +589,7 @@ document.addEventListener('click', async ev => {
     case 'eadd': if (cur) { const n = newEntry(cur.id, '', (kidsOf(cur.id, '').at(-1)?.o ?? 0) + 1); render(); focusRow(n.id); } break;
     case 'imp-go': { const n = importText($('#imp').value); $('#imp-msg').textContent = n ? `${n} treffen importiert.` : 'kein treffen im text gefunden.'; if (n) { $('#imp').value = ''; S.meeting = null; render(); } break; }
     case 'exp': { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify([...S.items.values()], null, 1)], { type: 'application/json' })); a.download = `bbk-treffen-${today()}.json`; a.click(); URL.revokeObjectURL(a.href); break; }
-    case 'room-new': { const u8 = crypto.getRandomValues(new Uint8Array(18)); enterRoom(b64(u8).replace(/\+/g, '-').replace(/\//g, '_')); break; }
+    case 'room-new': { if (!confirm('wirklich einen neuen, leeren raum erstellen? wenn es schon einen raum fürs kollektiv gibt, tritt stattdessen mit dem einladungslink bei.')) break; const u8 = crypto.getRandomValues(new Uint8Array(18)); enterRoom(b64(u8).replace(/\+/g, '-').replace(/\//g, '_')); break; }
     case 'room-copy': { const link = location.origin + location.pathname + '#raum=' + encodeURIComponent(localStorage[LSK]); try { await navigator.clipboard.writeText(link); t.textContent = 'kopiert ✓'; } catch { prompt('einladungslink:', link); } break; }
     case 'room-leave': if (confirm('raum verlassen? die daten bleiben auf diesem gerät, werden aber nicht mehr abgeglichen.')) { localStorage.removeItem(LSK); location.reload(); } break;
   }
@@ -597,7 +608,7 @@ document.addEventListener('submit', ev => {
   if (f.id === 'grp-form') { const n = $('#grp-in').value.trim(), gs = groups(); if (n && !gs.some(g => g.n.toLowerCase() === n.toLowerCase())) setGroups([...gs, { n, m: [] }]); $('#grp-in').value = ''; render(); }
   if (f.id === 'mem-form') { addMember($('#mem-in').value); $('#mem-in').value = ''; render(); }
   if (f.id === 'who-form') { const n = addMember($('#who-in').value), e = S.items.get(pick); if (n && e && !e.who.includes(n)) { e.who = e.who.filter(x => x !== 'alle').concat(n); put(e); } $('#who-in').value = ''; drawWho(); }
-  if (f.id === 'room-form') { const v = $('#room-in').value.trim(), code = decodeURIComponent((v.match(/raum=([^&\s]+)/) || [, v])[1]); if (code) enterRoom(code); }
+  if (f.classList.contains('join')) { const v = f.querySelector('input').value.trim(), code = decodeURIComponent((v.match(/raum=([^&\s]+)/) || [, v])[1]); if (!code || code === localStorage[LSK]) return; if (!localStorage[LSK] || confirm('in den anderen raum wechseln? was auf diesem gerät steht, wandert mit.')) enterRoom(code); }
 });
 $('#res').addEventListener('change', async ev => {
   try { let n = 0; for (const it of JSON.parse(await ev.target.files[0].text())) { const loc = S.items.get(it.id); if (it.id && it.t && (!loc || loc.u < it.u)) { S.items.set(it.id, it); S.dirty[it.id] = 1; n++; } } S.idx = null; flush(); render(); alert(`${n} einträge eingespielt.`); } catch { alert('die datei ließ sich nicht lesen.'); }
