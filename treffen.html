@@ -126,6 +126,7 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
   <button data-v="todo" aria-pressed="false">to-dos <span id="n-open"></span></button>
   <button data-v="set" aria-pressed="false">einstellungen</button>
   <a href="./">kombinierer</a>
+  <button id="reload" title="neueste version laden und alles frisch vom server holen">↻ aktualisieren</button>
   <span class="note" id="sync" data-s="local">nur dieses gerät</span>
 </header>
 
@@ -589,6 +590,8 @@ document.addEventListener('click', async ev => {
     case 'eadd': if (cur) { const n = newEntry(cur.id, '', (kidsOf(cur.id, '').at(-1)?.o ?? 0) + 1); render(); focusRow(n.id); } break;
     case 'imp-go': { const n = importText($('#imp').value); $('#imp-msg').textContent = n ? `${n} treffen importiert.` : 'kein treffen im text gefunden.'; if (n) { $('#imp').value = ''; S.meeting = null; render(); } break; }
     case 'exp': { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify([...S.items.values()], null, 1)], { type: 'application/json' })); a.download = `bbk-treffen-${today()}.json`; a.click(); URL.revokeObjectURL(a.href); break; }
+    // saves what is pending, forgets the "seen up to here" mark so the whole room is fetched again, and reloads the newest app
+    case 'reload': flush(); try { localStorage.removeItem(LSS); } catch {} try { (await navigator.serviceWorker?.getRegistration())?.update(); } catch {} location.reload(); break;
     case 'room-new': { if (!confirm('wirklich einen neuen, leeren raum erstellen? wenn es schon einen raum fürs kollektiv gibt, tritt stattdessen mit dem einladungslink bei.')) break; const u8 = crypto.getRandomValues(new Uint8Array(18)); enterRoom(b64(u8).replace(/\+/g, '-').replace(/\//g, '_')); break; }
     case 'room-copy': { const link = location.origin + location.pathname + '#raum=' + encodeURIComponent(localStorage[LSK]); try { await navigator.clipboard.writeText(link); t.textContent = 'kopiert ✓'; } catch { prompt('einladungslink:', link); } break; }
     case 'room-leave': if (confirm('raum verlassen? die daten bleiben auf diesem gerät, werden aber nicht mehr abgeglichen.')) { localStorage.removeItem(LSK); location.reload(); } break;
