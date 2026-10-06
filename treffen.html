@@ -127,7 +127,7 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
   <button data-v="set" aria-pressed="false">einstellungen</button>
   <a href="./">kombinierer</a>
   <button id="reload" title="neueste version laden und alles frisch vom server holen">↻ aktualisieren</button>
-  <span class="note" id="sync" data-s="local">nur dieses gerät</span>
+  <span class="note" id="sync" data-s="local">kein raum · nur dieses gerät</span>
 </header>
 
 <main id="main">
@@ -225,7 +225,19 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
   <div class="line"><button class="btn main" id="new-go">anlegen</button><form method="dialog"><button class="btn">abbrechen</button></form></div>
 </dialog>
 
-<script src="app/treffen-config.js"></script>
+<script>
+// firebase web config for the sync. these values only name the project and are public by design; the notes themselves
+// are encrypted in the browser with the room key from the invite link. it sits in the page itself, not in a file of its
+// own, so a flaky connection can never load the page without it. set it to null and everything stays on the device.
+window.BBK_FIREBASE = {
+  apiKey: 'AIzaSyBf4FTEH9ophPMfVSBOkrKYY-Fwjez9k4A',
+  authDomain: 'bbk-plenum-ba0a0.firebaseapp.com',
+  projectId: 'bbk-plenum-ba0a0',
+  storageBucket: 'bbk-plenum-ba0a0.firebasestorage.app',
+  messagingSenderId: '21382986869',
+  appId: '1:21382986869:web:cae998d6390882318ecc3c'
+};
+</script>
 <script>
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -292,7 +304,7 @@ async function roomKeys(pass) {
   const bits = new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: te.encode('bbk-treffen-v1'), iterations: 150000, hash: 'SHA-256' }, raw, 384));
   return { space: [...bits.slice(32)].map(b => b.toString(16).padStart(2, '0')).join(''), key: await crypto.subtle.importKey('raw', bits.slice(0, 32), 'AES-GCM', false, ['encrypt', 'decrypt']) };
 }
-const SYNC_TEXT = { local: 'nur dieses gerät', connecting: 'verbinde …', live: 'synchron', offline: 'offline · wird nachgetragen', error: 'sync-fehler' };
+const SYNC_TEXT = { local: 'kein raum · nur dieses gerät', connecting: 'verbinde …', live: 'synchron', offline: 'offline · wird nachgetragen', error: 'sync-fehler' };
 const sync = {
   state: 'local', col: null, key: null, fs: null, space: '', ready: false, merging: false, flying: {}, queue: Promise.resolve(),
   // the short room tag in the status lets two people check they are in the same room
@@ -487,7 +499,7 @@ function todosHTML() {
 function drawSyncBox() {
   const box = $('#sync-box'); if (!box || box.contains(document.activeElement)) return;
   const pass = localStorage[LSK];
-  box.innerHTML = !window.BBK_FIREBASE ? '<p>sync ist noch nicht eingerichtet (der firebase-zugang fehlt in <code>app/treffen-config.js</code>). bis dahin bleibt alles, was du einträgst, nur auf diesem gerät.</p>'
+  box.innerHTML = !window.BBK_FIREBASE ? '<p>sync ist noch nicht eingerichtet (der firebase-zugang fehlt). bis dahin bleibt alles, was du einträgst, nur auf diesem gerät.</p>'
     : !pass ? '<p>du bist noch in keinem raum. füg den einladungslink aus der gruppe ein. was schon auf diesem gerät steht, wandert mit in den raum.</p><form class="line join"><input placeholder="einladungslink" autocomplete="off" aria-label="einladungslink"><button class="btn main">beitreten</button></form><p class="mute" style="margin-top:18px">einen neuen raum braucht es nur ein einziges mal für das ganze kollektiv. wer einen eigenen erstellt, sieht nichts von den anderen.</p><div class="line"><button class="btn" id="room-new">neuen raum erstellen</button></div>'
     : `<p>im raum: ${esc(all('d').sort((a, b) => b.at.localeCompare(a.at)).map(d => `${d.name || 'gerät ohne namen'} (${d.at === today() ? 'heute' : fmt(d.at)})`).join(', ') || 'noch niemand gemeldet')}</p><p>status: ${esc($('#sync').textContent)}. wer den einladungslink hat, kann alles lesen und ändern. die inhalte liegen verschlüsselt auf dem server, der schlüssel steckt nur im link.</p><div class="line"><button class="btn main" id="room-copy">einladungslink kopieren</button><button class="btn bad" id="room-leave">raum auf diesem gerät verlassen</button></div><p class="mute" style="margin-top:18px">falsch gelandet? mit dem einladungslink in den richtigen raum wechseln:</p><form class="line join"><input placeholder="einladungslink" autocomplete="off" aria-label="einladungslink"><button class="btn">wechseln</button></form>`;
 }

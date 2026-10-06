@@ -1,7 +1,7 @@
 // network first, cache as fallback: the app always gets the newest version when online and still opens offline.
 // logo PNGs under logos/ are not precached (hundreds of MB); everything the app itself needs is.
-const CACHE = 'bbk-app-v3';
-const CORE = ['./', './index.html', './treffen.html', './app/treffen-config.js', './app/manifest.webmanifest', './app/icon-192.png', './app/icon-512.png'];
+const CACHE = 'bbk-app-v4';
+const CORE = ['./', './index.html', './treffen.html', './app/manifest.webmanifest', './app/icon-192.png', './app/icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)));

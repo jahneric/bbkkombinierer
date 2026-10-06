@@ -38,7 +38,7 @@ Die Inhalte stehen nicht im Repo. Ohne Sync liegen sie nur im Browser des jeweil
 Sync einrichten (einmalig):
 
 1. Auf https://console.firebase.google.com ein Projekt anlegen, darin „Firestore Database“ erstellen (Standort `eur3`) und eine Web-App registrieren.
-2. Die `firebaseConfig` der Web-App in `app/treffen-config.js` als `window.BBK_FIREBASE = { ... }` eintragen.
+2. Die `firebaseConfig` der Web-App oben im Skript von `treffen.html` als `window.BBK_FIREBASE = { ... }` eintragen.
 3. In Firestore unter „Regeln“ eintragen:
 
 ```
