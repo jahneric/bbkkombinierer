@@ -131,7 +131,7 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
 </header>
 
 <main id="main">
-<div id="noroom" class="empty" style="display:none;margin-bottom:24px;border-color:var(--warn)"><p><b>du bist noch in keinem raum.</b> was du hier einträgst, bleibt nur auf diesem gerät und niemand sonst sieht es. füg den einladungslink aus der gruppe ein:</p><form class="line join"><input placeholder="einladungslink" autocomplete="off" aria-label="einladungslink"><button class="btn main">beitreten</button></form></div>
+<div id="noroom" class="empty" style="display:none;margin-bottom:24px;border-color:var(--warn)"><p><b>du bist noch in keinem raum.</b> was du hier einträgst, bleibt nur auf diesem gerät und niemand sonst sieht es. gib das raum-passwort ein (oder füg den einladungslink ein). das musst du in jedem browser und in der app auf dem startbildschirm nur ein einziges mal machen:</p><form class="line join"><input placeholder="raum-passwort oder einladungslink" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="raum-passwort oder einladungslink"><button class="btn main">beitreten</button></form></div>
 <div id="iam" class="line" style="display:none"><label>wer bist du? <select class="me" aria-label="wer bist du"></select></label><span class="mute">damit die anderen sehen, dass du dabei bist.</span></div>
 <section id="v-meet" class="room"><div id="meet"></div></section>
 <section id="v-ev" class="room"><div id="ev"></div></section>
@@ -500,8 +500,8 @@ function drawSyncBox() {
   const box = $('#sync-box'); if (!box || box.contains(document.activeElement)) return;
   const pass = localStorage[LSK];
   box.innerHTML = !window.BBK_FIREBASE ? '<p>sync ist noch nicht eingerichtet (der firebase-zugang fehlt). bis dahin bleibt alles, was du einträgst, nur auf diesem gerät.</p>'
-    : !pass ? '<p>du bist noch in keinem raum. füg den einladungslink aus der gruppe ein. was schon auf diesem gerät steht, wandert mit in den raum.</p><form class="line join"><input placeholder="einladungslink" autocomplete="off" aria-label="einladungslink"><button class="btn main">beitreten</button></form><p class="mute" style="margin-top:18px">einen neuen raum braucht es nur ein einziges mal für das ganze kollektiv. wer einen eigenen erstellt, sieht nichts von den anderen.</p><div class="line"><button class="btn" id="room-new">neuen raum erstellen</button></div>'
-    : `<p>im raum: ${esc(all('d').sort((a, b) => b.at.localeCompare(a.at)).map(d => `${d.name || 'gerät ohne namen'} (${d.at === today() ? 'heute' : fmt(d.at)})`).join(', ') || 'noch niemand gemeldet')}</p><p>status: ${esc($('#sync').textContent)}. wer den einladungslink hat, kann alles lesen und ändern. die inhalte liegen verschlüsselt auf dem server, der schlüssel steckt nur im link.</p><div class="line"><button class="btn main" id="room-copy">einladungslink kopieren</button><button class="btn bad" id="room-leave">raum auf diesem gerät verlassen</button></div><p class="mute" style="margin-top:18px">falsch gelandet? mit dem einladungslink in den richtigen raum wechseln:</p><form class="line join"><input placeholder="einladungslink" autocomplete="off" aria-label="einladungslink"><button class="btn">wechseln</button></form>`;
+    : !pass ? '<p>du bist noch in keinem raum. gib das raum-passwort ein oder füg den einladungslink ein. was schon auf diesem gerät steht, wandert mit in den raum.</p><form class="line join"><input placeholder="raum-passwort oder einladungslink" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="raum-passwort oder einladungslink"><button class="btn main">beitreten</button></form><p class="mute" style="margin-top:18px">einen neuen raum braucht es nur ein einziges mal für das ganze kollektiv. wer einen eigenen erstellt, sieht nichts von den anderen.</p><div class="line"><button class="btn" id="room-new">neuen raum erstellen</button></div>'
+    : `<p>im raum: ${esc(all('d').sort((a, b) => b.at.localeCompare(a.at)).map(d => `${d.name || 'gerät ohne namen'} (${d.at === today() ? 'heute' : fmt(d.at)})`).join(', ') || 'noch niemand gemeldet')}</p><p>status: ${esc($('#sync').textContent)}. wer den einladungslink hat, kann alles lesen und ändern. die inhalte liegen verschlüsselt auf dem server, der schlüssel steckt nur im link.</p><div class="line"><button class="btn main" id="room-copy">einladungslink kopieren</button><button class="btn bad" id="room-leave">raum auf diesem gerät verlassen</button></div><p class="mute" style="margin-top:18px">einladungslinks gelten nur für den browser, in dem man sie antippt. mit einem raum-passwort kann jede person in der app selbst beitreten. der umzug nimmt alles von diesem gerät mit in einen neuen raum; alle anderen treten danach mit dem passwort bei.</p><div class="line"><button class="btn" id="room-pw">auf einen raum mit passwort umziehen</button></div><p class="mute" style="margin-top:18px">falsch gelandet? in den richtigen raum wechseln:</p><form class="line join"><input placeholder="raum-passwort oder einladungslink" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="raum-passwort oder einladungslink"><button class="btn">wechseln</button></form>`;
 }
 function autosize(root) { for (const ta of root.querySelectorAll('.tx')) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; } }
 function render() {
@@ -604,7 +604,12 @@ document.addEventListener('click', async ev => {
     case 'exp': { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify([...S.items.values()], null, 1)], { type: 'application/json' })); a.download = `bbk-treffen-${today()}.json`; a.click(); URL.revokeObjectURL(a.href); break; }
     // saves what is pending, forgets the "seen up to here" mark so the whole room is fetched again, and reloads the newest app
     case 'reload': flush(); try { localStorage.removeItem(LSS); } catch {} try { (await navigator.serviceWorker?.getRegistration())?.update(); } catch {} location.reload(); break;
-    case 'room-new': { if (!confirm('wirklich einen neuen, leeren raum erstellen? wenn es schon einen raum fürs kollektiv gibt, tritt stattdessen mit dem einladungslink bei.')) break; const u8 = crypto.getRandomValues(new Uint8Array(18)); enterRoom(b64(u8).replace(/\+/g, '-').replace(/\//g, '_')); break; }
+    case 'room-new': case 'room-pw': {
+      const pw = prompt('passwort für den neuen raum. mindestens 12 zeichen, am besten vier zufällige wörter: wer es errät, kann alles lesen. groß- und kleinschreibung ist egal.');
+      if (pw == null) break;
+      if (roomCode(pw).length < 12) { alert('das passwort braucht mindestens 12 zeichen.'); break; }
+      enterRoom(roomCode(pw)); break;
+    }
     case 'room-copy': { const link = location.origin + location.pathname + '#raum=' + encodeURIComponent(localStorage[LSK]); try { await navigator.clipboard.writeText(link); t.textContent = 'kopiert ✓'; } catch { prompt('einladungslink:', link); } break; }
     case 'room-leave': if (confirm('raum verlassen? die daten bleiben auf diesem gerät, werden aber nicht mehr abgeglichen.')) { localStorage.removeItem(LSK); location.reload(); } break;
   }
@@ -623,7 +628,7 @@ document.addEventListener('submit', ev => {
   if (f.id === 'grp-form') { const n = $('#grp-in').value.trim(), gs = groups(); if (n && !gs.some(g => g.n.toLowerCase() === n.toLowerCase())) setGroups([...gs, { n, m: [] }]); $('#grp-in').value = ''; render(); }
   if (f.id === 'mem-form') { addMember($('#mem-in').value); $('#mem-in').value = ''; render(); }
   if (f.id === 'who-form') { const n = addMember($('#who-in').value), e = S.items.get(pick); if (n && e && !e.who.includes(n)) { e.who = e.who.filter(x => x !== 'alle').concat(n); put(e); } $('#who-in').value = ''; drawWho(); }
-  if (f.classList.contains('join')) { const v = f.querySelector('input').value.trim(), code = decodeURIComponent((v.match(/raum=([^&\s]+)/) || [, v])[1]); if (!code || code === localStorage[LSK]) return; if (!localStorage[LSK] || confirm('in den anderen raum wechseln? was auf diesem gerät steht, wandert mit.')) enterRoom(code); }
+  if (f.classList.contains('join')) { const v = f.querySelector('input').value.trim(), m = v.match(/raum=([^&\s]+)/), code = m ? decodeURIComponent(m[1]) : roomCode(v); if (!code || code === localStorage[LSK]) return; if (!localStorage[LSK] || confirm('in den anderen raum wechseln? was auf diesem gerät steht, wandert mit.')) enterRoom(code); }
 });
 $('#res').addEventListener('change', async ev => {
   try { let n = 0; for (const it of JSON.parse(await ev.target.files[0].text())) { const loc = S.items.get(it.id); if (it.id && it.t && (!loc || loc.u < it.u)) { S.items.set(it.id, it); S.dirty[it.id] = 1; n++; } } S.idx = null; flush(); render(); alert(`${n} einträge eingespielt.`); } catch { alert('die datei ließ sich nicht lesen.'); }
@@ -707,7 +712,10 @@ for (const d of document.querySelectorAll('dialog')) { d.addEventListener('close
 
 /* ---------- rooms ---------- */
 // everything already on this device goes into the room, so it is all marked as not yet uploaded
-function enterRoom(code) { localStorage[LSK] = code; for (const id of S.items.keys()) S.dirty[id] = 1; persist(); location.hash = ''; location.reload(); }
+// a typed password is forgiving about case and spaces; the random 24-character keys of older invite links stay as they are
+const roomCode = s => /^[A-Za-z0-9_-]{24}$/.test(s.trim()) ? s.trim() : s.trim().toLowerCase().replace(/\s+/g, ' ');
+function enterRoom(code) { localStorage[LSK] = code; for (const [id, it] of [...S.items]) if (it.t === 'd') S.items.delete(id); else S.dirty[id] = 1; // the "who is here" cards belong to the room left behind
+  persist(); location.hash = ''; location.reload(); }
 // invite link: the key travels in the hash, which the browser never sends to a server
 function joinFromHash() {
   const m = location.hash.match(/raum=([^&]+)/); if (!m) return false;
