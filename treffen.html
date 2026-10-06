@@ -101,6 +101,19 @@ dialog::backdrop{background:rgba(0,0,0,.7)}
 dialog h2{font:800 16px var(--f-min);margin:0 0 14px;color:var(--bone)}
 #imp{width:100%;min-height:140px}
 @media (pointer:coarse){.keys{display:none}}
+dialog.wide{width:min(900px,calc(100vw - 16px));max-height:92vh;overflow:auto}
+#note-in{width:100%;min-height:55vh;font-size:12px}
+/* rendered markdown of a note */
+.md{overflow-x:auto;margin-bottom:14px}
+.md h3{font:800 18px var(--f-min);color:var(--bone);margin:18px 0 8px}
+.md h4{font:800 13px var(--f-min);color:var(--bone);margin:18px 0 6px}
+.md p,.md ul{max-width:none;margin:0 0 10px}
+.md ul{padding-left:20px}
+.md hr{border:0;border-top:1px solid var(--ash);margin:16px 0}
+.md table{border-collapse:collapse;margin:0 0 12px;font-size:12px}
+.md th,.md td{border:1px solid var(--line);padding:4px 8px;text-align:left;vertical-align:top}
+.md th{color:var(--bone)}
+.md a{text-decoration:underline;color:var(--bone)}
 pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:auto;font-size:11px}
 </style>
 </head>
@@ -156,6 +169,7 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
 
 <div id="bar" role="toolbar" aria-label="zeile bearbeiten">
   <button data-a="todo" title="als to-do / als notiz">☐ to-do</button>
+  <button data-a="note" title="plan oder längere notiz anhängen">+ notiz</button>
   <button data-a="out" title="ausrücken (shift+tab)">⇤</button>
   <button data-a="in" title="einrücken (tab)">⇥</button>
   <button data-a="up" title="nach oben (alt+↑)">↑</button>
@@ -175,6 +189,13 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
   <div class="line"><input type="date" id="due-in" aria-label="deadline"></div>
   <div class="chips" id="due-quick"></div>
   <form method="dialog"><button class="btn main">fertig</button></form>
+</dialog>
+
+<dialog id="dnote" class="wide">
+  <h2 id="note-h"></h2>
+  <div id="note-view" class="md"></div>
+  <textarea id="note-in" placeholder="text oder markdown einfügen: # überschrift, - liste, | tabelle |, [link](https://…)" aria-label="notiz" hidden></textarea>
+  <div class="line"><button class="btn" id="note-edit">bearbeiten</button><button class="btn bad" id="note-del">notiz löschen</button><form method="dialog"><button class="btn main">schließen</button></form></div>
 </dialog>
 
 <dialog id="dev">
@@ -213,6 +234,7 @@ const main = $('#main');
 /* ---------- state ----------
    items: id -> meeting {t:'m',date,title,place,c} | event {t:'v', same fields} | entry {t:'e',m,p,o,x,k,d,dd,who,due} | config {id:'cfg',t:'c',members,groups:[{n,m}]} | device {t:'d',name,at}
    an event holds entries like a meeting does; its top-level entries carry g, the group that section belongs to.
+   any entry can carry n, a longer note or plan in markdown (shopping list, shift plan …), shown in its own dialog.
    a to-do written anywhere else can point at an event and group (ev, eg): it stays where it is and also shows up there.
    every item carries u (ms of its last change); the newer u wins when two devices changed the same item.
    dirty: ids changed here that the server has not confirmed yet (a dirty id without an item is a deletion, the value its time). */
@@ -391,6 +413,7 @@ function rowHTML(e, d, flat, lnk) {
     : top ? `<button class="chk rnd" aria-pressed="${!!e.d}" aria-label="besprochen" title="besprochen"></button>` : '<span class="dot"></span>';
   let meta = '';
   if (e.k || e.who.length) meta += `<button class="chip who${e.who.length ? '' : ' off'}">${e.who.length ? esc(e.who.join(', ')) : 'wer?'}</button>`;
+  if (e.n) meta += `<button class="chip note" title="notiz öffnen">▤ ${esc(e.n.trim().split('\n')[0].replace(/^#+\s*/, '').slice(0, 40))}</button>`;
   if (e.k || e.due) meta += `<button class="chip due ${dueCls(e)}">${e.due ? 'bis ' + fmt(e.due) : 'bis?'}</button>`;
   if (e.k && !lnk && S.items.get(e.m)?.t !== 'v') { const v = S.items.get(e.ev); meta += `<button class="chip evc${v ? '' : ' off'}">${v ? esc(v.title + ' › ' + (e.eg || 'allgemein')) : 'event?'}</button>`; }
   if (top && e.g) meta += `<span class="chip grp">${esc(e.g === 'allgemein' ? 'alle' : groups().find(g => g.n === e.g)?.m.join(', ') || 'noch niemand in der gruppe')}</span>`;
@@ -538,6 +561,7 @@ document.addEventListener('click', async ev => {
     if (t.classList.contains('chk')) { toggleDone(r.e); render(); }
     else if (t.classList.contains('who')) { pick = r.e.id; drawWho(); $('#dwho').showModal(); }
     else if (t.classList.contains('due')) { pick = r.e.id; drawDue(); $('#ddue').showModal(); }
+    else if (t.classList.contains('note')) openNote(r.e.id);
     else if (t.classList.contains('evc')) { pick = r.e.id; drawEv(); $('#dev').showModal(); }
     else if (t.classList.contains('src')) { if (S.items.get(t.dataset.m)?.t === 'v') { S.event = t.dataset.m; S.view = 'ev'; } else { S.meeting = t.dataset.m; S.view = 'meet'; } render(); main.querySelector(`.tree .row[data-id="${r.e.id}"]`)?.scrollIntoView({ block: 'center' }); }
     return;
@@ -547,6 +571,8 @@ document.addEventListener('click', async ev => {
     case 'mnew': $('#new-date').value = today(); $('#new-tpl').value = 'std'; $('#dnew').showModal(); break;
     case 'new-go': { const m = newMeeting($('#new-date').value || today(), $('#new-tpl').value); S.meeting = m.id; $('#dnew').close(); render(); break; }
     case 'mdel': if (cur && confirm(`„${cur.title}“ mit allen notizen und to-dos darin löschen?`)) { for (const e of [...kidsOf(cur.id, '')]) remove(e); drop(cur.id); S.meeting = null; render(); } break;
+    case 'note-edit': if ($('#note-in').hidden) editNote(); else if (saveNote()) showNote(); break;
+    case 'note-del': if (confirm('die notiz an dieser zeile löschen?')) { const e = S.items.get(pick); if (e) { delete e.n; put(e); } $('#note-in').hidden = true; $('#dnote').close(); } break;
     case 'evnew': $('#ev-title').value = ''; $('#ev-date').value = ''; $('#dnewev').showModal(); break;
     case 'ev-go': { const x = $('#ev-title').value.trim(); if (!x) { $('#ev-title').focus(); break; } S.event = newEvent(x, $('#ev-date').value).id; S.view = 'ev'; $('#dnewev').close(); render(); break; }
     case 'eadd': if (cur) { const n = newEntry(cur.id, '', (kidsOf(cur.id, '').at(-1)?.o ?? 0) + 1); render(); focusRow(n.id); } break;
@@ -583,6 +609,7 @@ $('#bar').addEventListener('pointerdown', ev => {
   const b = ev.target.closest('button'), r = document.activeElement?.classList.contains('tx') && rowOf(document.activeElement); if (!b) return;
   ev.preventDefault(); if (!r?.e || r.flat) return;
   const e = r.e, a = b.dataset.a;
+  if (a === 'note') return openNote(e.id);
   if (a === 'todo') { e.k = e.k ? 0 : 1; if (!e.k) { e.d = 0; e.dd = ''; } put(e); }
   if (a === 'in') indent(e); if (a === 'out') outdent(e); if (a === 'up') move(e, -1); if (a === 'down') move(e, 1);
   if (a === 'del') { const n = kidsOf(e.m, e.id).length; if (n && !confirm('die zeile mit allem darunter löschen?')) return; const prev = neighbour(r.row, -1)?.dataset.id; remove(e); render(); if (prev) focusRow(prev); return; }
@@ -596,6 +623,41 @@ $('#who-list').addEventListener('click', ev => {
   e.who = e.who.includes(n) ? e.who.filter(x => x !== n) : n === 'alle' ? ['alle'] : e.who.filter(x => x !== 'alle').concat(n);
   put(e); drawWho();
 });
+/* ---------- notes ----------
+   a small markdown reader: headings, rules, tables, lists, bold, italics, links. everything is escaped first,
+   and only http(s) links become clickable, so a note can never smuggle in markup or scripts. */
+function md(src) {
+  const inl = s => esc(s).replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>')
+    .replace(/(^|[\s(])(https?:\/\/[^\s<)]+)/g, '$1<a href="$2" target="_blank" rel="noopener">$2</a>')
+    .replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>').replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<i>$2</i>');
+  const L = src.split(/\r?\n/), out = []; let i = 0;
+  const run = re => { const a = []; while (i < L.length && re.test(L[i])) a.push(L[i++]); return a; };
+  while (i < L.length) {
+    const l = L[i];
+    if (!l.trim()) i++;
+    else if (/^#{1,6}\s/.test(l)) { out.push(`<${/^#\s/.test(l) ? 'h3' : 'h4'}>${inl(l.replace(/^#+\s*/, ''))}</${/^#\s/.test(l) ? 'h3' : 'h4'}>`); i++; }
+    else if (/^\s*-{3,}\s*$/.test(l)) { out.push('<hr>'); i++; }
+    else if (/^\s*\|/.test(l)) {
+      const rows = run(/^\s*\|/).filter(r => !/^[\s|:-]+$/.test(r)).map(r => r.trim().replace(/^\||\|$/g, '').split('|'));
+      out.push('<table>' + rows.map((r, n) => '<tr>' + r.map(c => `<${n ? 'td' : 'th'}>${inl(c.trim())}</${n ? 'td' : 'th'}>`).join('') + '</tr>').join('') + '</table>');
+    }
+    else if (/^\s*([-*]|\d+\.)\s/.test(l)) out.push('<ul>' + run(/^\s*([-*]|\d+\.)\s/).map(r => `<li>${inl(r.replace(/^\s*([-*]|\d+\.)\s+/, ''))}</li>`).join('') + '</ul>');
+    else out.push('<p>' + run(/^(?!\s*$|#{1,6}\s|\s*\||\s*-{3,}\s*$|\s*([-*]|\d+\.)\s)/).map(inl).join('<br>') + '</p>');
+  }
+  return out.join('');
+}
+function showNote() { const e = S.items.get(pick); $('#note-in').hidden = true; $('#note-view').hidden = false; $('#note-view').innerHTML = md(e?.n || ''); $('#note-edit').textContent = 'bearbeiten'; }
+function editNote() { const e = S.items.get(pick); $('#note-in').value = e?.n || ''; $('#note-in').hidden = false; $('#note-view').hidden = true; $('#note-edit').textContent = 'fertig'; $('#note-in').focus(); }
+// the server takes at most 20000 characters of ciphertext per item (firestore rules), which is about 14 kB of text
+function saveNote() {
+  const e = S.items.get(pick), v = $('#note-in').value.trim(); if (!e || $('#note-in').hidden || v === (e.n || '')) return true;
+  const size = te.encode(JSON.stringify({ ...e, n: v })).length;
+  if (size > 14000) { alert(`die notiz ist zu lang für den abgleich (${Math.round(size / 1000)} von 14 kB). bitte kürzen oder auf zwei zeilen verteilen.`); return false; }
+  if (v) e.n = v; else delete e.n; put(e); return true;
+}
+function openNote(id) { pick = id; const e = S.items.get(id); if (!e) return; $('#note-h').textContent = e.x || 'notiz'; if (e.n) showNote(); else editNote(); $('#dnote').showModal(); if (!e.n) $('#note-in').focus(); }
+$('#dnote').addEventListener('close', () => { if (saveNote()) $('#note-in').hidden = true; else $('#dnote').showModal(); }); // too long: stay open, nothing typed is lost
+
 function drawEv() {
   const e = S.items.get(pick), t = today(); if (!e) return;
   $('#ev-list').innerHTML = events().filter(v => !v.date || v.date >= t || v.id === e.ev).map(v => `<button class="chip big" data-id="${v.id}" aria-pressed="${v.id === e.ev}">${esc(v.title)}${v.date ? ' · ' + fmt(v.date) : ''}</button>`).join('') || '<span class="mute">noch kein kommendes event. leg eins im reiter „events“ an.</span>';
