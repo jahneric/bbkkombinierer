@@ -31,7 +31,7 @@ Das Modell liegt unter `app/deeplab_v3.tflite`, die Laufzeit kommt von cdn.jsdel
 
 ## Treffen
 
-`treffen.html` ist das Orga-Werkzeug: pro Treffen eine Tagesordnung als Gliederung, jede Zeile kann ein To-do mit Leuten und Deadline werden, offene To-dos wandern automatisch ins nächste Treffen.
+`treffen.html` ist das Orga-Werkzeug: pro Treffen eine Tagesordnung als Gliederung, jede Zeile kann ein To-do mit Leuten und Deadline werden, offene To-dos wandern automatisch ins nächste Treffen. Unter „events“ bekommt jedes Event für jede Gruppe (Deko, Booking …) einen eigenen Bereich mit To-dos; wer zu welcher Gruppe gehört, steht in den Einstellungen.
 
 Die Inhalte stehen nicht im Repo. Ohne Sync liegen sie nur im Browser des jeweiligen Geräts. Mit Sync liegen sie in Firestore, im Browser verschlüsselt (AES-GCM); der Schlüssel steckt im Einladungslink und nirgends sonst. Wer den Link hat, kann alles lesen und ändern.
 
