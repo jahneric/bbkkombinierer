@@ -177,6 +177,13 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
   <form method="dialog"><button class="btn main">fertig</button></form>
 </dialog>
 
+<dialog id="dev">
+  <h2>zu welchem event?</h2>
+  <div id="ev-list" class="chips"></div>
+  <div id="evg-list" class="chips"></div>
+  <form method="dialog"><button class="btn main">fertig</button></form>
+</dialog>
+
 <dialog id="dnewev">
   <h2>neues event</h2>
   <div class="line"><input id="ev-title" placeholder="name, z. b. fromm6 &amp; bbkk" autocomplete="off" aria-label="name"></div>
@@ -206,6 +213,7 @@ const main = $('#main');
 /* ---------- state ----------
    items: id -> meeting {t:'m',date,title,place,c} | event {t:'v', same fields} | entry {t:'e',m,p,o,x,k,d,dd,who,due} | config {id:'cfg',t:'c',members,groups:[{n,m}]} | device {t:'d',name,at}
    an event holds entries like a meeting does; its top-level entries carry g, the group that section belongs to.
+   a to-do written anywhere else can point at an event and group (ev, eg): it stays where it is and also shows up there.
    every item carries u (ms of its last change); the newer u wins when two devices changed the same item.
    dirty: ids changed here that the server has not confirmed yet (a dirty id without an item is a deletion, the value its time). */
 const S = { items: new Map(), dirty: {}, idx: null, view: 'meet', meeting: null, event: null, filter: 'alle', grp: 'alle', showDone: false };
@@ -222,7 +230,7 @@ const members = () => S.items.get('cfg')?.members || [];
 const events = () => all('v').sort((a, b) => (a.date || '9').localeCompare(b.date || '9') || (a.c || 0) - (b.c || 0));
 const GROUPS = ['Deko', 'Social Media', 'Lichttechnik', 'Elektronik', 'Booking'];
 const groups = () => S.items.get('cfg')?.groups || GROUPS.map(n => ({ n, m: [] }));
-const groupOf = e => { while (e?.p) e = S.items.get(e.p); return e?.g || ''; };
+const groupOf = e => { if (S.items.has(e?.ev)) return e.eg || 'allgemein'; while (e?.p) e = S.items.get(e.p); return e?.g || ''; };
 function setGroups(list) { const c = S.items.get('cfg') || { id: 'cfg', t: 'c', members: [] }; c.groups = list; put(c); }
 // every device in a room leaves a card with the name its person picked, so the others can see who has joined
 function announce() {
@@ -231,7 +239,7 @@ function announce() {
   const name = localStorage[LSME] || '', it = S.items.get(id);
   if (!it || it.name !== name || it.at !== today()) put({ id, t: 'd', name, at: today() });
 }
-const openIn = id => all('e').filter(e => e.m === id && e.k && !e.d).length;
+const openIn = id => all('e').filter(e => (e.m === id || e.ev === id) && e.k && !e.d).length;
 function kidsOf(m, p) {
   if (!S.idx) { S.idx = new Map(); for (const e of all('e')) { const k = e.m + '|' + e.p; S.idx.has(k) ? S.idx.get(k).push(e) : S.idx.set(k, [e]); } for (const l of S.idx.values()) l.sort((a, b) => a.o - b.o || (a.id < b.id ? -1 : 1)); }
   return S.idx.get(m + '|' + p) || [];
@@ -377,18 +385,25 @@ function importText(txt) {
 
 /* ---------- render ---------- */
 const dueCls = e => !e.due ? 'off' : e.d ? '' : e.due < today() ? 'over' : e.due <= addDays(today(), 3) ? 'soon' : '';
-function rowHTML(e, d, flat) {
+function rowHTML(e, d, flat, lnk) {
   const top = !flat && !e.p;
   const chk = e.k ? `<button class="chk" aria-pressed="${!!e.d}" aria-label="erledigt"></button>`
     : top ? `<button class="chk rnd" aria-pressed="${!!e.d}" aria-label="besprochen" title="besprochen"></button>` : '<span class="dot"></span>';
   let meta = '';
   if (e.k || e.who.length) meta += `<button class="chip who${e.who.length ? '' : ' off'}">${e.who.length ? esc(e.who.join(', ')) : 'wer?'}</button>`;
   if (e.k || e.due) meta += `<button class="chip due ${dueCls(e)}">${e.due ? 'bis ' + fmt(e.due) : 'bis?'}</button>`;
+  if (e.k && !lnk && S.items.get(e.m)?.t !== 'v') { const v = S.items.get(e.ev); meta += `<button class="chip evc${v ? '' : ' off'}">${v ? esc(v.title + ' › ' + (e.eg || 'allgemein')) : 'event?'}</button>`; }
   if (top && e.g) meta += `<span class="chip grp">${esc(e.g === 'allgemein' ? 'alle' : groups().find(g => g.n === e.g)?.m.join(', ') || 'noch niemand in der gruppe')}</span>`;
   if (flat && e.m) { const m = S.items.get(e.m), par = S.items.get(e.p); if (m) meta += `<button class="chip src" data-m="${m.id}" title="${esc(m.title)}${m.date ? ' ' + fmt(m.date) : ''}">${esc(m.t === 'v' ? [m.title, groupOf(e)].filter(Boolean).join(' › ') : par?.x || m.title)}</button>`; }
-  return `<div class="row${e.k ? ' todo' : ''}${e.d ? ' done' : ''}${top ? ' top' : ''}" data-id="${e.id}" style="--d:${d}">${chk}<textarea class="tx" rows="1" placeholder="${top ? 'thema' : '…'}" aria-label="text">${esc(e.x)}</textarea>${meta && `<span class="meta">${meta}</span>`}</div>`;
+  return `<div class="row${e.k ? ' todo' : ''}${e.d ? ' done' : ''}${top ? ' top' : ''}${lnk ? ' lnk' : ''}" data-id="${e.id}" style="--d:${d}">${chk}<textarea class="tx" rows="1" placeholder="${top ? 'thema' : '…'}" aria-label="text">${esc(e.x)}</textarea>${meta && `<span class="meta">${meta}</span>`}</div>`;
 }
 const treeHTML = (m, p, d) => kidsOf(m, p).map(e => rowHTML(e, d) + treeHTML(m, e.id, d + 1)).join('');
+// an event's outline, each group followed by the to-dos from elsewhere that point at it
+function eventTreeHTML(v) {
+  const tops = kidsOf(v.id, ''), names = new Set(tops.map(e => e.g)), lnk = all('e').filter(e => e.ev === v.id && e.k).sort((a, b) => byDue(a, b));
+  const of = g => lnk.filter(e => (e.eg || 'allgemein') === g).map(e => rowHTML(e, 1, true, true)).join('');
+  return tops.map(e => rowHTML(e, 0) + treeHTML(v.id, e.id, 1) + (e.g ? of(e.g) : '')).join('') + lnk.filter(e => !names.has(e.eg || 'allgemein')).map(e => rowHTML(e, 0, true, true)).join('');
+}
 const byDue = (a, b) => (a.due || '9').localeCompare(b.due || '9') || (a.id < b.id ? -1 : 1);
 
 function meetHTML() {
@@ -420,9 +435,9 @@ function eventHTML() {
   <div class="line"><input id="mtitle" value="${esc(cur.title)}" aria-label="name"><input type="date" id="mdate" value="${cur.date}" aria-label="datum"></div>
   <div class="line"><input id="mplace" value="${esc(cur.place)}" placeholder="wo?" aria-label="ort"><button class="btn bad" id="mdel">event löschen</button></div>
   <h2 class="lab-h">gruppen · ${openIn(cur.id)} offen</h2>
-  <div class="tree">${treeHTML(cur.id, '', 0)}</div>
+  <div class="tree">${eventTreeHTML(cur)}</div>
   <div class="chips" style="margin-top:18px">${missing.map(g => `<button class="chip big off" data-addg="${esc(g.n)}">+ ${esc(g.n)}</button>`).join('')}<button class="chip big off" id="eadd">+ bereich</button></div>
-  <p class="mute" style="margin-top:18px">enter auf einer gruppe legt ein to-do darunter an. wer in welcher gruppe ist, steht in den einstellungen.</p>`;
+  <p class="mute" style="margin-top:18px">enter auf einer gruppe legt ein to-do darunter an. to-dos aus treffen oder der to-do-liste landen hier, wenn du dort auf „event?“ tippst. wer in welcher gruppe ist, steht in den einstellungen.</p>`;
 }
 function todosHTML() {
   const f = S.filter, t = today(), wk = addDays(t, 7);
@@ -469,7 +484,7 @@ function render() {
   document.body.classList.toggle('editing', !!document.activeElement?.closest?.('.tree .row'));
 }
 function focusRow(id, pos = -1) { const el = main.querySelector(`.tree .row[data-id="${id}"] .tx`); if (!el) return; el.focus(); const p = pos < 0 ? el.value.length : pos; el.setSelectionRange(p, p); }
-const rowOf = el => { const r = el.closest('.row'); return r && { row: r, e: S.items.get(r.dataset.id), flat: !r.closest('.tree') }; };
+const rowOf = el => { const r = el.closest('.row'); return r && { row: r, e: S.items.get(r.dataset.id), flat: r.classList.contains('lnk') || !r.closest('.tree') }; };
 const neighbour = (row, dir) => { const l = [...row.parentElement.querySelectorAll('.row')]; return l[l.indexOf(row) + dir]; };
 
 /* ---------- events ---------- */
@@ -510,7 +525,7 @@ main.addEventListener('keydown', ev => {
   } else if (ev.altKey && (up || down)) { ev.preventDefault(); move(e, up ? -1 : 1); render();
   } else if ((up && a === 0 && b === 0) || (down && a === ta.value.length)) { const o = neighbour(row, up ? -1 : 1); if (o) { ev.preventDefault(); focusRow(o.dataset.id, up ? -1 : 0); } }
 });
-main.addEventListener('focusin', () => document.body.classList.toggle('editing', !!document.activeElement.closest('.tree .row')));
+main.addEventListener('focusin', () => document.body.classList.toggle('editing', !!document.activeElement.closest('.tree .row:not(.lnk)')));
 main.addEventListener('focusout', () => setTimeout(() => document.body.classList.toggle('editing', !!document.activeElement?.closest?.('.tree .row')), 0));
 
 document.addEventListener('click', async ev => {
@@ -523,6 +538,7 @@ document.addEventListener('click', async ev => {
     if (t.classList.contains('chk')) { toggleDone(r.e); render(); }
     else if (t.classList.contains('who')) { pick = r.e.id; drawWho(); $('#dwho').showModal(); }
     else if (t.classList.contains('due')) { pick = r.e.id; drawDue(); $('#ddue').showModal(); }
+    else if (t.classList.contains('evc')) { pick = r.e.id; drawEv(); $('#dev').showModal(); }
     else if (t.classList.contains('src')) { if (S.items.get(t.dataset.m)?.t === 'v') { S.event = t.dataset.m; S.view = 'ev'; } else { S.meeting = t.dataset.m; S.view = 'meet'; } render(); main.querySelector(`.tree .row[data-id="${r.e.id}"]`)?.scrollIntoView({ block: 'center' }); }
     return;
   }
@@ -579,6 +595,17 @@ $('#who-list').addEventListener('click', ev => {
   const n = ev.target.closest('button')?.dataset.n, e = S.items.get(pick); if (!n || !e) return;
   e.who = e.who.includes(n) ? e.who.filter(x => x !== n) : n === 'alle' ? ['alle'] : e.who.filter(x => x !== 'alle').concat(n);
   put(e); drawWho();
+});
+function drawEv() {
+  const e = S.items.get(pick), t = today(); if (!e) return;
+  $('#ev-list').innerHTML = events().filter(v => !v.date || v.date >= t || v.id === e.ev).map(v => `<button class="chip big" data-id="${v.id}" aria-pressed="${v.id === e.ev}">${esc(v.title)}${v.date ? ' · ' + fmt(v.date) : ''}</button>`).join('') || '<span class="mute">noch kein kommendes event. leg eins im reiter „events“ an.</span>';
+  $('#evg-list').innerHTML = S.items.has(e.ev) ? ['allgemein', ...groups().map(g => g.n)].map(n => `<button class="chip big" data-g="${esc(n)}" aria-pressed="${(e.eg || 'allgemein') === n}">${esc(n)}</button>`).join('') : '';
+}
+$('#dev').addEventListener('click', ev => {
+  const b = ev.target.closest('button'), e = S.items.get(pick); if (!b || !e) return;
+  if (b.dataset.id) { if (e.ev === b.dataset.id) { e.ev = ''; e.eg = ''; } else { e.ev = b.dataset.id; e.eg = e.eg || 'allgemein'; } }
+  else if (b.dataset.g) e.eg = b.dataset.g; else return;
+  put(e); drawEv();
 });
 function drawDue() {
   const e = S.items.get(pick), t = today(), nextM = meetings().filter(m => m.date > t).at(-1); if (!e) return;
