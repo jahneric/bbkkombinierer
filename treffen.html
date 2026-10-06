@@ -41,7 +41,23 @@ input,select,textarea{background:var(--ink);border:1px solid var(--line);padding
 .switch .note[data-s="live"]::before{background:#7fd98a}
 .switch .note[data-s="offline"]::before,.switch .note[data-s="connecting"]::before{background:var(--soon)}
 .switch .note[data-s="error"]::before{background:var(--warn)}
-@media (max-width:700px){.switch .note{margin-left:0;width:100%}}
+.switch #vtitle{margin-right:6px}
+#ctx{display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:1 1 0;min-width:0}
+#ctx select{flex:0 1 340px;min-width:0;padding:6px 9px}
+#ctx label{display:flex;gap:6px;align-items:center;min-width:0}
+#ctx label select{flex:0 1 auto;max-width:42vw}
+@media (max-width:700px){.switch .note{order:2}#ctx{order:3;flex-basis:100%}#ctx:empty{display:none}#ctx select{flex:1 1 0}}
+#nav{position:fixed;top:0;bottom:0;left:0;z-index:41;width:min(280px,84vw);display:flex;flex-direction:column;gap:8px;
+  padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 16px;background:#0c0c0c;border-right:1px solid #2a2a2a;transform:translateX(-100%);transition:transform .18s ease-out;overflow:auto}
+body.nav-open #nav{transform:none}
+#nav b{letter-spacing:.04em;margin-bottom:10px;color:#eee}
+#nav button,#nav a{background:transparent;border:1px solid #555;padding:11px 12px;text-align:left;text-decoration:none;display:flex;justify-content:space-between}
+#nav button:hover,#nav a:hover{border-color:#aaa}
+#nav button[aria-pressed="true"]{background:#eee;color:#111}
+#nav .gap{flex:1;min-height:16px}
+#scrim{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.6);display:none}
+body.nav-open #scrim{display:block}
+@media (prefers-reduced-motion:reduce){#nav{transition:none}}
 
 main{max-width:860px;margin:0 auto;padding:24px 16px 140px}
 .room{display:none}
@@ -119,16 +135,23 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
 </head>
 <body data-v="meet">
 
-<header class="switch" role="toolbar" aria-label="Ansicht wählen">
+<header class="switch" role="toolbar" aria-label="Leiste">
+  <button id="menu" aria-label="menü" aria-expanded="false" aria-controls="nav">☰</button>
+  <b id="vtitle">treffen</b>
+  <div id="ctx"></div>
+  <span class="note" id="sync" data-s="local">kein raum · nur dieses gerät</span>
+</header>
+<div id="scrim"></div>
+<nav id="nav" aria-label="Bereiche" inert>
   <b>bbk · treffen</b>
   <button data-v="meet" aria-pressed="true">treffen</button>
   <button data-v="ev" aria-pressed="false">events</button>
   <button data-v="todo" aria-pressed="false">to-dos <span id="n-open"></span></button>
   <button data-v="set" aria-pressed="false">einstellungen</button>
-  <a href="./">kombinierer</a>
+  <span class="gap"></span>
   <button id="reload" title="neueste version laden und alles frisch vom server holen">↻ aktualisieren</button>
-  <span class="note" id="sync" data-s="local">kein raum · nur dieses gerät</span>
-</header>
+  <a href="./">kombinierer</a>
+</nav>
 
 <main id="main">
 <div id="noroom" class="empty" style="display:none;margin-bottom:24px;border-color:var(--warn)"><p><b>du bist noch in keinem raum.</b> was du hier einträgst, bleibt nur auf diesem gerät und niemand sonst sieht es. gib das raum-passwort ein (oder füg den einladungslink ein). das musst du in jedem browser und in der app auf dem startbildschirm nur ein einziges mal machen:</p><form class="line join"><input placeholder="raum-passwort oder einladungslink" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="raum-passwort oder einladungslink"><button class="btn main">beitreten</button></form></div>
@@ -137,14 +160,11 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
 <section id="v-ev" class="room"><div id="ev"></div></section>
 
 <section id="v-todo" class="room">
-  <h1>to-dos</h1>
   <form id="qform" class="line"><input id="qtext" placeholder="neues to-do …" autocomplete="off" aria-label="neues to-do"><button class="btn main">+ to-do</button></form>
-  <div class="line"><label>für <select id="fwho"></select></label><label>gruppe <select id="fgrp"></select></label><label><input type="checkbox" id="fdone"> erledigte zeigen</label></div>
   <div id="todos"></div>
 </section>
 
 <section id="v-set" class="room">
-  <h1>einstellungen</h1>
   <h2 class="lab-h">leute</h2>
   <p class="mute">wer im kollektiv to-dos übernehmen kann.</p>
   <div id="mem-list" class="chips"></div>
@@ -456,16 +476,15 @@ function meetHTML() {
   const ms = meetings();
   if (!S.items.has(S.meeting)) S.meeting = ms[0]?.id || null;
   const cur = S.items.get(S.view === 'ev' ? S.event : S.meeting);
-  if (!cur) return `<h1>treffen</h1><div class="empty"><p>noch kein treffen angelegt.</p><div class="line"><button class="btn main" id="mnew">+ erstes treffen</button><button class="btn" data-go="set">alte protokolle importieren</button></div></div>`;
+  if (!cur) return `<div class="empty"><p>noch kein treffen angelegt. leg oben mit „+ treffen“ das erste an.</p><div class="line"><button class="btn" data-go="set">alte protokolle importieren</button></div></div>`;
   // open to-dos from earlier meetings (or without one), plus those ticked off between the previous meeting and the next
   const next = ms[ms.indexOf(cur) - 1], since = ms[ms.indexOf(cur) + 1]?.date || '';
   const carry = all('e').filter(e => { if (!e.k || e.m === cur.id) return false; const m = S.items.get(e.m); if (m && (m.t === 'v' || (cur.date && m.date > cur.date))) return false; return !e.d || (e.dd > since && (!next || !next.date || e.dd < next.date)); }).sort(byDue);
-  return `<div class="line"><select id="msel" aria-label="treffen wählen">${ms.map(m => `<option value="${m.id}"${m === cur ? ' selected' : ''}>${m.date ? fmt(m.date) + ' · ' : ''}${esc(m.title)}</option>`).join('')}</select><button class="btn main" id="mnew">+ neues treffen</button></div>
-  <div class="line"><input id="mtitle" value="${esc(cur.title)}" aria-label="titel"><input type="date" id="mdate" value="${cur.date}" aria-label="datum"></div>
+  return `<div class="line"><input id="mtitle" value="${esc(cur.title)}" aria-label="titel"><input type="date" id="mdate" value="${cur.date}" aria-label="datum"></div>
   <div class="line"><input id="mplace" value="${esc(cur.place)}" placeholder="wo? wer kocht?" aria-label="ort"><button class="btn bad" id="mdel">treffen löschen</button></div>
   ${carry.length ? `<details class="carry" open><summary>offen von vorher · ${carry.filter(e => !e.d).length}</summary><div class="flat">${carry.map(e => rowHTML(e, 0, true)).join('')}</div></details>` : ''}
   <h2 class="lab-h">events</h2>
-  <div class="chips">${events().filter(v => !v.date || v.date >= today()).map(v => `<button class="chip big" data-ev="${v.id}">${esc(v.title)}${v.date ? ' · ' + fmt(v.date) : ''} · ${openIn(v.id)} offen</button>`).join('')}<button class="chip big off" id="evnew">+ event</button></div>
+  <div class="chips">${events().filter(v => !v.date || v.date >= today()).map(v => `<button class="chip big" data-ev="${v.id}">${esc(v.title)}${v.date ? ' · ' + fmt(v.date) : ''} · ${openIn(v.id)} offen</button>`).join('')}<button class="chip big off" data-newev="1">+ event</button></div>
   <h2 class="lab-h">tagesordnung</h2>
   <div class="tree">${treeHTML(cur.id, '', 0)}</div>
   <div class="line" style="margin-top:18px"><button class="btn" id="eadd">+ thema</button></div>
@@ -475,10 +494,9 @@ function eventHTML() {
   const vs = events(), t = today();
   if (!S.items.has(S.event)) S.event = (vs.find(v => v.date >= t) || vs.at(-1))?.id || null;
   const cur = S.items.get(S.event);
-  if (!cur) return `<h1>events</h1><div class="empty"><p>noch kein event angelegt. jedes event bekommt für jede gruppe (deko, booking …) einen eigenen bereich mit to-dos.</p><div class="line"><button class="btn main" id="evnew">+ erstes event</button></div></div>`;
+  if (!cur) return `<div class="empty"><p>noch kein event angelegt. leg oben mit „+ event“ eins an. jedes event bekommt für jede gruppe (deko, booking …) einen eigenen bereich mit to-dos.</p></div>`;
   const have = new Set(kidsOf(cur.id, '').map(e => e.g)), missing = groups().filter(g => !have.has(g.n));
-  return `<div class="line"><select id="msel" aria-label="event wählen">${vs.map(v => `<option value="${v.id}"${v === cur ? ' selected' : ''}>${v.date ? fmt(v.date) + ' · ' : ''}${esc(v.title)}</option>`).join('')}</select><button class="btn main" id="evnew">+ neues event</button></div>
-  <div class="line"><input id="mtitle" value="${esc(cur.title)}" aria-label="name"><input type="date" id="mdate" value="${cur.date}" aria-label="datum"></div>
+  return `<div class="line"><input id="mtitle" value="${esc(cur.title)}" aria-label="name"><input type="date" id="mdate" value="${cur.date}" aria-label="datum"></div>
   <div class="line"><input id="mplace" value="${esc(cur.place)}" placeholder="wo?" aria-label="ort"><button class="btn bad" id="mdel">event löschen</button></div>
   <h2 class="lab-h">gruppen · ${openIn(cur.id)} offen</h2>
   <div class="tree">${eventTreeHTML(cur)}</div>
@@ -496,6 +514,17 @@ function todosHTML() {
     + group('überfällig', open.filter(e => e.due && e.due < t), 'over') + group('nächste 7 tage', open.filter(e => e.due >= t && e.due <= wk))
     + group('später', open.filter(e => e.due > wk)) + group('ohne deadline', open.filter(e => !e.due)) + (S.showDone ? group('erledigt', done) : '');
 }
+const TITLES = { meet: 'treffen', ev: 'events', todo: 'to-dos', set: 'einstellungen' };
+// what the top bar offers depends on where you are: pick a meeting, pick an event, or filter the to-dos
+function ctxHTML() {
+  const opt = (list, cur) => list.map(m => `<option value="${m.id}"${m.id === cur ? ' selected' : ''}>${m.date ? fmt(m.date) + ' · ' : ''}${esc(m.title)}</option>`).join('');
+  const names = (list, cur) => ['alle', ...list].map(n => `<option${n === cur ? ' selected' : ''}>${esc(n)}</option>`).join('');
+  if (S.view === 'meet') return (meetings().length ? `<select id="msel" aria-label="treffen wählen">${opt(meetings(), S.meeting)}</select>` : '') + '<button class="btn main" id="mnew">+ treffen</button>';
+  if (S.view === 'ev') return (events().length ? `<select id="msel" aria-label="event wählen">${opt(events(), S.event)}</select>` : '') + '<button class="btn main" id="evnew">+ event</button>';
+  if (S.view === 'todo') return `<label>für <select id="fwho">${names(members(), S.filter)}</select></label><label>gruppe <select id="fgrp">${names(groups().map(g => g.n), S.grp)}</select></label><label><input type="checkbox" id="fdone"${S.showDone ? ' checked' : ''}> erledigte</label>`;
+  return '';
+}
+function setNav(open) { document.body.classList.toggle('nav-open', open); $('#nav').inert = !open; $('#menu').setAttribute('aria-expanded', open); }
 function drawSyncBox() {
   const box = $('#sync-box'); if (!box || box.contains(document.activeElement)) return;
   const pass = localStorage[LSK];
@@ -512,21 +541,20 @@ function render() {
   for (const s of document.querySelectorAll('select.me')) if (s !== document.activeElement) s.innerHTML = ['', ...members()].map(n => `<option value="${esc(n)}"${n === me ? ' selected' : ''}>${esc(n || '–')}</option>`).join('');
   $('#noroom').style.display = window.BBK_FIREBASE && !localStorage[LSK] && S.view !== 'set' ? '' : 'none';
   $('#iam').style.display = localStorage[LSK] && !members().includes(me) && members().length && S.view !== 'set' ? '' : 'none';
-  for (const b of document.querySelectorAll('.switch button')) b.setAttribute('aria-pressed', b.dataset.v === S.view);
+  for (const b of document.querySelectorAll('#nav button[data-v]')) b.setAttribute('aria-pressed', b.dataset.v === S.view);
+  $('#vtitle').textContent = TITLES[S.view];
   $('#n-open').textContent = all('e').filter(e => e.k && !e.d).length || '';
   // meeting and event view share the ids of their head fields, so only one of them is ever filled
   $('#meet').innerHTML = S.view === 'meet' ? meetHTML() : ''; $('#ev').innerHTML = S.view === 'ev' ? eventHTML() : ''; autosize(main);
   if (S.view === 'todo') {
     const mem = members(); if (S.filter !== 'alle' && !mem.includes(S.filter)) S.filter = 'alle';
-    if (document.activeElement !== $('#fwho')) $('#fwho').innerHTML = ['alle', ...mem].map(n => `<option${n === S.filter ? ' selected' : ''}>${esc(n)}</option>`).join('');
     const gn = groups().map(g => g.n); if (S.grp !== 'alle' && !gn.includes(S.grp)) S.grp = 'alle';
-    if (document.activeElement !== $('#fgrp')) $('#fgrp').innerHTML = ['alle', ...gn].map(n => `<option${n === S.grp ? ' selected' : ''}>${esc(n)}</option>`).join('');
-    $('#fdone').checked = S.showDone;
     $('#todos').innerHTML = todosHTML(); autosize($('#todos'));
   }
   if (S.view === 'set') { $('#mem-list').innerHTML = members().map(n => `<button class="chip big" data-n="${esc(n)}" title="entfernen">${esc(n)} ✕</button>`).join('') || '<span class="mute">noch niemand.</span>';
     $('#grp-list').innerHTML = groups().map(g => `<div class="grp"><div class="line"><b>${esc(g.n)}</b><button class="chip" data-gdel="${esc(g.n)}" title="gruppe entfernen">✕</button></div><div class="chips">${members().map(n => `<button class="chip big" data-g="${esc(g.n)}" data-n="${esc(n)}" aria-pressed="${g.m.includes(n)}">${esc(n)}</button>`).join('') || '<span class="mute">erst leute anlegen.</span>'}</div></div>`).join('');
     drawSyncBox(); }
+  if (document.activeElement?.tagName !== 'SELECT' || !$('#ctx').contains(document.activeElement)) $('#ctx').innerHTML = ctxHTML(); // an open dropdown is left alone
   if (keep) { const el = keep.row ? main.querySelector(`.room:not([hidden]) .row[data-id="${keep.row}"] .tx`) : keep.id && document.getElementById(keep.id); if (el && el !== document.activeElement && el.offsetParent) { el.focus(); try { el.setSelectionRange(keep.a, keep.b); } catch {} } }
   document.body.classList.toggle('editing', !!document.activeElement?.closest?.('.tree .row'));
 }
@@ -543,7 +571,7 @@ main.addEventListener('input', ev => {
   if (cur && t.id === 'mtitle') { cur.title = t.value; put(cur, true); }
   if (cur && t.id === 'mplace') { cur.place = t.value; put(cur, true); }
 });
-main.addEventListener('change', ev => {
+document.addEventListener('change', ev => {
   const t = ev.target, cur = S.items.get(S.view === 'ev' ? S.event : S.meeting);
   if (t.id === 'msel') { if (S.view === 'ev') S.event = t.value; else S.meeting = t.value; render(); }
   if (t.classList.contains('me')) { try { localStorage[LSME] = t.value; if (t.value) localStorage[LSF] = S.filter = t.value; } catch {} announce(); render(); }
@@ -553,6 +581,8 @@ main.addEventListener('change', ev => {
   if (t.id === 'fwho') { S.filter = t.value; try { localStorage[LSF] = S.filter; } catch {} render(); }
   if (t.id === 'fdone') { S.showDone = t.checked; render(); }
 });
+$('#scrim').addEventListener('click', () => setNav(false));
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && document.body.classList.contains('nav-open')) { setNav(false); $('#menu').focus(); } });
 main.addEventListener('keydown', ev => {
   if (!ev.target.classList?.contains('tx') || ev.isComposing) return;
   const ta = ev.target, { row, e, flat } = rowOf(ta); if (!e) return;
@@ -577,7 +607,8 @@ main.addEventListener('focusout', () => setTimeout(() => document.body.classList
 
 document.addEventListener('click', async ev => {
   const t = ev.target.closest('button,a,label'); if (!t) return;
-  if (t.dataset.v || t.dataset.go) { S.view = t.dataset.v || t.dataset.go; render(); scrollTo(0, 0); return; }
+  if (t.id === 'menu') return setNav(!document.body.classList.contains('nav-open'));
+  if (t.dataset.v || t.dataset.go) { S.view = t.dataset.v || t.dataset.go; setNav(false); render(); scrollTo(0, 0); return; }
   if (t.dataset.ev) { S.event = t.dataset.ev; S.view = 'ev'; render(); scrollTo(0, 0); return; }
   if (t.dataset.addg) { const v = S.items.get(S.event); if (v) { const e = newEntry(v.id, '', (kidsOf(v.id, '').at(-1)?.o ?? 0) + 1, t.dataset.addg); e.g = t.dataset.addg; put(e); render(); } return; }
   const r = t.closest('.row') && rowOf(t);
@@ -597,7 +628,7 @@ document.addEventListener('click', async ev => {
     case 'mdel': if (cur && confirm(`„${cur.title}“ mit allen notizen und to-dos darin löschen?`)) { for (const e of [...kidsOf(cur.id, '')]) remove(e); drop(cur.id); S.meeting = null; render(); } break;
     case 'note-edit': if ($('#note-in').hidden) editNote(); else if (saveNote()) showNote(); break;
     case 'note-del': if (confirm('die notiz an dieser zeile löschen?')) { const e = S.items.get(pick); if (e) { delete e.n; put(e); } $('#note-in').hidden = true; $('#dnote').close(); } break;
-    case 'evnew': $('#ev-title').value = ''; $('#ev-date').value = ''; $('#dnewev').showModal(); break;
+    case 'evnew': case '': if (t.id !== 'evnew' && !t.dataset.newev) break; $('#ev-title').value = ''; $('#ev-date').value = ''; $('#dnewev').showModal(); break;
     case 'ev-go': { const x = $('#ev-title').value.trim(); if (!x) { $('#ev-title').focus(); break; } S.event = newEvent(x, $('#ev-date').value).id; S.view = 'ev'; $('#dnewev').close(); render(); break; }
     case 'eadd': if (cur) { const n = newEntry(cur.id, '', (kidsOf(cur.id, '').at(-1)?.o ?? 0) + 1); render(); focusRow(n.id); } break;
     case 'imp-go': { const n = importText($('#imp').value); $('#imp-msg').textContent = n ? `${n} treffen importiert.` : 'kein treffen im text gefunden.'; if (n) { $('#imp').value = ''; S.meeting = null; render(); } break; }
