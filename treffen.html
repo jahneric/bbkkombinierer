@@ -42,18 +42,20 @@ input,select,textarea{background:var(--ink);border:1px solid var(--line);padding
 .switch .note[data-s="offline"]::before,.switch .note[data-s="connecting"]::before{background:var(--soon)}
 .switch .note[data-s="error"]::before{background:var(--warn)}
 .switch #vtitle{margin-right:6px}
-#ctx{display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:1 1 0;min-width:0}
+#subs{display:flex;flex-wrap:wrap;gap:8px}
+#ctx{display:flex;flex-wrap:wrap;gap:8px;align-items:center;flex:1 1 100%;min-width:0}
+#ctx:empty{display:none}
 #ctx select{flex:0 1 340px;min-width:0;padding:6px 9px}
 #ctx label{display:flex;gap:6px;align-items:center;min-width:0}
 #ctx label select{flex:0 1 auto;max-width:42vw}
-@media (max-width:700px){.switch .note{order:2}#ctx{order:3;flex-basis:100%}#ctx:empty{display:none}#ctx select{flex:1 1 0}}
+@media (max-width:700px){.switch .note{order:2}#subs{order:3;flex-basis:100%;gap:6px}#subs button{padding:7px 8px}#ctx{order:4}#ctx select{flex:1 1 0}}
 #nav{position:fixed;top:0;bottom:0;left:0;z-index:41;width:min(280px,84vw);display:flex;flex-direction:column;gap:8px;
   padding:calc(env(safe-area-inset-top,0px) + 16px) 16px 16px;background:#0c0c0c;border-right:1px solid #2a2a2a;transform:translateX(-100%);transition:transform .18s ease-out;overflow:auto}
 body.nav-open #nav{transform:none}
 #nav b{letter-spacing:.04em;margin-bottom:10px;color:#eee}
 #nav button,#nav a{background:transparent;border:1px solid #555;padding:11px 12px;text-align:left;text-decoration:none;display:flex;justify-content:space-between}
 #nav button:hover,#nav a:hover{border-color:#aaa}
-#nav button[aria-pressed="true"]{background:#eee;color:#111}
+#nav a[aria-current="page"]{background:#eee;color:#111}
 #nav .gap{flex:1;min-height:16px}
 #scrim{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.6);display:none}
 body.nav-open #scrim{display:block}
@@ -138,19 +140,24 @@ pre{background:var(--ink);border:1px solid var(--line);padding:10px;overflow:aut
 <header class="switch" role="toolbar" aria-label="Leiste">
   <button id="menu" aria-label="menü" aria-expanded="false" aria-controls="nav">☰</button>
   <b id="vtitle">treffen</b>
-  <div id="ctx"></div>
+  <span id="subs">
+    <button data-v="meet" aria-pressed="true">treffen</button>
+    <button data-v="ev" aria-pressed="false">events</button>
+    <button data-v="todo" aria-pressed="false">to-dos <span id="n-open"></span></button>
+    <button data-v="set" aria-pressed="false">einstellungen</button>
+  </span>
   <span class="note" id="sync" data-s="local">kein raum · nur dieses gerät</span>
+  <div id="ctx"></div>
 </header>
 <div id="scrim"></div>
 <nav id="nav" aria-label="Bereiche" inert>
-  <b>bbk · treffen</b>
-  <button data-v="meet" aria-pressed="true">treffen</button>
-  <button data-v="ev" aria-pressed="false">events</button>
-  <button data-v="todo" aria-pressed="false">to-dos <span id="n-open"></span></button>
-  <button data-v="set" aria-pressed="false">einstellungen</button>
+  <b>bbk</b>
+  <a href="./#logos">kombinierer</a>
+  <a href="./#shirt">t-shirt</a>
+  <a href="treffen.html" aria-current="page">treffen</a>
+  <a href="./#y2k">website</a>
   <span class="gap"></span>
   <button id="reload" title="neueste version laden und alles frisch vom server holen">↻ aktualisieren</button>
-  <a href="./">kombinierer</a>
 </nav>
 
 <main id="main">
@@ -514,7 +521,6 @@ function todosHTML() {
     + group('überfällig', open.filter(e => e.due && e.due < t), 'over') + group('nächste 7 tage', open.filter(e => e.due >= t && e.due <= wk))
     + group('später', open.filter(e => e.due > wk)) + group('ohne deadline', open.filter(e => !e.due)) + (S.showDone ? group('erledigt', done) : '');
 }
-const TITLES = { meet: 'treffen', ev: 'events', todo: 'to-dos', set: 'einstellungen' };
 // what the top bar offers depends on where you are: pick a meeting, pick an event, or filter the to-dos
 function ctxHTML() {
   const opt = (list, cur) => list.map(m => `<option value="${m.id}"${m.id === cur ? ' selected' : ''}>${m.date ? fmt(m.date) + ' · ' : ''}${esc(m.title)}</option>`).join('');
@@ -541,8 +547,7 @@ function render() {
   for (const s of document.querySelectorAll('select.me')) if (s !== document.activeElement) s.innerHTML = ['', ...members()].map(n => `<option value="${esc(n)}"${n === me ? ' selected' : ''}>${esc(n || '–')}</option>`).join('');
   $('#noroom').style.display = window.BBK_FIREBASE && !localStorage[LSK] && S.view !== 'set' ? '' : 'none';
   $('#iam').style.display = localStorage[LSK] && !members().includes(me) && members().length && S.view !== 'set' ? '' : 'none';
-  for (const b of document.querySelectorAll('#nav button[data-v]')) b.setAttribute('aria-pressed', b.dataset.v === S.view);
-  $('#vtitle').textContent = TITLES[S.view];
+  for (const b of document.querySelectorAll('#subs button')) b.setAttribute('aria-pressed', b.dataset.v === S.view);
   $('#n-open').textContent = all('e').filter(e => e.k && !e.d).length || '';
   // meeting and event view share the ids of their head fields, so only one of them is ever filled
   $('#meet').innerHTML = S.view === 'meet' ? meetHTML() : ''; $('#ev').innerHTML = S.view === 'ev' ? eventHTML() : ''; autosize(main);
