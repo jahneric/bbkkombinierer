@@ -497,6 +497,8 @@ function meetHTML() {
   <div class="line" style="margin-top:18px"><button class="btn" id="eadd">+ thema</button></div>
   <p class="mute keys" style="margin-top:18px">enter: neue zeile · tab / shift+tab: ein- und ausrücken · alt+↑↓: verschieben · strg+enter: abhaken</p>`;
 }
+const spKey = () => { const a = crypto.getRandomValues(new Uint8Array(18)); let t = ''; for (const b of a) t += String.fromCharCode(b); return btoa(t).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, ''); };
+const spLink = (v, orga) => new URL('schicht.html', location.href).href + '#k=' + v.sp.k + (orga ? '&o=' + v.sp.o + '&t=' + encodeURIComponent(v.title || '') + '&d=' + (v.date || '') : '');
 function eventHTML() {
   const vs = events(), t = today();
   if (!S.items.has(S.event)) S.event = (vs.find(v => v.date >= t) || vs.at(-1))?.id || null;
@@ -505,6 +507,10 @@ function eventHTML() {
   const have = new Set(kidsOf(cur.id, '').map(e => e.g)), missing = groups().filter(g => !have.has(g.n));
   return `<div class="line"><input id="mtitle" value="${esc(cur.title)}" aria-label="name"><input type="date" id="mdate" value="${cur.date}" aria-label="datum"></div>
   <div class="line"><input id="mplace" value="${esc(cur.place)}" placeholder="wo?" aria-label="ort"><button class="btn bad" id="mdel">event löschen</button></div>
+  <h2 class="lab-h">schichtplan</h2>
+  ${cur.sp ? `<div class="line"><a class="btn main" href="${spLink(cur, true)}" target="_blank" rel="noopener">schichtplan öffnen</a><button class="btn" id="spcopy">helfer-link kopieren</button></div>
+  <p class="mute">wer den helfer-link hat, sieht nur diesen plan (bereiche und halbe stunden) und kann sich eintragen. von treffen, gruppen und to-dos sieht er nichts. zeiten und bereiche ändert ihr über „schichtplan öffnen“.</p>`
+  : `<div class="line"><button class="btn" id="spnew">+ schichtplan</button><span class="mute">awareness, bar, einlass … in halben stunden zum selbst eintragen, über einen eigenen link.</span></div>`}
   <h2 class="lab-h">gruppen · ${openIn(cur.id)} offen</h2>
   <div class="tree">${eventTreeHTML(cur)}</div>
   <div class="chips" style="margin-top:18px">${missing.map(g => `<button class="chip big off" data-addg="${esc(g.n)}">+ ${esc(g.n)}</button>`).join('')}<button class="chip big off" id="eadd">+ bereich</button></div>
@@ -635,6 +641,8 @@ document.addEventListener('click', async ev => {
     case 'note-del': if (confirm('die notiz an dieser zeile löschen?')) { const e = S.items.get(pick); if (e) { delete e.n; put(e); } $('#note-in').hidden = true; $('#dnote').close(); } break;
     case 'evnew': case '': if (t.id !== 'evnew' && !t.dataset.newev) break; $('#ev-title').value = ''; $('#ev-date').value = ''; $('#dnewev').showModal(); break;
     case 'ev-go': { const x = $('#ev-title').value.trim(); if (!x) { $('#ev-title').focus(); break; } S.event = newEvent(x, $('#ev-date').value).id; S.view = 'ev'; $('#dnewev').close(); render(); break; }
+    case 'spnew': if (cur && !cur.sp) { cur.sp = { k: spKey(), o: spKey() }; put(cur); render(); open(spLink(cur, true), '_blank', 'noopener'); } break;
+    case 'spcopy': if (cur?.sp) { const link = spLink(cur); try { await navigator.clipboard.writeText(link); t.textContent = 'kopiert ✓'; } catch { prompt('helfer-link:', link); } } break;
     case 'eadd': if (cur) { const n = newEntry(cur.id, '', (kidsOf(cur.id, '').at(-1)?.o ?? 0) + 1); render(); focusRow(n.id); } break;
     case 'imp-go': { const n = importText($('#imp').value); $('#imp-msg').textContent = n ? `${n} treffen importiert.` : 'kein treffen im text gefunden.'; if (n) { $('#imp').value = ''; S.meeting = null; render(); } break; }
     case 'exp': { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify([...S.items.values()], null, 1)], { type: 'application/json' })); a.download = `bbk-treffen-${today()}.json`; a.click(); URL.revokeObjectURL(a.href); break; }

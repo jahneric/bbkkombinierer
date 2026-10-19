@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12110f">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>schichtplan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martian+Mono:wdth,wght@75..112.5,100..800&display=swap">
+<style>
+/* schichtplan: one evening, its areas (awareness, bar, einlass …) in 30-minute steps; people sign themselves up.
+   a page of its own on purpose: whoever gets the link sees this plan and nothing else of the collective.
+   same dark identity as treffen.html; tokens are copied from there. */
+:root{
+  --void:#050505; --ink:#000; --bone:#ecebe6; --phosphor:#d3d6d4; --ash:#2c2c2a; --line:#3a3c3b; --mute:#8d8c87;
+  --warn:#ff7a59; --soon:#e8c76a; --ok:#7fd98a;
+  --f-min:'Martian Mono',ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--void);color:var(--phosphor);font:13px/1.6 var(--f-min)}
+:focus-visible{outline:2px dashed var(--bone);outline-offset:2px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+input,select,textarea{background:var(--ink);border:1px solid var(--line);padding:7px 9px;border-radius:0}
+@media (pointer:coarse){input,select,textarea{font-size:16px}}
+.top{position:sticky;top:0;z-index:20;display:flex;gap:10px;align-items:center;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px 8px;
+  background:#0c0c0c;color:#eee;font:12px/1.2 var(--f-min);border-bottom:1px solid #2a2a2a}
+.top b{letter-spacing:.04em}
+.note{margin-left:auto;opacity:.7;font-size:11px}
+.note::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;background:var(--mute)}
+.note[data-s="live"]::before{background:var(--ok)}
+.note[data-s="offline"]::before,.note[data-s="connecting"]::before{background:var(--soon)}
+.note[data-s="error"]::before{background:var(--warn)}
+main{max-width:980px;margin:0 auto;padding:24px 16px 120px}
+h1{font:800 clamp(26px,6vw,44px)/.95 var(--f-min);font-stretch:112.5%;letter-spacing:-.05em;margin:0 0 10px;color:var(--bone)}
+.sub{color:var(--bone);margin:0 0 14px}
+.lab-h{font:400 11px var(--f-min);letter-spacing:.2em;text-transform:uppercase;color:var(--mute);margin:28px 0 8px}
+p{max-width:62ch;margin:0 0 12px}
+.mute{color:var(--mute)}
+.line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.line>input:not([type=checkbox]),.line>select{flex:1 1 12ch;min-width:0}
+.btn{background:transparent;border:1px solid #555;padding:7px 11px;text-decoration:none;color:inherit}
+.btn:hover{border-color:#aaa}
+.btn.main{background:var(--bone);color:var(--ink);border-color:var(--bone)}
+.btn.bad:hover{border-color:var(--warn);color:var(--warn)}
+.empty{color:var(--mute);border:1px dashed var(--line);padding:18px}
+.info{white-space:pre-wrap;border-left:2px solid var(--line);padding-left:10px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11px;color:var(--mute);margin:6px 0 10px}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line)}
+/* the grid: a row per half hour, a column per area */
+.grid{display:grid;gap:3px;overflow-x:auto;padding-bottom:4px}
+.grid .h{font-size:11px;color:var(--bone);padding:4px 2px;line-height:1.3;align-self:end}
+.grid .h small{display:block;color:var(--mute)}
+.grid .t{font-size:11px;color:var(--mute);padding:6px 4px 0 0;text-align:right;white-space:nowrap}
+.cell{min-height:44px;text-align:left;background:#0a0a0a;border:1px solid var(--line);padding:4px 6px;display:flex;flex-direction:column;gap:1px;min-width:0}
+.cell:hover{border-color:#aaa}
+.cell .n{font-size:10px;color:var(--mute)}
+.cell .p{font-size:11px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cell.gap{border-color:var(--warn);border-style:dashed}
+.cell.low{border-color:var(--soon)}
+.cell.full{border-color:#4f6b52}
+.cell.mine{background:var(--bone);color:var(--ink);border-color:var(--bone)}
+.cell.mine .n{color:#555}
+.cell.busy{opacity:.45}
+.cell:disabled{cursor:default}
+.mine-list .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--ash)}
+.chip{background:none;border:1px solid var(--line);padding:2px 8px;font-size:11px}
+.chip:hover{border-color:#aaa}
+.chip.bad:hover{border-color:var(--warn);color:var(--warn)}
+details.set{border:1px solid var(--ash);padding:10px 14px;margin:0 0 18px}
+details.set>summary{cursor:pointer;color:var(--bone);letter-spacing:.06em}
+.areas .line input[type=number]{flex:0 0 5.5em}
+textarea{width:100%;min-height:70px}
+#toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--bone);color:var(--ink);padding:8px 14px;font-size:12px;z-index:50;display:none;max-width:90vw}
+</style>
+</head>
+<body>
+<header class="top"><b>schichtplan</b><span class="note" id="sync" data-s="connecting">verbinde …</span></header>
+<main id="main"><p class="mute">lädt …</p></main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// firebase web config: names the project, public by design. the plan itself is encrypted in the browser with the key
+// from the link; the server only ever holds ciphertext.
+window.BBK_FIREBASE = {
+  apiKey: 'AIzaSyBf4FTEH9ophPMfVSBOkrKYY-Fwjez9k4A',
+  authDomain: 'bbk-plenum-ba0a0.firebaseapp.com',
+  projectId: 'bbk-plenum-ba0a0',
+  storageBucket: 'bbk-plenum-ba0a0.firebasestorage.app',
+  messagingSenderId: '21382986869',
+  appId: '1:21382986869:web:cae998d6390882318ecc3c'
+};
+</script>
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const te = new TextEncoder(), td = new TextDecoder();
+const b64 = u8 => { let s = ''; for (const b of u8) s += String.fromCharCode(b); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const hex = u8 => [...u8].map(b => b.toString(16).padStart(2, '0')).join('');
+const rnd = n => { const a = crypto.getRandomValues(new Uint8Array(n)); return b64(a).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const main = $('#main');
+
+/* ---------- the link ----------
+   #k=<plan key> is the helper link: read the plan, sign up. #k=…&o=<orga key> is the orga link: change times and areas,
+   take people off. both live in the hash, which the browser never sends to a server. a plan made from treffen also
+   brings its title and date (t, d) for the very first save. */
+const P = Object.fromEntries(location.hash.slice(1).split('&').filter(Boolean).map(kv => kv.split('=').map(decodeURIComponent)));
+const ORGA = !!P.o;
+const LSN = 'bbk-schicht-name', LSO = 'bbk-schicht-own-' + (P.k || '').slice(0, 12);
+let OWN = {}; try { OWN = JSON.parse(localStorage[LSO] || '{}'); } catch {}   // entry id -> the secret that lets this device change it
+const saveOwn = () => { try { localStorage[LSO] = JSON.stringify(OWN); } catch {} };
+
+/* ---------- state ----------
+   cfg  {title, date, start:'20:00'|'', end:'03:00'|'', names:true, info, areas:[{id, n, need}], hidden:[entry ids]}
+   entry {id, a: area id, n: name, sl: [slot starts in minutes from midnight of the date; past midnight they go on, 1500 = 01:00]}
+   one entry per person and area; a slot is half an hour. */
+const S = { cfg: null, items: new Map(), raw: new Map(), gone: new Map(), ready: false, name: localStorage[LSN] || '' };
+// a local change is newer than anything the server can echo back while it is still on its way up
+const touch = it => { it.u = Math.max(Date.now(), (it.u || 0) + 1); return it; };
+const DEF_AREAS = [['awareness', 2], ['bar', 2], ['einlass', 1]];
+const toMin = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(s || ''); return m ? +m[1] * 60 + +m[2] : null; };
+const clock = m => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+function slots() { const c = S.cfg, a = toMin(c?.start), b = toMin(c?.end); if (a == null || b == null) return [];
+  const e = b <= a ? b + 1440 : b, out = []; for (let m = a - (a % 30); m < e; m += 30) out.push(m); return out; }
+const ranges = sl => { const s = [...sl].sort((a, b) => a - b), out = []; for (const m of s) { const l = out.at(-1); if (l && l[1] === m) l[1] = m + 30; else out.push([m, m + 30]); } return out; };
+const rangeText = sl => ranges(sl).map(([a, b]) => clock(a) + '–' + clock(b)).join(', ');
+const dateText = d => { if (!d) return ''; const x = new Date(d + 'T12:00'); return isNaN(x) ? d : x.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }); };
+const entries = () => [...S.items.values()].filter(e => e.t === 's' && !(S.cfg?.hidden || []).includes(e.id));
+const areaOf = id => (S.cfg?.areas || []).find(a => a.id === id);
+const mine = e => !!OWN[e.id];
+
+/* ---------- crypto ----------
+   the plan key is long and random, so one hash is enough to turn it into the storage id and the AES key.
+   who may change a document: each one carries h, the end of a hash chain only its writer can extend backwards.
+   a change has to show p with sha256(p) == h and then stores p as the new h (firestore checks it, see README);
+   the secret itself never reaches the server and a seen p is worthless afterwards. */
+async function planKeys(k) {
+  const b = new Uint8Array(await crypto.subtle.digest('SHA-512', te.encode('bbk-schicht-v1|' + k)));
+  return { space: hex(b.slice(32, 48)), key: await crypto.subtle.importKey('raw', b.slice(0, 32), 'AES-GCM', false, ['encrypt', 'decrypt']) };
+}
+const CHAINS = new Map();
+async function chain(secret, n) {   // xs[0] = sha256(secret), xs[i] = sha256(xs[i-1]); a fresh document starts at xs[n]
+  const ck = secret + '|' + n; if (CHAINS.has(ck)) return CHAINS.get(ck);
+  const xs = [new Uint8Array(await crypto.subtle.digest('SHA-256', te.encode(secret)))];
+  for (let i = 1; i <= n; i++) xs.push(new Uint8Array(await crypto.subtle.digest('SHA-256', xs[i - 1])));
+  const r = { xs, at: new Map(xs.map((x, i) => [hex(x), i])) }; CHAINS.set(ck, r); return r;
+}
+const N_CFG = 3000, N_ENTRY = 400;
+
+/* ---------- sync ---------- */
+const SYNC_TEXT = { connecting: 'verbinde …', live: 'synchron', offline: 'offline · wird nachgetragen', error: 'fehler' };
+const sync = {
+  fs: null, col: null, key: null, q: {},
+  set(s, d) { const n = $('#sync'); n.dataset.s = s; n.textContent = SYNC_TEXT[s] + (d ? ' · ' + d : ''); },
+  async start() {
+    if (!P.k) { main.innerHTML = '<div class="empty"><p>dieser link ist unvollständig. frag die person, die ihn dir geschickt hat, nach dem ganzen link.</p></div>'; this.set('error'); return; }
+    try {
+      const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
+      const [{ initializeApp }, fs] = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-firestore.js')]);
+      const k = await planKeys(P.k), app = initializeApp(window.BBK_FIREBASE);
+      this.fs = fs; this.key = k.key; this.col = fs.collection(fs.getFirestore(app), 'schichten', k.space, 'items');
+      fs.onSnapshot(this.col, { includeMetadataChanges: true }, snap => this.apply(snap).catch(e => console.error(e)), err => this.set('error', err.code));
+    } catch (e) { console.error(e); this.set(navigator.onLine ? 'error' : 'offline'); }
+  },
+  async apply(snap) {
+    for (const ch of snap.docChanges()) {
+      const id = ch.doc.id, d = ch.doc.data();
+      if (S.gone.get(id) > d.u) { this.keep(id, d); continue; }   // deleted here after that version
+      if (ch.type === 'removed' || d.x) { S.items.delete(id); if (id === 'cfg') S.cfg = null; this.keep(id, d); continue; }
+      const loc = id === 'cfg' ? S.cfg : S.items.get(id);
+      if (loc && loc.u > d.u) { this.keep(id, d); continue; }   // ours is newer and on its way up
+      try { const it = JSON.parse(td.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(d.iv) }, this.key, unb64(d.c))));
+        if (id === 'cfg') S.cfg = it; else S.items.set(id, it); } catch (e) { console.warn('nicht lesbar', id); }
+      this.keep(id, d);
+    }
+    this.set(snap.metadata.fromCache ? 'offline' : 'live');
+    if (!snap.metadata.fromCache && !S.ready) { S.ready = true; if (!S.cfg && ORGA) await createPlan(); }
+    if (S.ready) render();
+  },
+  keep(id, d) { if (d.h) { const h = hex(d.h.toUint8Array()), r = S.raw.get(id); if (!r || !r.local || r.h === h) S.raw.set(id, { h }); } },
+  // one write per document at a time, each one sends whatever is newest at that moment
+  write(id, secret, n) { this.q[id] = (this.q[id] || Promise.resolve()).then(() => this.writeNow(id, secret, n)).catch(e => this.failed(id, e)); return this.q[id]; },
+  // after a refused write the chain position may be off: ask the server where the document stands
+  async failed(id, e) { console.error(e); this.set('error', e.code || 'schreiben'); toast('konnte nicht speichern. lade die seite neu und versuch es nochmal.');
+    try { const d = (await this.fs.getDoc(this.fs.doc(this.col, id))).data(); if (d?.h) S.raw.set(id, { h: hex(d.h.toUint8Array()) }); else S.raw.delete(id); } catch {} },
+  async writeNow(id, secret, n) {
+    const it = id === 'cfg' ? S.cfg : S.items.get(id), { xs, at } = await chain(secret, n), r = S.raw.get(id), fs = this.fs;
+    let doc;
+    if (it) { touch(it); const iv = crypto.getRandomValues(new Uint8Array(12));
+      doc = { iv: b64(iv), c: b64(new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, this.key, te.encode(JSON.stringify(it))))), u: it.u }; }
+    else { doc = { x: 1, u: Date.now() }; S.gone.set(id, doc.u); }
+    if (!r) { doc.h = fs.Bytes.fromUint8Array(xs[n]); S.raw.set(id, { h: hex(xs[n]), local: true }); }
+    else { const i = at.get(r.h); if (!(i > 0)) throw Object.assign(new Error('kette'), { code: 'keine berechtigung' });
+      doc.p = doc.h = fs.Bytes.fromUint8Array(xs[i - 1]); S.raw.set(id, { h: hex(xs[i - 1]), local: true }); }
+    await fs.setDoc(fs.doc(this.col, id), { ...doc, s: fs.serverTimestamp() });
+    const cur = S.raw.get(id); if (cur) delete cur.local;
+  }
+};
+addEventListener('offline', () => sync.set('offline'));
+
+/* ---------- changes ---------- */
+let cfgT;
+function saveCfg(lazy) { touch(S.cfg); clearTimeout(cfgT); const go = () => sync.write('cfg', P.o, N_CFG); if (lazy) cfgT = setTimeout(go, 800); else go(); render(); }
+async function createPlan() {
+  S.cfg = { title: P.t || 'neuer abend', date: P.d || '', start: '', end: '', names: true, info: '', hidden: [], areas: DEF_AREAS.map(([n, need]) => ({ id: uid(), n, need })) };
+  await sync.write('cfg', P.o, N_CFG);
+}
+// a tap on a half hour of an area: in or out. nobody can be in two places at once, so a slot taken elsewhere is refused
+function toggle(aid, m) {
+  if (!S.name.trim()) { toast('trag oben zuerst deinen namen ein.'); $('#me')?.focus(); return; }
+  const own = entries().filter(mine), other = own.find(e => e.a !== aid && e.sl.includes(m));
+  if (other) { toast(`um ${clock(m)} bist du schon bei ${areaOf(other.a)?.n || 'einem anderen bereich'}.`); return; }
+  let e = own.find(x => x.a === aid);
+  if (!e) { e = { id: uid(), t: 's', a: aid, n: S.name.trim(), sl: [] }; OWN[e.id] = rnd(24); saveOwn(); S.items.set(e.id, e); }
+  e.sl = e.sl.includes(m) ? e.sl.filter(x => x !== m) : [...e.sl, m].sort((a, b) => a - b); touch(e);
+  if (!e.sl.length) { S.items.delete(e.id); S.gone.set(e.id, Date.now()); }
+  sync.write(e.id, OWN[e.id], N_ENTRY); render();
+}
+function dropOwn(id) { const e = S.items.get(id); if (!e || !OWN[id]) return; S.items.delete(id); S.gone.set(id, Date.now()); sync.write(id, OWN[id], N_ENTRY); render(); }
+function rename(name) { S.name = name; try { localStorage[LSN] = name; } catch {}
+  for (const e of entries().filter(mine)) if (name.trim() && e.n !== name.trim()) { e.n = name.trim(); touch(e); sync.write(e.id, OWN[e.id], N_ENTRY); } }
+
+/* ---------- view ---------- */
+let toastT;
+function toast(t) { const n = $('#toast'); n.textContent = t; n.style.display = 'block'; clearTimeout(toastT); toastT = setTimeout(() => { n.style.display = 'none'; }, 3200); }
+function gridHTML() {
+  const c = S.cfg, ss = slots(), as = c.areas || [], es = entries(), showNames = c.names || ORGA;
+  if (!as.length) return `<div class="empty"><p>${ORGA ? 'leg oben in den einstellungen bereiche an (z. b. bar, einlass).' : 'hier sind noch keine bereiche eingetragen.'}</p></div>`;
+  if (!ss.length) return `<div class="empty"><p>${ORGA ? 'trag oben beginn und ende ein, dann erscheinen die halben stunden zum eintragen.' : 'die zeiten für den abend stehen noch nicht fest. schau später nochmal rein, der link bleibt gleich.'}</p></div>`;
+  const ownAt = m => es.find(e => mine(e) && e.sl.includes(m));
+  let h = `<div class="grid" style="grid-template-columns:3.4em repeat(${as.length},minmax(92px,1fr))"><div></div>`;
+  h += as.map(a => `<div class="h">${esc(a.n)}<small>${a.need ? a.need + ' pro schicht' : ''}</small></div>`).join('');
+  for (const m of ss) {
+    h += `<div class="t">${clock(m)}</div>`;
+    for (const a of as) {
+      const here = es.filter(e => e.a === a.id && e.sl.includes(m)), n = here.length, me = here.some(mine), need = +a.need || 0, elsewhere = !me && ownAt(m);
+      const cls = me ? 'mine' : need && n === 0 ? 'gap' : need && n < need ? 'low' : need ? 'full' : '';
+      const who = showNames ? here.map(e => `<span class="p">${esc(e.n)}</span>`).join('') : (me ? `<span class="p">${esc(S.name)}</span>` : '');
+      h += `<button class="cell ${cls}${elsewhere ? ' busy' : ''}" data-a="${a.id}" data-m="${m}" aria-pressed="${me}" aria-label="${esc(a.n)} ${clock(m)}–${clock(m + 30)}, ${n}${need ? ' von ' + need : ''}">
+        <span class="n">${n}${need ? '/' + need : ''}</span>${who}</button>`;
+    }
+  }
+  return h + '</div>';
+}
+function mineHTML() {
+  const own = entries().filter(mine); if (!own.length) return '';
+  return `<h2 class="lab-h">deine schichten</h2><div class="mine-list">${own.map(e => `<div class="row"><b>${esc(areaOf(e.a)?.n || '?')}</b><span>${rangeText(e.sl)}</span>
+    <button class="chip bad" data-drop="${e.id}">austragen</button></div>`).join('')}</div>`;
+}
+function orgaHTML() {
+  const c = S.cfg, ss = new Set(slots()), es = entries();
+  const outside = es.filter(e => e.sl.some(m => !ss.has(m)) || !areaOf(e.a));
+  const people = [...new Set(es.map(e => e.n))].sort((a, b) => a.localeCompare(b, 'de'));
+  return `<details class="set"${!c.start || !c.end || !(c.areas || []).length ? ' open' : ''}><summary>einstellungen (nur orga)</summary>
+    <h2 class="lab-h">abend</h2>
+    <div class="line"><input id="c-title" value="${esc(c.title)}" aria-label="name des abends"><input type="date" id="c-date" value="${esc(c.date)}" aria-label="datum"></div>
+    <div class="line"><label>beginn <input type="time" id="c-start" value="${esc(c.start)}" step="1800"></label><label>ende <input type="time" id="c-end" value="${esc(c.end)}" step="1800"></label>
+      <span class="mute">ende vor beginn heißt: nach mitternacht. leer lassen, solange es nicht feststeht.</span></div>
+    <textarea id="c-info" placeholder="infos für alle, die sich eintragen (treffpunkt, ansprechperson, was mitbringen …)" aria-label="infos">${esc(c.info)}</textarea>
+    <h2 class="lab-h">bereiche · leute pro halbe stunde</h2>
+    <div class="areas">${(c.areas || []).map(a => `<div class="line"><input id="an-${a.id}" data-an="${a.id}" value="${esc(a.n)}" aria-label="bereich"><input type="number" min="0" max="20" id="aneed-${a.id}" data-aneed="${a.id}" value="${+a.need || 0}" aria-label="leute pro halbe stunde"><button class="btn bad" data-adel="${a.id}">entfernen</button></div>`).join('')}</div>
+    <div class="line"><button class="btn" id="a-add">+ bereich</button></div>
+    <h2 class="lab-h">sichtbarkeit</h2>
+    <div class="line"><label><input type="checkbox" id="c-names"${c.names ? ' checked' : ''}> namen der anderen für alle sichtbar</label></div>
+    <h2 class="lab-h">link für helfende</h2>
+    <p class="mute">wer diesen link hat, sieht nur diesen plan und kann sich eintragen und wieder austragen. zeiten und bereiche ändern geht nur über euren orga-link aus treffen.</p>
+    <div class="line"><button class="btn main" id="l-copy">helfer-link kopieren</button></div>
+  </details>
+  ${people.length ? `<h2 class="lab-h">wer wann · ${people.length} leute</h2><div class="mine-list">${es.sort((a, b) => a.n.localeCompare(b.n, 'de')).map(e => `<div class="row"><b>${esc(e.n)}</b><span>${esc(areaOf(e.a)?.n || 'gelöschter bereich')}</span><span>${rangeText(e.sl)}</span>
+    <button class="chip bad" data-hide="${e.id}">austragen</button></div>`).join('')}</div>
+    <div class="line" style="margin-top:10px"><button class="btn" id="l-text">liste als text kopieren</button></div>` : ''}
+  ${outside.length ? `<p class="mute" style="margin-top:12px">⚠ ${outside.length} eintrag/einträge liegen ganz oder teilweise außerhalb der zeiten oder in einem gelöschten bereich. sie bleiben gespeichert und tauchen wieder auf, wenn die zeiten passen.</p>` : ''}`;
+}
+function render() {
+  const c = S.cfg;
+  if (!c) { main.innerHTML = `<div class="empty"><p>${S.ready ? 'diesen plan gibt es nicht (mehr). frag nach einem neuen link.' : 'lädt …'}</p></div>`; return; }
+  document.title = (c.title || 'schichtplan') + ' · schichten';
+  const ss = slots(), focus = document.activeElement?.id, pos = document.activeElement?.selectionStart;
+  main.innerHTML = `<h1>${esc(c.title || 'schichtplan')}</h1>
+    <p class="sub">${esc(dateText(c.date))}${ss.length ? ` · ${clock(ss[0])}–${clock(ss.at(-1) + 30)}` : c.date ? ' · zeiten folgen' : ''}</p>
+    ${c.info ? `<p class="info">${esc(c.info)}</p>` : ''}
+    ${ORGA ? orgaHTML() : ''}
+    <h2 class="lab-h">eintragen</h2>
+    <div class="line"><input id="me" value="${esc(S.name)}" placeholder="dein name" autocomplete="name" aria-label="dein name"></div>
+    <p class="mute">tipp die halben stunden an, in denen du kannst, nochmal tippen nimmt sie wieder raus. du kannst mehrere bereiche übernehmen, nur nicht zur selben zeit.</p>
+    <div class="legend"><span><i style="border:1px dashed var(--warn)"></i>niemand da</span><span><i style="border-color:var(--soon)"></i>fehlt noch wer</span><span><i style="border-color:#4f6b52"></i>voll</span><span><i style="background:var(--bone);border-color:var(--bone)"></i>du</span></div>
+    ${gridHTML()}
+    ${mineHTML()}`;
+  if (focus) { const el = document.getElementById(focus); if (el) { el.focus(); try { if (pos != null) el.setSelectionRange(pos, pos); } catch {} } }
+}
+
+main.addEventListener('click', async ev => {
+  const t = ev.target.closest('button'); if (!t) return;
+  if (t.classList.contains('cell')) return toggle(t.dataset.a, +t.dataset.m);
+  if (t.dataset.drop && confirm('aus diesem bereich ganz austragen?')) return dropOwn(t.dataset.drop);
+  if (!ORGA) return;
+  const c = S.cfg;
+  if (t.dataset.hide) { const e = S.items.get(t.dataset.hide); if (e && confirm(`${e.n} aus ${areaOf(e.a)?.n || 'dem bereich'} austragen?`)) { c.hidden = [...(c.hidden || []), e.id]; saveCfg(); } return; }
+  if (t.dataset.adel) { const a = areaOf(t.dataset.adel); if (a && confirm(`bereich „${a.n}“ entfernen? eingetragene leute bleiben gespeichert, werden aber nicht mehr angezeigt.`)) { c.areas = c.areas.filter(x => x !== a); saveCfg(); } return; }
+  switch (t.id) {
+    case 'a-add': c.areas = [...(c.areas || []), { id: uid(), n: 'neuer bereich', need: 1 }]; saveCfg(); break;
+    case 'l-copy': { const link = location.origin + location.pathname + '#k=' + encodeURIComponent(P.k); try { await navigator.clipboard.writeText(link); toast('helfer-link kopiert'); } catch { prompt('helfer-link:', link); } break; }
+    case 'l-text': { const txt = `${c.title} · ${dateText(c.date)}\n` + (c.areas || []).map(a => `\n${a.n}\n` + entries().filter(e => e.a === a.id).map(e => `  ${rangeText(e.sl)}  ${e.n}`).join('\n')).join('\n');
+      try { await navigator.clipboard.writeText(txt); toast('liste kopiert'); } catch { prompt('liste:', txt); } break; }
+  }
+});
+main.addEventListener('input', ev => {
+  const t = ev.target, c = S.cfg;
+  if (t.id === 'me') { rename(t.value); clearTimeout(t._r); t._r = setTimeout(render, 600); return; }
+  if (!ORGA || !c) return;
+  if (t.id === 'c-title') c.title = t.value; else if (t.id === 'c-date') c.date = t.value; else if (t.id === 'c-info') c.info = t.value;
+  else if (t.id === 'c-start') c.start = t.value; else if (t.id === 'c-end') c.end = t.value; else if (t.id === 'c-names') c.names = t.checked;
+  else if (t.dataset.an) areaOf(t.dataset.an).n = t.value; else if (t.dataset.aneed) areaOf(t.dataset.aneed).need = Math.max(0, Math.min(20, +t.value || 0));
+  else return;
+  touch(c); clearTimeout(cfgT); cfgT = setTimeout(() => sync.write('cfg', P.o, N_CFG), 800);
+  if (['c-start', 'c-end', 'c-names', 'c-date'].includes(t.id) || t.dataset.aneed) render();
+});
+// typing in a text field of the orga settings should not lose the cursor to a re-render from the server
+main.addEventListener('change', ev => { if (ev.target.dataset.an || ev.target.id === 'c-title' || ev.target.id === 'c-info') render(); });
+
+render();
+sync.start();
+</script>
+</body>
+</html>
