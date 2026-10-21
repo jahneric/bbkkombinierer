@@ -523,6 +523,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <div><span class="mo-lbl">effekte · mehrere möglich</span><div class="mo-chips" id="bild-fx" role="group" aria-label="Effekte"></div></div>
         <label for="bild-amt">stärke <output id="bild-amt-o"></output><input type="range" id="bild-amt" min="10" max="100" value="60"></label>
         <div class="row"><div class="seg" role="group" aria-label="Ausschnitt"><button data-bild-fit="fuellen" aria-pressed="true">füllen</button><button data-bild-fit="ganz" aria-pressed="false">ganz zeigen</button></div></div>
+        <div><span class="mo-lbl">eigener text</span><div id="bild-texts"></div>
+          <div class="row"><button class="kb-btn ghost" id="bild-addtext" type="button">+ text</button></div>
+          <p class="mo-note" style="margin:4px 0 0">texte in der vorschau mit der maus an ihren platz ziehen.</p></div>
         <div class="row"><div class="seg" role="group" aria-label="Text"><button data-bild-text="0" aria-pressed="true">ohne text</button><button data-bild-text="1" aria-pressed="false">titel + datum</button></div><div class="seg" role="group" aria-label="Logo"><button data-bild-logo="0" aria-pressed="true">ohne logo</button><button data-bild-logo="1" aria-pressed="false">mit logo</button></div></div>
       </div></details>
       <details class="mo-sec mo-reel" data-sec="szenen" open><summary>szenen</summary><div class="mo-body">
@@ -549,6 +552,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <div class="row"><div class="seg" role="group" aria-label="Papier"><button data-mo-paper="1" aria-pressed="true">vergilbt</button><button data-mo-paper="0" aria-pressed="false">rein</button></div></div>
         <div class="row colctl"></div>
         <div class="mo-post"><label for="mo-font">schrift für den titel<select id="mo-font"></select></label></div>
+      <div class="mo-post"><label for="mo-tw">breite der titelschrift <output id="mo-tw-o"></output><input type="range" id="mo-tw" min="50" max="250" value="100"></label></div>
         <div><span class="mo-lbl">druck</span><div class="mo-chips" id="mo-pfx" role="group" aria-label="Druck-Effekt"></div></div>
         <label for="mo-pstr">druck-stärke <output id="mo-pstr-o"></output><input type="range" id="mo-pstr" min="10" max="100" value="60"></label>
         <div><span class="mo-lbl">hintergrund</span><div class="mo-chips" id="mo-back" role="group" aria-label="Hintergrund-Visual"></div></div>
@@ -1360,7 +1364,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // every logo is rasterised from its svg in 4 "drawings" (different boil seeds), cycled like a flip book.
   // everything is a pure function of the frame index f, so a recording of N frames loops seamlessly.
   const MO = { mode: 'logo', fmt: 'post', m: 'r4-kopfwelle', w: 'r2-guss', fx: 'ruhig', lay: 'plakat', boil: 4, amt: 55, fps: 8, size: 72,
-    dark: true, grain: true, paper: true, len: 6, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', pfx: 'sauber', pstr: 60, arr: 'logo', still: false, btext: 'bbk', p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
+    dark: true, grain: true, paper: true, len: 6, tw: 100, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', pfx: 'sauber', pstr: 60, arr: 'logo', still: false, btext: 'bbk', p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
   const FMT = { post: [1080, 1350], story: [1080, 1920] };
   // own colour pair, shared by logo-labor, kombinierer and bewegt (and the png downloads)
   const COL = { on: false, ground: '#3b1a5c', ink: '#f5d33d' };
@@ -1389,7 +1393,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const P_PALS = { sw: ['schwarz / weiß', '#0b0b0b', '#f2f2f2'], rw: ['rot / weiß', '#c3221b', '#f4eee2'], sr: ['schwarz / rot', '#0b0b0b', '#e3271d'],
     bw: ['blau / weiß', '#1b2f8a', '#f2f0ea'], lg: ['lila / gelb', '#3b1a5c', '#f5d33d'], pv: ['papier', '#12110f', '#ebe3cb'], own: ['eigene farben', null, null] };
   const N_STYLES = [['gezogen', 'gezogen'], ['block', 'block'], ['quer', 'quer'], ['hoch', 'hoch'], ['wiederholt', 'wiederholt']];
-  const TFONTS = { archivo: { n: 'archivo breit', f: "'Archivo'", w: 900, st: 'extra-expanded' }, martian: { n: 'martian mono', f: "'Martian Mono'", w: 800 }, ...FONTS };
+  // sony serif: besley (a clarendon), the slab of the classic sony print on cds and players
+  const TFONTS = { archivo: { n: 'archivo breit', f: "'Archivo'", w: 900, st: 'extra-expanded' }, sony: { n: 'sony serif', f: "'Besley'", w: 800 }, martian: { n: 'martian mono', f: "'Martian Mono'", w: 800 }, ...FONTS };
   const MONO = { f: "'Martian Mono'", w: 700 }, MONO_L = { f: "'Martian Mono'", w: 400 };
   const sr = (a, b) => hash(a * 12.9898 + 1.3, b * 78.233 + .7);
   const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
@@ -1474,14 +1479,16 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // text helpers (drawn on the text layer, letter by letter so each "drawing" wobbles)
   const fontStr = (F, px) => `${F.s || 'normal'} ${F.w} ${px}px ${F.f}, sans-serif`;
   const setFont = (c, F, px) => { c.font = fontStr(F, px); c.fontStretch = F.st || 'normal'; };
-  const fitPx = (c, s, F, maxW, maxPx) => { setFont(c, F, 100); const w = c.measureText(s).width; return Math.max(8, Math.min(maxPx, w ? 100 * maxW / w : maxPx)); };
+  // how wide a text is drawn: own text lines carry sx, the title font of the posts follows the "breite" control
+  const sxOf = F => F.sx || (F === (TFONTS[MO.font] || TFONTS.archivo) ? (MO.tw || 100) / 100 : 1);
+  const fitPx = (c, s, F, maxW, maxPx) => { setFont(c, F, 100); const w = c.measureText(s).width * sxOf(F); return Math.max(8, Math.min(maxPx, w ? 100 * maxW / w : maxPx)); };
   function jtext(c, s, x, y, px, F, align, f, stroke) {
     setFont(c, F, px); c.textAlign = 'center'; c.textBaseline = 'alphabetic';
-    const ch = [...s], ws = ch.map(q => c.measureText(q).width), tot = c.measureText(s).width, sum = ws.reduce((a, b) => a + b, 0) || 1, k = tot / sum;
+    const sx = sxOf(F), ch = [...s], ws = ch.map(q => c.measureText(q).width * sx), tot = c.measureText(s).width * sx, sum = ws.reduce((a, b) => a + b, 0) || 1, k = tot / sum;
     let cx = align === 'center' ? x - tot / 2 : align === 'right' ? x - tot : x;
     const j = MO.boil / 10, q = f % 4;
     ch.forEach((l, i) => { const w = ws[i] * k;
-      c.save(); c.translate(cx + w / 2 + (sr(q, i * 3 + 1) - .5) * j * px * .07, y + (sr(q, i * 3 + 2) - .5) * j * px * .07); c.rotate((sr(q, i * 3 + 3) - .5) * j * .12);
+      c.save(); c.translate(cx + w / 2 + (sr(q, i * 3 + 1) - .5) * j * px * .07, y + (sr(q, i * 3 + 2) - .5) * j * px * .07); c.rotate((sr(q, i * 3 + 3) - .5) * j * .12); if (sx !== 1) c.scale(sx, 1);
       if (stroke) c.strokeText(l, 0, 0); else c.fillText(l, 0, 0); c.restore(); cx += w; });
   }
   const wrap = (c, s, F, px, maxW) => { setFont(c, F, px); const out = []; let line = '';
@@ -1872,7 +1879,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   // bild: camera over the loop, depth (people cut out and moved in front of their background), effects that combine,
   // text and logo on top if wanted. every movement comes back to its start, so a post loops without a jump.
-  const BILD = { img: null, v: 0, mask: null, maskV: -1, busy: false, fg: null, bg: null, layV: '', cam: 'atmen', depth: 'auto', fx: ['lichtleck'], fxTouched: false, amt: 60, fit: 'fuellen', text: false, logo: false, ink: 0, pmask: null, pmaskV: -1 };
+  const BILD = { img: null, v: 0, mask: null, maskV: -1, busy: false, fg: null, bg: null, layV: '', cam: 'atmen', depth: 'auto', fx: ['lichtleck'], fxTouched: false, amt: 60, fit: 'fuellen', text: false, logo: false, texts: [], rects: [], ink: 0, pmask: null, pmaskV: -1 };
   const BILD_CAM = [['ruhig', 'ruhig'], ['atmen', 'atmen'], ['heran', 'heranfahren'], ['schwenk', 'schwenken']];
   const BILD_FX = [['zittern', 'zittern'], ['glanz', 'glanz'], ['glitzer', 'glitzer'], ['lichtleck', 'lichtleck'], ['flackern', 'flackern'], ['vhs', 'vhs'], ['glitch', 'glitch'], ['wellen', 'wellen'], ['scan', 'scanlinie'], ['puls', 'puls']];
   // which layer goes in front: a poster's drawing (lots of pure black ink), people, or nothing
@@ -1933,6 +1940,23 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     return cur;
   }
   let BILDBUF = null, BOILBUF = null;
+  // own lines: a font (sony serif, edding …), size and width, white or black, or like the poster: white in a black box
+  const BT_STYLES = [['kasten', 'weiß im schwarzen kasten'], ['kasten-hell', 'schwarz im weißen kasten'], ['weiss', 'weiß'], ['schwarz', 'schwarz']];
+  const btFont = k => k === 'edding' ? EDD : TFONTS[k] || TFONTS.sony;
+  function bildTexts(x, W, H, f, wob) {
+    BILD.rects = []; const v = Math.floor(f / 2) % 4;
+    for (const it of BILD.texts) { const t = (it.t || '').trim(); if (!t) continue;
+      const F = { ...btFont(it.font), sx: it.w / 100 }, px = it.size / 100 * W; setFont(x, F, px);
+      const tw = x.measureText(t).width * F.sx, cx = it.x * W, cy = it.y * H, pad = px * .3, bx = cx - tw / 2 - pad, by = cy - px * .8 - pad * .55, bw = tw + 2 * pad, bh = px * 1.02 + pad * 1.1;
+      if (it.style === 'kasten' || it.style === 'kasten-hell') {   // a box drawn by hand: its corners sit a little off, and move when the drawing boils
+        const j = (k, n) => wob ? (sr(v * 7 + k, n) - .5) * px * .06 : (sr(k, n) - .5) * px * .04, P = [[bx + j(1, 1), by + j(1, 2)], [bx + bw + j(2, 1), by + j(2, 2)], [bx + bw + j(3, 1), by + bh + j(3, 2)], [bx + j(4, 1), by + bh + j(4, 2)]];
+        x.beginPath(); P.forEach((p, i) => i ? x.lineTo(...p) : x.moveTo(...p)); x.closePath(); x.fillStyle = it.style === 'kasten' ? '#0a0a0a' : '#f4f4f2'; x.fill();
+        if (it.style === 'kasten-hell') { x.strokeStyle = '#0a0a0a'; x.lineWidth = Math.max(2, px * .05); x.stroke(); } }
+      x.fillStyle = it.style === 'kasten' || it.style === 'weiss' ? '#f4f4f2' : '#0a0a0a';
+      if (it.style === 'weiss' || it.style === 'schwarz') { x.save(); x.strokeStyle = it.style === 'weiss' ? '#0a0a0a' : '#f4f4f2'; x.lineWidth = Math.max(2, px * .07); x.lineJoin = 'round'; jtext(x, t, cx, cy, px, F, 'center', wob ? f : 0, true); x.restore(); }
+      jtext(x, t, cx, cy, px, F, 'center', wob ? f : 0);
+      BILD.rects.push([bx, by, bw, bh, it.id]); }
+  }
   // hand-drawn boil: the layer is redrawn in strips that each sit a pixel or two off, a new drawing every other frame
   function bildBoil(x, src, place, W, H, f, a) {
     if (!BOILBUF) BOILBUF = [gpuBuf(), gpuBuf()]; const [[c1, x1], [c2, x2]] = BOILBUF;
@@ -2005,6 +2029,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     }
     if (fx.has('glitzer')) bildGlitzer(x, W, H, q, a);
     bildFx(x, W, H, f, q, a, fx);
+    bildTexts(x, W, H, f, fx.has('zittern'));
     if (BILD.logo) { tx.fillStyle = PHOTO.lt; tx.strokeStyle = PHOTO.lt; logoBlock({ x: M, y: M * .6, w: W - 2 * M, h: H * (story ? .09 : .11) }, f); }
     if (BILD.text) { const TF = TFONTS[MO.font] || TFONTS.archivo, title = MO.title || 'bbk', date = [MO.date, MO.extra].filter(Boolean).join(' · ');
       const g = x.createLinearGradient(0, H * .62, 0, H); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.65)'); x.fillStyle = g; x.fillRect(0, H * .62, W, H * .38);
@@ -3113,7 +3138,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   $('#mo-ev').onchange = e => { const ev = EVENTS[+e.target.value]; if (!e.target.value || !ev) return;
     MO.title = ev.t; MO.date = ev.d; MO.info = ev.l; ['title', 'date', 'info'].forEach(k => { $('#mo-' + k).value = MO[k]; }); };
   let boilT = 0;
-  [['boil', v => { clearTimeout(boilT); boilT = setTimeout(() => { MO.boil = v; }, 180); }], ['amt', v => { MO.amt = v; }], ['fps', v => { MO.fps = v; fmtNote(); }], ['size', v => { MO.size = v; }], ['bga', v => { MO.bga = v; }], ['wash', v => { MO.wash = v; }]]
+  [['boil', v => { clearTimeout(boilT); boilT = setTimeout(() => { MO.boil = v; }, 180); }], ['amt', v => { MO.amt = v; }], ['fps', v => { MO.fps = v; fmtNote(); }], ['size', v => { MO.size = v; }], ['tw', v => { MO.tw = v; }], ['bga', v => { MO.bga = v; }], ['wash', v => { MO.wash = v; }]]
     .forEach(([id, fn]) => { const el = $('#mo-' + id), o = $(`#mo-${id}-o`); o.textContent = el.value; el.oninput = () => { o.textContent = el.value; fn(+el.value); }; });
   $('#mo-len').onchange = e => { MO.len = +e.target.value; fmtNote(); };
   $('#mo-rnd').onclick = () => { const pick = a => a[Math.floor(Math.random() * a.length)];
@@ -3770,6 +3795,25 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       const sc = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); BILD.img = c; BILD.v++; BILD.mask = null; BILD.pmask = null; BILD.layV = ''; $('#bild-stat').textContent = 'bild geladen.'; };
     $('#bild-up').onchange = e => { bildLoad(e.target.files[0]); e.target.value = ''; };
+    { const box = $('#bild-texts'), fontOpts = cur => [...Object.entries(TFONTS).map(([k, F]) => [k, F.n]), ['edding', 'edding']].map(([k, n]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${esc(n)}</option>`).join('');
+      const draw = () => { box.innerHTML = BILD.texts.map(it => `<div class="bt" data-id="${it.id}" style="display:grid;gap:6px;border-left:2px solid #444;padding-left:10px;margin-bottom:10px">
+          <div class="row" style="flex-wrap:nowrap"><input data-f="t" value="${esc(it.t)}" placeholder="text" aria-label="text" style="flex:1;min-width:0"><button class="kb-btn ghost" data-del type="button" aria-label="text entfernen">×</button></div>
+          <div class="row"><select data-f="font" aria-label="schrift">${fontOpts(it.font)}</select><select data-f="style" aria-label="stil">${BT_STYLES.map(([k, n]) => `<option value="${k}"${k === it.style ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
+          <label>größe <output>${it.size}</output><input type="range" data-f="size" min="2" max="30" value="${it.size}"></label>
+          <label>breite <output>${it.w} %</output><input type="range" data-f="w" min="50" max="250" value="${it.w}"></label></div>`).join(''); };
+      const item = el => BILD.texts.find(q => q.id === el.closest('.bt')?.dataset.id);
+      box.addEventListener('input', e => { const it = item(e.target), k = e.target.dataset.f; if (!it || !k) return; it[k] = k === 'size' || k === 'w' ? +e.target.value : e.target.value;
+        const o = e.target.parentElement.querySelector('output'); if (o) o.textContent = it[k] + (k === 'w' ? ' %' : ''); });
+      box.addEventListener('click', e => { if (!e.target.closest('[data-del]')) return; const it = item(e.target); BILD.texts = BILD.texts.filter(q => q !== it); draw(); });
+      $('#bild-addtext').onclick = () => { const n = BILD.texts.length; BILD.texts.push({ id: 'bt' + Date.now().toString(36), t: n ? 'text' : 'bbkk', font: 'sony', style: 'kasten', size: 12, w: 160, x: .5, y: .3 + (n % 5) * .12 }); draw(); box.querySelector('.bt:last-child input')?.select(); };
+      // dragging a line in the preview
+      const pt = e => { const r = mcv.getBoundingClientRect(); return [(e.clientX - r.left) * mcv.width / r.width, (e.clientY - r.top) * mcv.height / r.height]; };
+      const hit = q => [...BILD.rects].reverse().find(r => q[0] >= r[0] && q[0] <= r[0] + r[2] && q[1] >= r[1] && q[1] <= r[1] + r[3]);
+      let dr = null;
+      mcv.addEventListener('pointerdown', e => { if (MO.mode !== 'bild') return; const q = pt(e), r = hit(q); if (!r) return; const it = BILD.texts.find(t => t.id === r[4]); dr = { it, q, o: [it.x, it.y] }; mcv.setPointerCapture(e.pointerId); mcv.style.cursor = 'grabbing'; });
+      mcv.addEventListener('pointermove', e => { if (MO.mode !== 'bild') return; const q = pt(e); if (!dr) { mcv.style.cursor = hit(q) ? 'grab' : ''; return; }
+        dr.it.x = Math.max(0, Math.min(1, dr.o[0] + (q[0] - dr.q[0]) / mcv.width)); dr.it.y = Math.max(0, Math.min(1, dr.o[1] + (q[1] - dr.q[1]) / mcv.height)); });
+      const end = () => { if (dr) { dr = null; mcv.style.cursor = ''; } }; mcv.addEventListener('pointerup', end); mcv.addEventListener('pointercancel', end); }
     { const cam = $('#bild-cam'), fxb = $('#bild-fx');
       cam.innerHTML = BILD_CAM.map(([k, n]) => `<button type="button" data-k="${k}" aria-pressed="${k === BILD.cam}">${n}</button>`).join('');
       cam.onclick = e => { const b = e.target.closest('button'); if (!b) return; BILD.cam = b.dataset.k; $$('button', cam).forEach(q => q.setAttribute('aria-pressed', String(q === b))); };
