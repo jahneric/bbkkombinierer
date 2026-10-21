@@ -1941,21 +1941,43 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   let BILDBUF = null, BOILBUF = null;
   // own lines: a font (sony serif, edding …), size and width, white or black, or like the poster: white in a black box
-  const BT_STYLES = [['kasten', 'weiß im schwarzen kasten'], ['kasten-hell', 'schwarz im weißen kasten'], ['weiss', 'weiß'], ['schwarz', 'schwarz']];
+  const BT_STYLES = [['kasten', 'im schwarzen kasten'], ['kasten-hell', 'im weißen kasten'], ['rand', 'mit rand'], ['pur', 'ohne rand'], ['koernig', 'gekörnt'], ['schleier', 'schleier'], ['doppelt', 'doppelt']];
+  const BT_SOFT = new Set(['pur', 'koernig', 'schleier', 'doppelt']);
   const btFont = k => k === 'edding' ? EDD : TFONTS[k] || TFONTS.sony;
-  function bildTexts(x, W, H, f, wob) {
-    BILD.rects = []; const v = Math.floor(f / 2) % 4;
-    for (const it of BILD.texts) { const t = (it.t || '').trim(); if (!t) continue;
-      const F = { ...btFont(it.font), sx: it.w / 100 }, px = it.size / 100 * W; setFont(x, F, px);
-      const tw = x.measureText(t).width * F.sx, cx = it.x * W, cy = it.y * H, pad = px * .3, bx = cx - tw / 2 - pad, by = cy - px * .8 - pad * .55, bw = tw + 2 * pad, bh = px * 1.02 + pad * 1.1;
+  const btLight = c => { const n = parseInt((c || '#f4f4f2').slice(1), 16); return (.3 * (n >> 16) + .59 * (n >> 8 & 255) + .11 * (n & 255)) > 128; };
+  let BTBUF = null, BTGRAIN = null;
+  // grain: a few tiles of loose dots, a new one every other frame
+  const btGrain = (x, v) => { if (!BTGRAIN) BTGRAIN = [0, 1, 2, 3].map(k => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'), d = g.createImageData(256, 256);
+      for (let i = 0; i < d.data.length; i += 4) { const r = Math.random(); d.data[i + 3] = r > .55 ? 255 : r > .35 ? 110 : 0; } g.putImageData(d, 0, 0); return c; }); return x.createPattern(BTGRAIN[v % 4], 'repeat'); };
+  // layer 'vorne' sits on top of everything, 'hinten' between the background and the drawing of the poster (or the people of a photo)
+  function bildTexts(x, W, H, f, wob, layer, q) {
+    const v = Math.floor(f / 2) % 4;
+    for (const it of BILD.texts) { let t = (it.t || '').trim(); if (!t || (it.layer || 'vorne') !== layer) continue; if (it.caps) t = t.toUpperCase();
+      const F = { ...btFont(it.font), sx: it.w / 100 }, px = it.size / 100 * W, col = it.col || '#f4f4f2', op = (it.op ?? 100) / 100; setFont(x, F, px);
+      const tw = x.measureText(t).width * F.sx, cx = it.x * W, cy = it.y * H, pad = px * .3, bx = cx - tw / 2 - pad, by = cy - px * .8 - pad * .55, bw = tw + 2 * pad, bh = px * 1.02 + pad * 1.1, jf = wob ? f : 0;
+      BILD.rects.push([bx, by, bw, bh, it.id]);
+      if (BT_SOFT.has(it.style)) {   // drawn alone into a buffer first, then laid in softly
+        if (!BTBUF) BTBUF = gpuBuf(); const [c, b] = BTBUF; if (c.width !== W || c.height !== H) { c.width = W; c.height = H; } else b.clearRect(0, 0, W, H);
+        b.fillStyle = col; b.strokeStyle = col; jtext(b, t, cx, cy, px, F, 'center', jf);
+        if (it.style === 'koernig') { b.save(); b.globalCompositeOperation = 'destination-in'; b.fillStyle = btGrain(b, v); b.translate(sr(v, 1) * 256, sr(v, 2) * 256); b.fillRect(-256, -256, W + 512, H + 512); b.restore(); }
+        x.save();
+        if (it.style === 'schleier') { const d = Math.sin(TAU * q) * px * .03;
+          x.globalAlpha = op * .9; x.filter = 'blur(' + Math.round(px * .14) + 'px)'; x.drawImage(c, d, 0);
+          x.globalAlpha = op * .6; x.filter = 'blur(' + Math.round(px * .05) + 'px)'; x.drawImage(c, -d * .5, 0);
+          x.globalAlpha = op * .25; x.filter = 'none'; x.drawImage(c, 0, 0); }
+        else if (it.style === 'doppelt') { const d = px * (.06 + .02 * Math.sin(TAU * q));
+          x.globalAlpha = op * .45; x.drawImage(c, d, d * .6); x.globalAlpha = op; x.drawImage(c, 0, 0); }
+        else { x.globalAlpha = op; x.drawImage(c, 0, 0); }
+        x.restore(); continue; }
+      x.save(); x.globalAlpha = op;
       if (it.style === 'kasten' || it.style === 'kasten-hell') {   // a box drawn by hand: its corners sit a little off, and move when the drawing boils
         const j = (k, n) => wob ? (sr(v * 7 + k, n) - .5) * px * .06 : (sr(k, n) - .5) * px * .04, P = [[bx + j(1, 1), by + j(1, 2)], [bx + bw + j(2, 1), by + j(2, 2)], [bx + bw + j(3, 1), by + bh + j(3, 2)], [bx + j(4, 1), by + bh + j(4, 2)]];
         x.beginPath(); P.forEach((p, i) => i ? x.lineTo(...p) : x.moveTo(...p)); x.closePath(); x.fillStyle = it.style === 'kasten' ? '#0a0a0a' : '#f4f4f2'; x.fill();
         if (it.style === 'kasten-hell') { x.strokeStyle = '#0a0a0a'; x.lineWidth = Math.max(2, px * .05); x.stroke(); } }
-      x.fillStyle = it.style === 'kasten' || it.style === 'weiss' ? '#f4f4f2' : '#0a0a0a';
-      if (it.style === 'weiss' || it.style === 'schwarz') { x.save(); x.strokeStyle = it.style === 'weiss' ? '#0a0a0a' : '#f4f4f2'; x.lineWidth = Math.max(2, px * .07); x.lineJoin = 'round'; jtext(x, t, cx, cy, px, F, 'center', wob ? f : 0, true); x.restore(); }
-      jtext(x, t, cx, cy, px, F, 'center', wob ? f : 0);
-      BILD.rects.push([bx, by, bw, bh, it.id]); }
+      // light writing in a white box would vanish: there it turns black, and dark writing in a black box white
+      const ink = it.style === 'kasten-hell' && btLight(col) ? '#0a0a0a' : it.style === 'kasten' && !btLight(col) ? '#f4f4f2' : col;
+      if (it.style === 'rand') { x.save(); x.strokeStyle = btLight(ink) ? '#0a0a0a' : '#f4f4f2'; x.lineWidth = Math.max(2, px * .07); x.lineJoin = 'round'; jtext(x, t, cx, cy, px, F, 'center', jf, true); x.restore(); }
+      x.fillStyle = ink; jtext(x, t, cx, cy, px, F, 'center', jf); x.restore(); }
   }
   // hand-drawn boil: the layer is redrawn in strips that each sit a pixel or two off, a new drawing every other frame
   function bildBoil(x, src, place, W, H, f, a) {
@@ -2004,7 +2026,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   function drawBild(W, H, M, f, N) {
     const x = mx, q = (f % N) / N, a = BILD.amt / 100, im = BILD.img, u = W / 1080, story = MO.fmt === 'story';
     if (!im) { x.fillStyle = '#0d0d0d'; x.fillRect(0, 0, W, H); tx.fillStyle = '#8d8c87'; jtext(tx, 'bild laden oder hierher ziehen', W / 2, H / 2, 34 * u, MONO, 'center', f); flush(f); return; }
-    bildMask(); bildLayers();
+    bildMask(); bildLayers(); BILD.rects = [];
     const fx = new Set(BILD.fx), beat = fx.has('puls') ? Math.pow(1 - ((q * 8) % 1), 3) : 0;
     let s = 1, dx = 0, dy = 0;   // the camera
     if (BILD.cam === 'atmen') s = 1 + .07 * a * (1 - Math.cos(TAU * q)) / 2;
@@ -2020,16 +2042,18 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (bildMode() === 'poster' && BILD.fg) {   // poster: the camera moves the background only, the drawing stays readable
       const sp = 1 + (s - 1) * .3; put(BILD.bg, sp * 1.01, dx * .25, dy * .25);
       if (fx.has('glanz')) bildGlanz(x, W, H, q, a);
+      bildTexts(x, W, H, f, fx.has('zittern'), 'hinten', q);
       const sb = 1 + .012 * a * beat; if (fx.has('zittern')) bildBoil(x, BILD.fg, (c2, w, h) => put2(c2, w, h, BILD.fg, sb), W, H, f, a); else put(BILD.fg, sb, 0, 0);
     } else {   // depth: the background moves less, the people more and come a little closer
       put(BILD.bg, s, dx * .6, dy * .6);
       if (fx.has('glanz')) bildGlanz(x, W, H, q, a);
+      bildTexts(x, W, H, f, fx.has('zittern'), 'hinten', q);
       if (BILD.fg) put(BILD.fg, s * (1 + .035 * a * (.5 + .5 * ph)), dx * 1.6 + ph * .007 * a * W, dy * 1.6 - Math.abs(ph) * .004 * a * H);
       else if (fx.has('zittern')) bildBoil(x, null, (c2, w, h) => { c2.drawImage(x.canvas, 0, 0); }, W, H, f, a * .5);
     }
     if (fx.has('glitzer')) bildGlitzer(x, W, H, q, a);
     bildFx(x, W, H, f, q, a, fx);
-    bildTexts(x, W, H, f, fx.has('zittern'));
+    bildTexts(x, W, H, f, fx.has('zittern'), 'vorne', q);
     if (BILD.logo) { tx.fillStyle = PHOTO.lt; tx.strokeStyle = PHOTO.lt; logoBlock({ x: M, y: M * .6, w: W - 2 * M, h: H * (story ? .09 : .11) }, f); }
     if (BILD.text) { const TF = TFONTS[MO.font] || TFONTS.archivo, title = MO.title || 'bbk', date = [MO.date, MO.extra].filter(Boolean).join(' · ');
       const g = x.createLinearGradient(0, H * .62, 0, H); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.65)'); x.fillStyle = g; x.fillRect(0, H * .62, W, H * .38);
@@ -3799,13 +3823,17 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       const draw = () => { box.innerHTML = BILD.texts.map(it => `<div class="bt" data-id="${it.id}" style="display:grid;gap:6px;border-left:2px solid #444;padding-left:10px;margin-bottom:10px">
           <div class="row" style="flex-wrap:nowrap"><input data-f="t" value="${esc(it.t)}" placeholder="text" aria-label="text" style="flex:1;min-width:0"><button class="kb-btn ghost" data-del type="button" aria-label="text entfernen">×</button></div>
           <div class="row"><select data-f="font" aria-label="schrift">${fontOpts(it.font)}</select><select data-f="style" aria-label="stil">${BT_STYLES.map(([k, n]) => `<option value="${k}"${k === it.style ? ' selected' : ''}>${n}</option>`).join('')}</select></div>
+          <div class="row"><label style="display:flex;gap:6px;align-items:center;margin:0"><input type="checkbox" data-f="caps"${it.caps ? ' checked' : ''}> GROSSBUCHSTABEN</label>
+            <label style="display:flex;gap:6px;align-items:center;margin:0">farbe <input type="color" data-f="col" value="${it.col || '#f4f4f2'}" style="width:34px;height:26px;padding:0;border:1px solid #555;background:none"></label>
+            <select data-f="layer" aria-label="ebene"><option value="vorne"${it.layer !== 'hinten' ? ' selected' : ''}>vor dem bild</option><option value="hinten"${it.layer === 'hinten' ? ' selected' : ''}>hinter der schrift im bild</option></select></div>
+          <label>deckkraft <output>${it.op ?? 100} %</output><input type="range" data-f="op" min="5" max="100" value="${it.op ?? 100}"></label>
           <label>größe <output>${it.size}</output><input type="range" data-f="size" min="2" max="30" value="${it.size}"></label>
           <label>breite <output>${it.w} %</output><input type="range" data-f="w" min="50" max="250" value="${it.w}"></label></div>`).join(''); };
       const item = el => BILD.texts.find(q => q.id === el.closest('.bt')?.dataset.id);
-      box.addEventListener('input', e => { const it = item(e.target), k = e.target.dataset.f; if (!it || !k) return; it[k] = k === 'size' || k === 'w' ? +e.target.value : e.target.value;
-        const o = e.target.parentElement.querySelector('output'); if (o) o.textContent = it[k] + (k === 'w' ? ' %' : ''); });
+      box.addEventListener('input', e => { const it = item(e.target), k = e.target.dataset.f; if (!it || !k) return; it[k] = k === 'caps' ? e.target.checked : ['size', 'w', 'op'].includes(k) ? +e.target.value : e.target.value;
+        const o = e.target.type === 'range' && e.target.parentElement.querySelector('output'); if (o) o.textContent = it[k] + (k === 'w' || k === 'op' ? ' %' : ''); });
       box.addEventListener('click', e => { if (!e.target.closest('[data-del]')) return; const it = item(e.target); BILD.texts = BILD.texts.filter(q => q !== it); draw(); });
-      $('#bild-addtext').onclick = () => { const n = BILD.texts.length; BILD.texts.push({ id: 'bt' + Date.now().toString(36), t: n ? 'text' : 'bbkk', font: 'sony', style: 'kasten', size: 12, w: 160, x: .5, y: .3 + (n % 5) * .12 }); draw(); box.querySelector('.bt:last-child input')?.select(); };
+      $('#bild-addtext').onclick = () => { const n = BILD.texts.length; BILD.texts.push({ id: 'bt' + Date.now().toString(36), t: n ? 'text' : 'bbkk', font: 'sony', style: 'kasten', caps: true, col: '#f4f4f2', op: 100, layer: 'vorne', size: 12, w: 160, x: .5, y: .3 + (n % 5) * .12 }); draw(); box.querySelector('.bt:last-child input')?.select(); };
       // dragging a line in the preview
       const pt = e => { const r = mcv.getBoundingClientRect(); return [(e.clientX - r.left) * mcv.width / r.width, (e.clientY - r.top) * mcv.height / r.height]; };
       const hit = q => [...BILD.rects].reverse().find(r => q[0] >= r[0] && q[0] <= r[0] + r[2] && q[1] >= r[1] && q[1] <= r[1] + r[3]);
