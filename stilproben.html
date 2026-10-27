@@ -1989,7 +1989,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   // effect on one colour: the frame so far is read at half size, every pixel near the colour becomes part of a mask,
   // the effect is drawn into a buffer and cut to that mask, so it follows the drawing even while it boils
-  const CFX_FX = [['koernung', 'körnung'], ['flimmern', 'flimmern'], ['schimmer', 'regenbogen'], ['umfaerben', 'umfärben']];
+  const CFX_FX = [['raster', 'punktraster'], ['koernung', 'körnung'], ['flimmern', 'flimmern'], ['schimmer', 'regenbogen'], ['umfaerben', 'umfärben']];
   let CFXBUF = null, CFXGRAIN = null;
   const cfxRgb = c => { const n = parseInt(c.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; };
   function bildColorFx(x, W, H, f, q, clip) {
@@ -2007,12 +2007,13 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       if (!CFXGRAIN) CFXGRAIN = [0, 1, 2, 3].map(() => [255, 0].map(ink => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'), id = g.createImageData(256, 256);
         for (let i = 0; i < id.data.length; i += 4) { const n = Math.random(); id.data[i] = id.data[i + 1] = id.data[i + 2] = ink; id.data[i + 3] = n > .5 ? Math.min(255, (n - .5) * 2.2 * 255) : 0; } g.putImageData(id, 0, 0); return c; }));
       const k = Math.max(1, W / 1080 * 1.4); b.save(); b.scale(k, k); b.translate(-sr(v, 1) * 256, -sr(v, 2) * 256); b.fillStyle = b.createPattern(CFXGRAIN[v][dark ? 0 : 1], 'repeat'); b.fillRect(0, 0, W / k + 512, H / k + 512); b.restore(); }
+    else if (C.fx === 'raster') { b.drawImage(x.canvas, 0, 0); eliKorn(b, W, H, f, a); }   // the picture as dot screen, kept only on the chosen colour
     else if (C.fx === 'flimmern') { b.fillStyle = dark ? '#fff' : '#000'; b.globalAlpha = .15 + .85 * sr(Math.floor(f / 2), 9); b.fillRect(0, 0, W, H); b.globalAlpha = 1; }
     else if (C.fx === 'schimmer') { const t = (q * 1.5) % 1, cx = -W * .6 + t * W * 2.2, g = b.createLinearGradient(cx - W * .5, -H * .2, cx + W * .5, H * 1.2);
       [[0, '#ff4040'], [.2, '#ffbe3c'], [.38, '#78ff8c'], [.56, '#50aaff'], [.74, '#be5aff'], [1, '#ff4040']].forEach(([o, c]) => g.addColorStop(o, c)); b.fillStyle = g; b.fillRect(0, 0, W, H); }
     else { b.fillStyle = C.to; b.fillRect(0, 0, W, H); }
     b.globalCompositeOperation = 'destination-in'; b.imageSmoothingQuality = 'high'; b.drawImage(mc, 0, 0, W, H); b.globalCompositeOperation = 'source-over';
-    x.save(); if (clip) { x.beginPath(); x.rect(...clip); x.clip(); } x.globalAlpha = C.fx === 'umfaerben' ? .3 + .7 * a : a; x.drawImage(bc, 0, 0); x.restore();
+    x.save(); if (clip) { x.beginPath(); x.rect(...clip); x.clip(); } x.globalAlpha = C.fx === 'umfaerben' ? .3 + .7 * a : C.fx === 'raster' ? 1 : a; x.drawImage(bc, 0, 0); x.restore();
   }
   // hand-drawn boil: the layer is redrawn in strips that each sit a pixel or two off, a new drawing every other frame
   function bildBoil(x, src, place, W, H, f, a) {
