@@ -14,7 +14,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Silkscreen&family=Sniglet:wght@800&family=Kablammo:MORF@0..60&family=Danfo:ELSH@0..100&family=Moirai+One&family=Monoton&family=Faster+One&family=Major+Mono+Display&family=Climate+Crisis:YEAR@1979..2050&family=Grenze+Gotisch:wght@100..900&family=Jacquard+24&family=Doto:ROND,wght@0..100,100..900&family=Handjet:ELGR,ELSH,wght@1..2,0..16,100..900&family=Rubik+Glitch&family=Zen+Tokyo+Zoo&family=Train+One&family=Foldit&family=Tilt+Warp&family=Sedgwick+Ave+Display&family=Workbench:BLED,SCAN@0..100,-53..100&family=Sixtyfour:BLED,SCAN@0..100,-53..100&family=Codystar&family=Rubik+Wet+Paint&family=Bungee+Hairline&family=Tourney:ital,wdth,wght@1,75..125,100..900&family=Permanent+Marker&family=Besley:wght@400..900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Martian+Mono:wdth,wght@75..112.5,100..800&family=Silkscreen&family=Sniglet:wght@800&family=Kablammo:MORF@0..60&family=Danfo:ELSH@0..100&family=Moirai+One&family=Monoton&family=Faster+One&family=Major+Mono+Display&family=Climate+Crisis:YEAR@1979..2050&family=Grenze+Gotisch:wght@100..900&family=Jacquard+24&family=Doto:ROND,wght@0..100,100..900&family=Handjet:ELGR,ELSH,wght@1..2,0..16,100..900&family=Rubik+Glitch&family=Zen+Tokyo+Zoo&family=Train+One&family=Foldit&family=Tilt+Warp&family=Sedgwick+Ave+Display&family=Workbench:BLED,SCAN@0..100,-53..100&family=Sixtyfour:BLED,SCAN@0..100,-53..100&family=Codystar&family=Rubik+Wet+Paint&family=Bungee+Hairline&family=Tourney:ital,wdth,wght@1,75..125,100..900&family=Permanent+Marker&family=Besley:ital,wght@0,400..900;1,400..900&display=swap">
 <style>
 /* layout: fixed switcher; rooms below it (logo lab, kombinierer, bewegt, website desktop).
    single dark theme by choice: the whole identity lives on black. */
@@ -193,7 +193,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 #r-motion .mo-scenes button img,#r-motion .mo-scenes button canvas{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;filter:grayscale(1)}#r-motion .mo-scenes button span{padding:3px 4px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #r-motion .mo-scenes button[aria-pressed="true"]{outline:2px solid var(--bone);outline-offset:-2px;color:var(--bone)}#r-motion .mo-scenes button:hover{border-color:#777}
 #r-motion #mo-back{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}#r-motion #mo-back button{display:flex;flex-direction:column;padding:0;overflow:hidden;text-align:left}#r-motion #mo-back button canvas{width:100%;aspect-ratio:4/5;display:block;background:#000}#r-motion #mo-back button span{padding:3px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#mo-mark,#mo-word{display:none}#r-motion:not(.bild) .mo-bild,#r-motion.bild .mo-noreel{display:none}#r-motion:not(.fxbg) .mo-fxbg{display:none}#r-motion .mo-thgrid{max-height:236px;overflow:auto;padding-right:2px}
+#mo-mark,#mo-word{display:none}#r-motion:not(.bild) .mo-bild,#r-motion.bild .mo-noreel{display:none}#r-motion:not(.sony) .mo-sony,#r-motion.sony .mo-noreel{display:none}#r-motion .mo-sony input:not([type]){flex:1;min-width:0}#r-motion:not(.fxbg) .mo-fxbg{display:none}#r-motion .mo-thgrid{max-height:236px;overflow:auto;padding-right:2px}
 #r-motion.photo .mo-print,#r-motion.objscene .mo-bgctl,#r-motion.objscene .mo-fxctl{display:none}
 #r-motion:not(.collage) .mo-col,#r-motion.collage .mo-noreel,#r-motion.collage .mo-lu,#r-motion:not(.solo) .mo-onlylogo,#r-motion:not(.arr) .mo-arrbox,#r-motion:not(.let) .mo-let,#r-motion.let .mo-notlet,#r-motion:not(.lu) .mo-lu,#r-motion:not(.lineup) .mo-luonly,#r-motion.lineup .mo-noreel,#r-motion:not(.reel) .mo-reelonly,#r-motion:not(.post) .mo-post,#r-motion.post:not(.reel) .mo-solo,#r-motion:not(.reel) .mo-reel,#r-motion.reel .mo-noreel,#r-motion:not(.cd) .mo-cd,#r-motion.cdonly .mo-nocd,#r-motion:not(.hu) .mo-hu,#r-motion.hu .mo-cdspin,#r-motion:not(.cdonly) .mo-obj{display:none}
 .mo-sc{display:grid;grid-template-columns:minmax(0,1.3fr) 58px minmax(0,1fr) auto;gap:5px;align-items:center;margin-bottom:6px}
@@ -461,7 +461,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   <div class="mo-main">
     <div class="mo-view"><canvas id="mo-cv" width="1080" height="1350" aria-label="Vorschau des bewegten Posts"></canvas><div id="mo-status" aria-live="polite"></div></div>
     <aside class="kb-ctl mo-ctl">
-      <div class="row"><div class="seg" role="group" aria-label="Modus"><button data-mo-mode="logo" aria-pressed="true">logo-effekt</button><button data-mo-mode="post" aria-pressed="false">event-post</button><button data-mo-mode="lineup" aria-pressed="false">lineup</button><button data-mo-mode="collage" aria-pressed="false">collage</button><button data-mo-mode="bild" aria-pressed="false">bild</button><button data-mo-mode="reel" aria-pressed="false">reel</button></div></div>
+      <div class="row"><div class="seg" role="group" aria-label="Modus"><button data-mo-mode="logo" aria-pressed="true">logo-effekt</button><button data-mo-mode="post" aria-pressed="false">event-post</button><button data-mo-mode="lineup" aria-pressed="false">lineup</button><button data-mo-mode="collage" aria-pressed="false">collage</button><button data-mo-mode="bild" aria-pressed="false">bild</button><button data-mo-mode="sony" aria-pressed="false">save the date</button><button data-mo-mode="reel" aria-pressed="false">reel</button></div></div>
       <div class="row"><div class="seg" role="group" aria-label="Format"><button data-mo-fmt="post" aria-pressed="true">post 4:5</button><button data-mo-fmt="story" aria-pressed="false">story / reel 9:16</button></div><div class="seg" role="group" aria-label="Bewegung"><button data-mo-frz="0" aria-pressed="true">läuft</button><button data-mo-frz="1" aria-pressed="false">still</button></div></div>
       <div class="mo-lu mo-luonly"><span class="mo-lbl">szene</span><div class="mo-scenes" role="group" aria-label="Ansicht"><button data-mo-view="artist" aria-pressed="true">einzeln</button><button data-mo-view="lineup" aria-pressed="false">alle</button><button data-mo-view="cd" aria-pressed="false">cd</button><button data-mo-view="huelle" aria-pressed="false">hülle</button><button data-mo-view="tv" aria-pressed="false">tv</button><button data-mo-view="handy" aria-pressed="false">handy</button><button data-mo-view="handys" aria-pressed="false">handys</button><button data-mo-view="player" aria-pressed="false">cd-player</button><button data-mo-view="laufwerk" aria-pressed="false">laufwerk</button><button data-mo-view="desktop" aria-pressed="false">desktop</button><button data-mo-view="tvcd" aria-pressed="false">röhre + cd</button></div></div>
       <div class="mo-lu mo-obj row"><div class="seg" role="group" aria-label="Objekte"><button data-mo-obj="foto" aria-pressed="true">objekte als foto</button><button data-mo-obj="zeich" aria-pressed="false">gezeichnet</button></div><div class="seg" role="group" aria-label="Logo auf den Bildschirmen"><button data-scr-logo="1" aria-pressed="true">mit bbk-logo</button><button data-scr-logo="0" aria-pressed="false">nur artists</button></div></div>
@@ -516,6 +516,19 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <div class="mo-col row"><div class="seg" role="group" aria-label="Freistellen"><button data-col-cut="1" aria-pressed="true">leute freistellen</button><button data-col-cut="0" aria-pressed="false">ganzes bild</button></div></div>
         <div class="mo-col"><label for="col-con">kontrast <output id="col-con-o"></output><input type="range" id="col-con" min="60" max="220" value="130"></label></div>
       </div></details>
+      <details class="mo-sec mo-sony" data-sec="sony" open><summary>save the date</summary><div class="mo-body">
+        <p class="mo-note" style="margin:0">die sony cd-r in ihrer hülle auf weiß. statt sony steht euer logo auf der cd, die schrift darauf und auf den aufklebern ist eure.</p>
+        <div><span class="mo-lbl">auf der cd</span>
+          <div class="row"><div class="seg" role="group" aria-label="Oben auf der CD"><button data-sony-top="logo" aria-pressed="true">logo</button><button data-sony-top="text" aria-pressed="false">text</button></div><input data-sony="topT" value="BBKK" aria-label="text oben auf der cd" hidden></div>
+          <div class="row"><input data-sony="big" value="CD-R" aria-label="große schräge schrift links"><input data-sony="right" value="700MB" aria-label="große schrift rechts"></div></div>
+        <div><span class="mo-lbl">großer aufkleber</span>
+          <div class="row"><input data-sony="s1" value="RECORDABLE" aria-label="aufkleber oben, weiß im balken"></div>
+          <div class="row"><input data-sony="s2" value="BBKK" aria-label="aufkleber mitte, groß"></div>
+          <div class="row"><input data-sony="s3" value="CLEAR &amp; DYNAMIC" aria-label="aufkleber unten, weiß im balken"></div></div>
+        <div><span class="mo-lbl">kleiner aufkleber</span>
+          <div class="row"><input data-sony="d1" value="" placeholder="datum (sonst das vom post)" aria-label="datum auf dem kleinen aufkleber"><input data-sony="d2" value="TOTAL FREEDOM" aria-label="text auf dem kleinen aufkleber"></div></div>
+        <div><span class="mo-lbl">die cd</span><div class="seg" role="group" aria-label="Bewegung der CD"><button data-sony-move="schwingen" aria-pressed="true">schwingt</button><button data-sony-move="drehen" aria-pressed="false">dreht sich</button><button data-sony-move="steht" aria-pressed="false">steht</button></div></div>
+      </div></details>
       <details class="mo-sec mo-bild" data-sec="bild" open><summary>dein bild</summary><div class="mo-body">
         <div class="row"><label class="kb-btn ghost mo-up">bild laden<input type="file" id="bild-up" accept="image/*" hidden></label><span class="mo-note" id="bild-stat" style="margin:0">oder einfach auf die vorschau ziehen.</span></div>
         <div><span class="mo-lbl">kamera</span><div class="mo-chips" id="bild-cam" role="group" aria-label="Kamera"></div></div>
@@ -523,6 +536,14 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <div><span class="mo-lbl">effekte · mehrere möglich</span><div class="mo-chips" id="bild-fx" role="group" aria-label="Effekte"></div></div>
         <label for="bild-amt">stärke <output id="bild-amt-o"></output><input type="range" id="bild-amt" min="10" max="100" value="60"></label>
         <div class="row"><div class="seg" role="group" aria-label="Ausschnitt"><button data-bild-fit="fuellen" aria-pressed="true">füllen</button><button data-bild-fit="ganz" aria-pressed="false">ganz zeigen</button></div></div>
+        <div><span class="mo-lbl">effekt nur auf einer farbe</span>
+          <div class="row"><div class="seg" role="group" aria-label="Farbe für den Effekt" id="bild-cfx-col"><button data-c="" aria-pressed="true">aus</button><button data-c="#000000" aria-pressed="false">schwarz</button><button data-c="#ffffff" aria-pressed="false">weiß</button><button data-c="pick" aria-pressed="false">aus der vorschau picken</button></div>
+            <input type="color" id="bild-cfx-own" value="#000000" aria-label="eigene farbe" style="width:34px;height:26px;padding:0;border:1px solid #555;background:none"></div>
+          <div class="mo-cfx" hidden>
+            <div class="mo-chips" id="bild-cfx-fx" role="group" aria-label="Effekt auf der Farbe" style="margin-top:6px"></div>
+            <label class="mo-cfx-to" hidden style="display:flex;gap:6px;align-items:center">neue farbe <input type="color" id="bild-cfx-to" value="#e4531c" style="width:34px;height:26px;padding:0;border:1px solid #555;background:none"></label>
+            <label for="bild-cfx-tol">wie genau die farbe <output id="bild-cfx-tol-o"></output><input type="range" id="bild-cfx-tol" min="5" max="100" value="35"></label>
+            <label for="bild-cfx-amt">stärke <output id="bild-cfx-amt-o"></output><input type="range" id="bild-cfx-amt" min="5" max="100" value="60"></label></div></div>
         <div><span class="mo-lbl">eigener text</span><div id="bild-texts"></div>
           <div class="row"><button class="kb-btn ghost" id="bild-addtext" type="button">+ text</button></div>
           <p class="mo-note" style="margin:4px 0 0">texte in der vorschau mit der maus an ihren platz ziehen.</p></div>
@@ -1879,9 +1900,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   // bild: camera over the loop, depth (people cut out and moved in front of their background), effects that combine,
   // text and logo on top if wanted. every movement comes back to its start, so a post loops without a jump.
-  const BILD = { img: null, v: 0, mask: null, maskV: -1, busy: false, fg: null, bg: null, layV: '', cam: 'atmen', depth: 'auto', fx: ['lichtleck'], fxTouched: false, amt: 60, fit: 'fuellen', text: false, logo: false, texts: [], rects: [], ink: 0, pmask: null, pmaskV: -1 };
+  const BILD = { img: null, v: 0, mask: null, maskV: -1, busy: false, fg: null, bg: null, layV: '', cam: 'atmen', depth: 'auto', fx: ['lichtleck'], fxTouched: false, amt: 60, fit: 'fuellen', text: false, logo: false, texts: [], rects: [], cfx: { col: '', fx: 'koernung', to: '#e4531c', tol: 35, amt: 60 }, ink: 0, pmask: null, pmaskV: -1 };
   const BILD_CAM = [['ruhig', 'ruhig'], ['atmen', 'atmen'], ['heran', 'heranfahren'], ['schwenk', 'schwenken']];
-  const BILD_FX = [['zittern', 'zittern'], ['glanz', 'glanz'], ['glitzer', 'glitzer'], ['lichtleck', 'lichtleck'], ['flackern', 'flackern'], ['vhs', 'vhs'], ['glitch', 'glitch'], ['wellen', 'wellen'], ['scan', 'scanlinie'], ['puls', 'puls']];
+  const BILD_FX = [['eli', 'punktraster'], ['zittern', 'zittern'], ['glanz', 'glanz'], ['glitzer', 'glitzer'], ['lichtleck', 'lichtleck'], ['flackern', 'flackern'], ['vhs', 'vhs'], ['glitch', 'glitch'], ['wellen', 'wellen'], ['scan', 'scanlinie'], ['puls', 'puls']];
   // which layer goes in front: a poster's drawing (lots of pure black ink), people, or nothing
   const bildMode = () => BILD.depth === 'auto' ? (BILD.ink > .04 ? 'poster' : 'leute') : BILD.depth;
   // the drawn layer of a poster: near-black neutral ink, small gaps closed (the inside of drawn pipes), plus every small pure-white
@@ -1979,6 +2000,33 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       if (it.style === 'rand') { x.save(); x.strokeStyle = btLight(ink) ? '#0a0a0a' : '#f4f4f2'; x.lineWidth = Math.max(2, px * .07); x.lineJoin = 'round'; jtext(x, t, cx, cy, px, F, 'center', jf, true); x.restore(); }
       x.fillStyle = ink; jtext(x, t, cx, cy, px, F, 'center', jf); x.restore(); }
   }
+  // effect on one colour: the frame so far is read at half size, every pixel near the colour becomes part of a mask,
+  // the effect is drawn into a buffer and cut to that mask, so it follows the drawing even while it boils
+  const CFX_FX = [['koernung', 'körnung'], ['flimmern', 'flimmern'], ['schimmer', 'regenbogen'], ['umfaerben', 'umfärben']];
+  let CFXBUF = null, CFXGRAIN = null;
+  const cfxRgb = c => { const n = parseInt(c.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; };
+  function bildColorFx(x, W, H, f, q, clip) {
+    const C = BILD.cfx; if (!C.col) return;
+    if (!CFXBUF) CFXBUF = [gpuBuf(), gpuBuf(), (() => { const c = document.createElement('canvas'); return [c, c.getContext('2d', { willReadFrequently: true })]; })()];
+    const [[mc, m], [bc, b], [sc, sx]] = CFXBUF, w = Math.ceil(W / 2), h = Math.ceil(H / 2);
+    if (sc.width !== w || sc.height !== h) { sc.width = mc.width = w; sc.height = mc.height = h; }
+    if (bc.width !== W || bc.height !== H) { bc.width = W; bc.height = H; } else b.clearRect(0, 0, W, H);
+    sx.drawImage(x.canvas, 0, 0, w, h); const d = sx.getImageData(0, 0, w, h), p = d.data, [r0, g0, b0] = cfxRgb(C.col), T = C.tol * 2.2, soft = 10 + T * .25;
+    for (let i = 0; i < p.length; i += 4) { const dr = p[i] - r0, dg = p[i + 1] - g0, db = p[i + 2] - b0, dist = Math.sqrt(dr * dr + dg * dg + db * db);
+      p[i] = p[i + 1] = p[i + 2] = 255; p[i + 3] = Math.max(0, Math.min(255, (T + soft - dist) / (2 * soft) * 255)); }
+    m.putImageData(d, 0, 0);
+    const a = C.amt / 100, dark = (r0 * .3 + g0 * .59 + b0 * .11) < 128, v = Math.floor(f / 2) % 4;
+    if (C.fx === 'koernung') {   // light grain on dark colours, dark grain on light ones, a new one every other frame
+      if (!CFXGRAIN) CFXGRAIN = [0, 1, 2, 3].map(() => [255, 0].map(ink => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'), id = g.createImageData(256, 256);
+        for (let i = 0; i < id.data.length; i += 4) { const n = Math.random(); id.data[i] = id.data[i + 1] = id.data[i + 2] = ink; id.data[i + 3] = n > .5 ? Math.min(255, (n - .5) * 2.2 * 255) : 0; } g.putImageData(id, 0, 0); return c; }));
+      const k = Math.max(1, W / 1080 * 1.4); b.save(); b.scale(k, k); b.translate(-sr(v, 1) * 256, -sr(v, 2) * 256); b.fillStyle = b.createPattern(CFXGRAIN[v][dark ? 0 : 1], 'repeat'); b.fillRect(0, 0, W / k + 512, H / k + 512); b.restore(); }
+    else if (C.fx === 'flimmern') { b.fillStyle = dark ? '#fff' : '#000'; b.globalAlpha = .15 + .85 * sr(Math.floor(f / 2), 9); b.fillRect(0, 0, W, H); b.globalAlpha = 1; }
+    else if (C.fx === 'schimmer') { const t = (q * 1.5) % 1, cx = -W * .6 + t * W * 2.2, g = b.createLinearGradient(cx - W * .5, -H * .2, cx + W * .5, H * 1.2);
+      [[0, '#ff4040'], [.2, '#ffbe3c'], [.38, '#78ff8c'], [.56, '#50aaff'], [.74, '#be5aff'], [1, '#ff4040']].forEach(([o, c]) => g.addColorStop(o, c)); b.fillStyle = g; b.fillRect(0, 0, W, H); }
+    else { b.fillStyle = C.to; b.fillRect(0, 0, W, H); }
+    b.globalCompositeOperation = 'destination-in'; b.imageSmoothingQuality = 'high'; b.drawImage(mc, 0, 0, W, H); b.globalCompositeOperation = 'source-over';
+    x.save(); if (clip) { x.beginPath(); x.rect(...clip); x.clip(); } x.globalAlpha = C.fx === 'umfaerben' ? .3 + .7 * a : a; x.drawImage(bc, 0, 0); x.restore();
+  }
   // hand-drawn boil: the layer is redrawn in strips that each sit a pixel or two off, a new drawing every other frame
   function bildBoil(x, src, place, W, H, f, a) {
     if (!BOILBUF) BOILBUF = [gpuBuf(), gpuBuf()]; const [[c1, x1], [c2, x2]] = BOILBUF;
@@ -2005,7 +2053,20 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       x.fillStyle = `rgba(255,255,255,${al})`; x.beginPath(); for (let k = 0; k < 8; k++) { const ang = k * Math.PI / 4 + .3, rr = k % 2 ? r * .16 : r; x.lineTo(px + Math.cos(ang) * rr, py + Math.sin(ang) * rr); } x.closePath(); x.fill(); }
     x.restore();
   }
+  // eli-raster (right half of the pink eli post): a coarse regular dot screen over the photo, keeping its colours.
+  // each cell: the cell colour darkened as ground, a dot of the brightened colour sized by brightness
+  function eliKorn(x, W, H, f, a) {
+    const g = Math.max(8, Math.round(W / (95 - 45 * a))), im = x.getImageData(0, 0, W, H), d = im.data;
+    x.save();
+    for (let y = 0, r = 0; y < H; y += g, r++) for (let xx = (r % 2) * g / 2 - g / 2; xx < W; xx += g) {
+      const cx = Math.min(W - 1, Math.max(0, xx + g / 2 | 0)), cy = Math.min(H - 1, y + g / 2 | 0), i = (cy * W + cx) * 4, R = d[i], G = d[i + 1], B = d[i + 2], L = (R * .3 + G * .59 + B * .11) / 255;
+      x.fillStyle = `rgb(${R * .42 | 0},${G * .42 | 0},${B * .42 | 0})`; x.fillRect(xx, y, g + 1, g + 1);
+      const rad = g * .5 * Math.min(.86, Math.sqrt(L) * .95); if (rad < .6) continue;
+      x.fillStyle = `rgb(${Math.min(255, R * .7 + 90) | 0},${Math.min(255, G * .7 + 90) | 0},${Math.min(255, B * .7 + 90) | 0})`; x.beginPath(); x.arc(xx + g / 2, y + g / 2, rad, 0, Math.PI * 2); x.fill(); }
+    x.restore();
+  }
   function bildFx(x, W, H, f, q, a, fx) {
+    if (fx.has('eli')) eliKorn(x, W, H, f, a);
     const grab = () => { if (!BILDBUF) BILDBUF = gpuBuf(); const [c, cx] = BILDBUF; if (c.width !== W || c.height !== H) { c.width = W; c.height = H; } else cx.clearRect(0, 0, W, H); cx.drawImage(x.canvas, 0, 0); return c; };
     if (fx.has('wellen')) { const c = grab(), st = 4; for (let y = 0; y < H; y += st) { const o = Math.sin(y / H * TAU * 2.5 + TAU * q) * a * W * .009 + Math.sin(y / H * TAU * 7 - TAU * q * 2) * a * W * .003; x.drawImage(c, 0, y, W, st, o, y, W, st); } }
     if (fx.has('vhs')) { const c = grab(), band = ((q * 3) % 1) * (H * 1.2) - H * .1, bh = H * .07;
@@ -2051,6 +2112,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       if (BILD.fg) put(BILD.fg, s * (1 + .035 * a * (.5 + .5 * ph)), dx * 1.6 + ph * .007 * a * W, dy * 1.6 - Math.abs(ph) * .004 * a * H);
       else if (fx.has('zittern')) bildBoil(x, null, (c2, w, h) => { c2.drawImage(x.canvas, 0, 0); }, W, H, f, a * .5);
     }
+    { const k = k0 * (bildMode() === 'poster' && BILD.fg ? 1.01 : s), w = im.width * k, h = im.height * k; bildColorFx(x, W, H, f, q, ganz ? [(W - w) / 2, (H - h) / 2, w, h] : null); }
     if (fx.has('glitzer')) bildGlitzer(x, W, H, q, a);
     bildFx(x, W, H, f, q, a, fx);
     bildTexts(x, W, H, f, fx.has('zittern'), 'vorne', q);
@@ -2691,6 +2753,86 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   function y2k(k) { if (CDS.obj !== 'foto') return null; let im = Y2K_IMG[k]; if (!im) { im = Y2K_IMG[k] = new Image(); im.onload = () => {}; im.src = Y2K[k]; } if (im.complete && im.naturalWidth) return im; moWait = true; return null; }
   // the cd-r photo stretched so its (slightly oval) disc becomes a circle of radius r around the origin
   const cdrPhoto = (x, im, r) => { const kx = r / (226 / 500 * im.width), ky = r / (230.75 / 500 * im.height); x.drawImage(im, -251 / 500 * im.width * kx, -253.25 / 500 * im.height * ky, im.width * kx, im.height * ky); };
+  // sony-cd: the cd-r photo with its print taken out (filled from the silver around it) and our own set in the slab of
+  // the sony print, the case photo with new writing on its two stickers; both on white, the disc in front of the case
+  const SONY = { top: 'logo', topT: 'BBKK', big: 'CD-R', right: '700MB', s1: 'RECORDABLE', s2: 'BBKK', s3: 'CLEAR & DYNAMIC', d1: '', d2: 'TOTAL FREEDOM', move: 'schwingen' };
+  const SONYC = { base: null, disc: null, dk: '', cse: null, ck: '' };
+  const y2kAny = k => { let im = Y2K_IMG[k]; if (!im) { im = Y2K_IMG[k] = new Image(); im.src = Y2K[k]; } if (im.complete && im.naturalWidth) return im; moWait = true; return null; };
+  const SONY_SLAB = { f: "'Besley'", w: 800 }, SONY_IT = { f: "'Besley'", w: 800, s: 'italic' }, DISC_C = [251, 252], DISC_R = 231, DISC_H = 27;
+  const sonyFonts = () => { const ok = ["800 20px 'Besley'", "italic 800 20px 'Besley'", "condensed 800 20px 'Archivo'"].every(q => document.fonts.check(q));
+    if (!ok) { document.fonts.load("italic 800 20px 'Besley'"); document.fonts.load("800 20px 'Besley'"); moWait = true; } return ok; };
+  function sonyDisc(im) {
+    const key = [SONY.top, SONY.topT, SONY.big, SONY.right, MO.m, MO.w, MO.p, MO.pmode].join('|'); if (SONYC.dk === key) return SONYC.disc;
+    if (!SONYC.base) {   // where sony, cd-r, 700mb and supremas stand: the silver of a disc changes with the angle, hardly along the radius,
+      // so each pixel there takes the colours just inside and just outside the print on its own ray
+      const [b, bx] = mk(); b.width = b.height = 500; bx.drawImage(im, 0, 0); const d = bx.getImageData(0, 0, 500, 500), p = d.data, inM = new Uint8Array(250000);
+      [[46, 206, 104, 32], [38, 234, 118, 62], [344, 238, 122, 58], [404, 212, 62, 34, 2]].forEach(([rx, ry, rw, rh, v = 1]) => { for (let yy = ry; yy < ry + rh; yy++) for (let xx = rx; xx < rx + rw; xx++) inM[yy * 500 + xx] = v; });   // 2: only from outside, inside is the disc logo
+      const at = (r, a) => { const xx = Math.round(DISC_C[0] + Math.cos(a) * r), yy = Math.round(DISC_C[1] + Math.sin(a) * r); return xx < 0 || yy < 0 || xx > 499 || yy > 499 ? -1 : yy * 500 + xx; };
+      for (let i = 0; i < 250000; i++) { if (!inM[i]) continue; const px = i % 500 - DISC_C[0], py = (i / 500 | 0) - DISC_C[1], r = Math.hypot(px, py), a = Math.atan2(py, px);
+        let r1 = r, r2 = r, j1, j2; do { r1 -= 1; j1 = at(r1, a); } while (j1 >= 0 && inM[j1] && r1 > 40); do { r2 += 1; j2 = at(r2, a); } while (j2 >= 0 && inM[j2] && r2 < DISC_R - 4);
+        const w = r2 >= DISC_R - 4 || j2 < 0 || inM[j2] ? 0 : inM[i] === 2 ? 1 : (r - r1) / (r2 - r1); for (let k = 0; k < 3; k++) p[i * 4 + k] = p[j1 * 4 + k] * (1 - w) + (w ? p[j2 * 4 + k] * w : 0); }
+      bx.putImageData(d, 0, 0); SONYC.base = b; }
+    const [c, x] = mk(); c.width = c.height = 1000; x.scale(2, 2);
+    x.save(); x.beginPath(); x.arc(DISC_C[0], DISC_C[1], DISC_R, 0, TAU); x.arc(DISC_C[0], DISC_C[1], DISC_H, 0, TAU); x.clip('evenodd'); x.drawImage(SONYC.base, 0, 0); x.restore();
+    x.save(); x.fillStyle = '#151515'; x.textBaseline = 'alphabetic'; x.textAlign = 'center';
+    const w0 = moWait; moWait = false; let miss = false;
+    if (SONY.top === 'logo') { const bw = 270, bh = 96, items = lockup(bw, bh).filter(it => !it.cross); miss = moWait || !items.length;   // our logo where sony stood, printed black
+      if (items.length) { const [g, gg] = mk(); g.width = bw; g.height = bh; items.forEach(it => gg.drawImage(it.a.frames[0], it.x, it.y, it.w, it.h));
+        const d = gg.getImageData(0, 0, bw, bh), p = d.data; for (let i = 0; i < p.length; i += 4) { p[i + 3] = p[i + 3] * Math.max(p[i], p[i + 1], p[i + 2]) / 255; p[i] = p[i + 1] = p[i + 2] = 21; } gg.putImageData(d, 0, 0);
+        x.drawImage(g, 98 - bw / 4, 219 - bh / 4, bw / 2, bh / 2); } }
+    else if (SONY.topT.trim()) { const t = SONY.topT.trim(); x.letterSpacing = '2px'; setFont(x, SONY_SLAB, Math.min(19, fitPx(x, t, SONY_SLAB, 100, 19))); x.fillText(t, 98, 229); x.letterSpacing = '0px'; }
+    // the big writing: narrow like the sony print, the left one slanted
+    const big = (t, F, cx, by, maxW, px) => { t = t.trim(); if (!t) return; const sq = .8; setFont(x, F, Math.min(px, fitPx(x, t, F, maxW / sq, px))); x.save(); x.translate(cx, by); x.scale(sq, 1); x.fillText(t, 0, 0); x.restore(); };
+    big(SONY.big, SONY_IT, 99, 287, 118, 62); big(SONY.right, SONY_SLAB, 405, 285, 110, 58);
+    x.restore();
+    moWait = w0 || miss; if (sonyFonts() && !miss) SONYC.dk = key; return SONYC.disc = c;
+  }
+  function sonyCase(im) {
+    const date = (SONY.d1 || MO.date || '31.10').trim(), key = [SONY.s1, SONY.s2, SONY.s3, date, SONY.d2].join('|'); if (SONYC.ck === key) return SONYC.cse;
+    const [c, x] = mk(); c.width = 991; c.height = 863; x.drawImage(im, -6, -9);
+    const grime = (w, h, seed) => { for (let i = 0; i < 260; i++) { x.fillStyle = 'rgba(30,30,30,' + (.05 + .12 * sr(seed, i)) + ')'; x.fillRect(sr(seed, i + 500) * w, sr(seed, i + 900) * h, 1 + sr(seed, i + 1300) * 1.5, 1 + sr(seed, i + 1700) * 1.5); }
+      for (let i = 0; i < 4; i++) { const gx = sr(seed, 40 + i) * w, gy = sr(seed, 50 + i) * h, g = x.createRadialGradient(gx, gy, 0, gx, gy, w * .3); g.addColorStop(0, 'rgba(60,60,60,.12)'); g.addColorStop(1, 'rgba(60,60,60,0)'); x.fillStyle = g; x.fillRect(0, 0, w, h); } };
+    const line = (t, F, cx, by, maxW, px, sp) => { t = t.trim(); if (!t) return; x.letterSpacing = sp + 'px'; setFont(x, F, px); const w = x.measureText(t).width; if (w > maxW) setFont(x, F, px * maxW / w); x.fillText(t, cx + sp / 2, by); x.letterSpacing = '0px'; };
+    const COND = { f: "'Archivo'", w: 800, st: 'condensed' }, COND6 = { f: "'Archivo'", w: 600, st: 'condensed' };
+    x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+    // the big sticker: paper, a black bar with white writing at the top and at the bottom, a big word between
+    x.save(); x.translate(715, 727); x.beginPath(); x.roundRect(3, 3, 147, 79, 4); x.clip();
+    x.fillStyle = '#b3b3b1'; x.fillRect(0, 0, 153, 85); x.fillStyle = '#161616'; x.fillRect(9, 6, 132, 22); x.fillRect(9, 59, 132, 21);
+    x.fillStyle = '#c9c9c7'; line(SONY.s1, COND, 75, 23, 124, 17, 3); line(SONY.s3, COND, 75, 75, 124, 16, 2);
+    x.fillStyle = '#121212'; line(SONY.s2, COND6, 75, 54, 128, 34, 6);
+    grime(153, 85, 7);
+    x.strokeStyle = 'rgba(255,255,255,.75)'; x.lineWidth = 2.5; x.filter = 'blur(1.2px)'; x.beginPath(); x.moveTo(-10, 69); x.lineTo(80, 67); x.stroke(); x.filter = 'none';   // the glare of the plastic runs on over it
+    x.restore();
+    // the small sticker: turned, a grey field with the date, two lines below
+    x.save(); x.translate(841, 671); x.rotate(Math.atan2(17, 74)); x.beginPath(); x.roundRect(3, 3, 70, 60, 7); x.clip();
+    x.fillStyle = '#a9a9a7'; x.fillRect(0, 0, 76, 66); x.fillStyle = '#8c8c8a'; x.fillRect(11, 8, 54, 20);
+    x.fillStyle = '#141414'; line(date, COND, 38, 24, 48, 17, 2);
+    x.letterSpacing = '2px'; const tt = SONY.d2.trim().toUpperCase(); let lp = 13, ws = wrap(x, tt, COND, lp, 58); if (ws.length > 2) { lp = 10; ws = wrap(x, tt, COND, lp, 58); } x.letterSpacing = '0px';
+    ws.slice(0, 3).forEach((t, i) => line(t, COND, 38, (ws.length > 2 ? 40 : 43) + i * (lp + 1), 60, lp, 2));
+    grime(76, 66, 11); x.restore();
+    if (sonyFonts()) SONYC.ck = key; return SONYC.cse = c;
+  }
+  function drawSony(W, H, M, f, N) {
+    const x = mx, q = (f % N) / N, u = W / 1080, cd = y2kAny('cdr'), hu = y2kAny('huelle');
+    x.fillStyle = '#f2f1ed'; x.fillRect(0, 0, W, H); if (!cd || !hu) return;
+    const disc = sonyDisc(cd), cse = sonyCase(hu), m = M * .8;
+    // the disc lies inside the case on its tray (hub at 520,430 of the case photo, radius ~400), under the lid:
+    // the lid's scratches and glare are screened back over it, the two stickers sit on top
+    const cw = Math.min(W - 2 * m, H * .72 * 991 / 863), ch = cw * 863 / 991, kc = cw / 991, cx0 = (W - cw) / 2, y0 = (H - ch) / 2;
+    x.save(); x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = 40 * u; x.shadowOffsetY = 18 * u; x.fillStyle = '#111'; x.fillRect(cx0 + 4 * u, y0 + 4 * u, cw - 8 * u, ch - 8 * u); x.restore();
+    x.drawImage(cse, cx0, y0, cw, ch);
+    const t = TAU * q, rot = SONY.move === 'drehen' ? t : SONY.move === 'schwingen' ? .14 * Math.sin(t) : 0;
+    const dx = cx0 + 520 * kc, dy = y0 + 430 * kc, R = 398 * kc, k = R / DISC_R;
+    x.save(); x.beginPath(); x.rect(cx0, y0, cw, ch); x.clip();
+    x.save(); x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = 18 * u; x.beginPath(); x.arc(dx, dy, R * .995, 0, TAU); x.arc(dx, dy, DISC_H * k, 0, TAU); x.fillStyle = '#cfcfcf'; x.fill('evenodd'); x.restore();
+    x.save(); x.translate(dx, dy); x.rotate(rot); x.drawImage(disc, -DISC_C[0] * k, -DISC_C[1] * k, 500 * k, 500 * k); x.restore();
+    x.save(); x.globalCompositeOperation = 'screen'; x.globalAlpha = .5; x.drawImage(cse, cx0, y0, cw, ch); x.restore();   // lid: scratches + glare over the disc
+    // the stickers sit on the outside of the lid: cut out in their exact shape (same placement as in sonyCase)
+    [[715, 727, 0, 147, 79, 4], [841, 671, Math.atan2(17, 74), 70, 60, 7]].forEach(([tx2, ty2, r2, sw, sh, rr]) => { x.save(); x.translate(cx0, y0); x.scale(kc, kc);
+      x.translate(tx2, ty2); x.rotate(r2); x.beginPath(); x.roundRect(3, 3, sw, sh, rr); x.rotate(-r2); x.translate(-tx2, -ty2); x.clip(); x.drawImage(cse, 0, 0); x.restore(); });
+    const p = cx0 - cw * .8 + q * cw * 2.6, g = x.createLinearGradient(p, y0, p + cw * .35, y0 + ch * .35);
+    g.addColorStop(0, 'rgba(255,255,255,0)'); g.addColorStop(.5, 'rgba(255,255,255,.14)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.globalCompositeOperation = 'screen'; x.fillStyle = g; x.fillRect(cx0, y0, cw, ch); x.restore();
+  }
   function photoFit(x, im, W, H) {   // cover-fit the photo, return a mapper from photo fractions to canvas pixels
     const k = Math.max(W / im.width, H / im.height), ox = (W - im.width * k) / 2, oy = (H - im.height * k) / 2;
     x.drawImage(im, ox, oy, im.width * k, im.height * k); return (nx, ny) => [ox + nx * im.width * k, oy + ny * im.height * k];
@@ -2917,6 +3059,8 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       if (date) jtext(tx, date, W / 2, H * .5 + tp * .3 + 90, 56, MONO, 'center', f);
     } else if (kind === 'bild') {
       PHOTO_FRAME = true; drawBild(W, H, M, f, N);
+    } else if (kind === 'sony') {
+      PHOTO_FRAME = SCREEN_GRAIN = true; drawSony(W, H, M, f, N);
     } else if (kind === 'collage') {
       PHOTO_FRAME = true; drawCollage(W, H, M, f);
     } else if (kind === 'cd') {
@@ -3090,7 +3234,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     const W = CV.width, H = CV.height, N = frameCount(), f = F;
     mx = CVX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; if (CLEAN()) cleanBase(F, N); else { mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H); }
     drawBack(F, N);
-    if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.mode === 'collage' ? 'collage' : MO.mode === 'bild' ? 'bild' : MO.mode === 'lineup' ? PHOTO.view : MO.lay);
+    if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.mode === 'collage' ? 'collage' : MO.mode === 'bild' ? 'bild' : MO.mode === 'sony' ? 'sony' : MO.mode === 'lineup' ? PHOTO.view : MO.lay);
     if (MO.look === 'stamp' && !PHOTO_FRAME) {   // stempel: the light-on-dark frame becomes stamp ink on paper (texture changes with the flip-book)
       if (dcv.width !== W || dcv.height !== H) { dcv.width = W; dcv.height = H; } dcx.clearRect(0, 0, W, H); dcx.drawImage(CV, 0, 0);
       mx.save(); mx.globalCompositeOperation = 'copy'; mx.filter = MO.grain ? `url(#stamp${MO.boil ? f % 4 : 0})` : 'url(#stampS)'; mx.drawImage(dcv, 0, 0); mx.restore();
@@ -3119,7 +3263,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   chips($('#mo-fx'), MO_FX, 'fx'); chips($('#mo-lay'), MO_LAY, 'lay'); chips($('#mo-back'), MO_BACK, 'back');
   const seg = (attr, fn) => $$(`[${attr}]`).forEach(b => b.onclick = () => { fn(b.getAttribute(attr)); $$(`[${attr}]`).forEach(x => x.setAttribute('aria-pressed', String(x === b))); });
   const fmtNote = () => { const [W, H] = FMT[MO.fmt], n = frameCount(); $('#mo-fmtnote').textContent = `${W} × ${H} · ${(n / MO.fps).toFixed(1)} s`; };
-  seg('data-mo-mode', v => { MO.mode = v; mroom.classList.toggle('post', v !== 'logo'); mroom.classList.toggle('reel', v === 'reel'); mroom.classList.toggle('lineup', v === 'lineup'); mroom.classList.toggle('collage', v === 'collage'); mroom.classList.toggle('bild', v === 'bild'); if (v === 'collage') segmenter().catch(() => {}); mroom.classList.toggle('lu', v === 'lineup' || v === 'reel'); fmtNote(); });
+  seg('data-mo-mode', v => { MO.mode = v; mroom.classList.toggle('post', v !== 'logo'); mroom.classList.toggle('reel', v === 'reel'); mroom.classList.toggle('lineup', v === 'lineup'); mroom.classList.toggle('collage', v === 'collage'); mroom.classList.toggle('bild', v === 'bild'); mroom.classList.toggle('sony', v === 'sony'); if (v === 'collage') segmenter().catch(() => {}); mroom.classList.toggle('lu', v === 'lineup' || v === 'reel'); fmtNote(); });
   seg('data-mo-fmt', v => { MO.fmt = v; fmtNote(); });
   seg('data-mo-bg', v => { MO.dark = v === '0'; });
   seg('data-mo-grain', v => { MO.grain = v === '1'; });
@@ -3819,6 +3963,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       const sc = Math.min(1, 2400 / Math.max(img.naturalWidth, img.naturalHeight)), c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * sc); c.height = Math.round(img.naturalHeight * sc);
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); BILD.img = c; BILD.v++; BILD.mask = null; BILD.pmask = null; BILD.layV = ''; $('#bild-stat').textContent = 'bild geladen.'; };
     $('#bild-up').onchange = e => { bildLoad(e.target.files[0]); e.target.value = ''; };
+    $$('[data-sony]').forEach(el => el.oninput = () => { SONY[el.dataset.sony] = el.value; });
+    [['data-sony-top', v => { SONY.top = v; $('[data-sony=topT]').hidden = v !== 'text'; }], ['data-sony-move', v => { SONY.move = v; }]]
+      .forEach(([at, fn]) => $$('[' + at + ']').forEach(b => b.onclick = () => { fn(b.getAttribute(at)); $$('[' + at + ']').forEach(q => q.setAttribute('aria-pressed', String(q === b))); }));
     { const box = $('#bild-texts'), fontOpts = cur => [...Object.entries(TFONTS).map(([k, F]) => [k, F.n]), ['edding', 'edding']].map(([k, n]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${esc(n)}</option>`).join('');
       const draw = () => { box.innerHTML = BILD.texts.map(it => `<div class="bt" data-id="${it.id}" style="display:grid;gap:6px;border-left:2px solid #444;padding-left:10px;margin-bottom:10px">
           <div class="row" style="flex-wrap:nowrap"><input data-f="t" value="${esc(it.t)}" placeholder="text" aria-label="text" style="flex:1;min-width:0"><button class="kb-btn ghost" data-del type="button" aria-label="text entfernen">×</button></div>
@@ -3842,6 +3989,20 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       mcv.addEventListener('pointermove', e => { if (MO.mode !== 'bild') return; const q = pt(e); if (!dr) { mcv.style.cursor = hit(q) ? 'grab' : ''; return; }
         dr.it.x = Math.max(0, Math.min(1, dr.o[0] + (q[0] - dr.q[0]) / mcv.width)); dr.it.y = Math.max(0, Math.min(1, dr.o[1] + (q[1] - dr.q[1]) / mcv.height)); });
       const end = () => { if (dr) { dr = null; mcv.style.cursor = ''; } }; mcv.addEventListener('pointerup', end); mcv.addEventListener('pointercancel', end); }
+    { const C = BILD.cfx, cb = $('#bild-cfx-col'), own = $('#bild-cfx-own'), fxc = $('#bild-cfx-fx'), more = $('.mo-cfx');
+      const show = () => { more.hidden = !C.col; $('.mo-cfx-to').hidden = C.fx !== 'umfaerben'; $$('button', fxc).forEach(q => q.setAttribute('aria-pressed', String(q.dataset.k === C.fx))); };
+      const pick = (c, btn) => { C.col = c; $$('button', cb).forEach(q => q.setAttribute('aria-pressed', String(q === btn))); if (c) own.value = c; show(); };
+      let picking = false;
+      cb.onclick = e => { const btn = e.target.closest('button'); if (!btn) return; if (btn.dataset.c === 'pick') { picking = true; mcv.style.cursor = 'crosshair'; $$('button', cb).forEach(q => q.setAttribute('aria-pressed', String(q === btn))); return; } picking = false; pick(btn.dataset.c, btn); };
+      own.oninput = () => pick(own.value, null);
+      // picking: the next click in the preview takes the colour under the pointer
+      mcv.addEventListener('pointerdown', e => { if (!picking || MO.mode !== 'bild') return; e.stopImmediatePropagation(); picking = false; mcv.style.cursor = '';
+        const r = mcv.getBoundingClientRect(), px = mcv.getContext('2d').getImageData(Math.round((e.clientX - r.left) * mcv.width / r.width), Math.round((e.clientY - r.top) * mcv.height / r.height), 1, 1).data;
+        pick('#' + [px[0], px[1], px[2]].map(n => n.toString(16).padStart(2, '0')).join(''), null); }, true);
+      fxc.innerHTML = CFX_FX.map(([k, n]) => `<button type="button" data-k="${k}" aria-pressed="${k === C.fx}">${n}</button>`).join('');
+      fxc.onclick = e => { const btn = e.target.closest('button'); if (!btn) return; C.fx = btn.dataset.k; show(); };
+      $('#bild-cfx-to').oninput = e => { C.to = e.target.value; };
+      [['tol', '#bild-cfx-tol'], ['amt', '#bild-cfx-amt']].forEach(([k, id]) => { const el = $(id), o = $(id + '-o'); o.textContent = el.value; el.oninput = () => { o.textContent = el.value; C[k] = +el.value; }; }); }
     { const cam = $('#bild-cam'), fxb = $('#bild-fx');
       cam.innerHTML = BILD_CAM.map(([k, n]) => `<button type="button" data-k="${k}" aria-pressed="${k === BILD.cam}">${n}</button>`).join('');
       cam.onclick = e => { const b = e.target.closest('button'); if (!b) return; BILD.cam = b.dataset.k; $$('button', cam).forEach(q => q.setAttribute('aria-pressed', String(q === b))); };
@@ -3914,7 +4075,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (document.body.dataset.v === 'motion' || recOn) {
       const f = MO.still && !recOn ? 0 : Math.floor(Math.max(0, now - mt0) / 1000 * MO.fps) % frameCount();
       drawMotion(f); mLast = f;
-      mroom.classList.toggle('photo', MO.mode === 'lineup' || MO.mode === 'collage' || MO.mode === 'bild'); mroom.classList.toggle('objscene', MO.mode === 'lineup' && !!OBJ_SCENES[PHOTO.view]); secSync(); thSync(); mroom.classList.toggle('fxbg', MO.back === 'fx'); mroom.classList.toggle('solo', MO.mode === 'logo'); mroom.classList.toggle('cdonly', MO.mode === 'lineup' && !['artist', 'lineup'].includes(PHOTO.view)); mroom.classList.toggle('hu', MO.mode === 'lineup' && PHOTO.view === 'huelle'); mroom.classList.toggle('cd', (MO.mode === 'lineup' && (PHOTO.view === 'cd' || PHOTO.view === 'huelle')) || (MO.mode === 'reel' && REEL.some(sc => sc.k === 'cd' || sc.k === 'huelle'))); const curLay = MO.mode === 'logo' ? MO.arr : MO.mode === 'post' ? MO.lay : ''; mroom.classList.toggle('arr', curLay === 'buchstaben' || COMP_KEYS.includes(curLay)); mroom.classList.toggle('let', curLay === 'buchstaben');
+      mroom.classList.toggle('photo', MO.mode === 'lineup' || MO.mode === 'collage' || MO.mode === 'bild' || MO.mode === 'sony'); mroom.classList.toggle('objscene', MO.mode === 'lineup' && !!OBJ_SCENES[PHOTO.view]); secSync(); thSync(); mroom.classList.toggle('fxbg', MO.back === 'fx'); mroom.classList.toggle('solo', MO.mode === 'logo'); mroom.classList.toggle('cdonly', MO.mode === 'lineup' && !['artist', 'lineup'].includes(PHOTO.view)); mroom.classList.toggle('hu', MO.mode === 'lineup' && PHOTO.view === 'huelle'); mroom.classList.toggle('cd', (MO.mode === 'lineup' && (PHOTO.view === 'cd' || PHOTO.view === 'huelle')) || (MO.mode === 'reel' && REEL.some(sc => sc.k === 'cd' || sc.k === 'huelle'))); const curLay = MO.mode === 'logo' ? MO.arr : MO.mode === 'post' ? MO.lay : ''; mroom.classList.toggle('arr', curLay === 'buchstaben' || COMP_KEYS.includes(curLay)); mroom.classList.toggle('let', curLay === 'buchstaben');
       if (!recOn) mstat.textContent = moWait ? 'logo wird gezeichnet …' : (mstat.textContent === 'logo wird gezeichnet …' ? '' : mstat.textContent);   // every rAF: assets finish loading asynchronously, and the recorder needs a steady stream
     }
     requestAnimationFrame(moLoop);
