@@ -2020,11 +2020,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       if (!CFXGRAIN) CFXGRAIN = [0, 1, 2, 3].map(() => [255, 0].map(ink => { const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d'), id = g.createImageData(256, 256);
         for (let i = 0; i < id.data.length; i += 4) { const n = Math.random(); id.data[i] = id.data[i + 1] = id.data[i + 2] = ink; id.data[i + 3] = n > .5 ? Math.min(255, (n - .5) * 2.2 * 255) : 0; } g.putImageData(id, 0, 0); return c; }));
       const k = Math.max(1, W / 1080 * 1.4); b.save(); b.scale(k, k); b.translate(-sr(v, 1) * 256, -sr(v, 2) * 256); b.fillStyle = b.createPattern(CFXGRAIN[v][dark ? 0 : 1], 'repeat'); b.fillRect(0, 0, W / k + 512, H / k + 512); b.restore(); }
-    else if (C.fx === 'raster') {   // the chosen colour becomes a black-and-white dot screen: black ground, white dots; slightly bigger where the area is a bit lighter
-      const g = Math.max(8, Math.round(W / 74)), sd = x.getImageData(0, 0, W, H).data; b.fillStyle = '#000'; b.fillRect(0, 0, W, H); b.fillStyle = '#f2f2f2';
-      for (let y = 0, r = 0; y < H + g; y += g, r++) for (let xx = (r % 2) * g / 2 - g / 2; xx < W + g; xx += g) {
-        const cx = Math.min(W - 1, Math.max(0, xx + g / 2 | 0)), cy = Math.min(H - 1, y + g / 2 | 0), i = (cy * W + cx) * 4, L = (sd[i] * .3 + sd[i + 1] * .59 + sd[i + 2] * .11) / 255;
-        const rad = g * .5 * (.28 + .5 * a) * (.8 + Math.min(1, L * 4) * .5); b.beginPath(); b.arc(xx + g / 2, y + g / 2, rad, 0, Math.PI * 2); b.fill(); } }
+    else if (C.fx === 'raster') halftoneBW(b, x.canvas, W, H, a, .25 + C.tol / 100 * .6);   // the chosen (dark) colour becomes the fine b/w halftone, its darks spread out
     else if (C.fx === 'flimmern') { b.fillStyle = dark ? '#fff' : '#000'; b.globalAlpha = .15 + .85 * sr(Math.floor(f / 2), 9); b.fillRect(0, 0, W, H); b.globalAlpha = 1; }
     else if (C.fx === 'schimmer') { const t = (q * 1.5) % 1, cx = -W * .6 + t * W * 2.2, g = b.createLinearGradient(cx - W * .5, -H * .2, cx + W * .5, H * 1.2);
       [[0, '#ff4040'], [.2, '#ffbe3c'], [.38, '#78ff8c'], [.56, '#50aaff'], [.74, '#be5aff'], [1, '#ff4040']].forEach(([o, c]) => g.addColorStop(o, c)); b.fillStyle = g; b.fillRect(0, 0, W, H); }
@@ -2058,18 +2054,19 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       x.fillStyle = `rgba(255,255,255,${al})`; x.beginPath(); for (let k = 0; k < 8; k++) { const ang = k * Math.PI / 4 + .3, rr = k % 2 ? r * .16 : r; x.lineTo(px + Math.cos(ang) * rr, py + Math.sin(ang) * rr); } x.closePath(); x.fill(); }
     x.restore();
   }
-  // eli-raster (right half of the pink eli post): a coarse regular dot screen over the photo, keeping its colours.
-  // each cell: the cell colour darkened as ground, a dot of the brightened colour sized by brightness
-  function eliKorn(x, W, H, f, a) {
-    const g = Math.max(8, Math.round(W / (95 - 45 * a))), im = x.getImageData(0, 0, W, H), d = im.data;
-    x.save();
-    for (let y = 0, r = 0; y < H; y += g, r++) for (let xx = (r % 2) * g / 2 - g / 2; xx < W; xx += g) {
-      const cx = Math.min(W - 1, Math.max(0, xx + g / 2 | 0)), cy = Math.min(H - 1, y + g / 2 | 0), i = (cy * W + cx) * 4, R = d[i], G = d[i + 1], B = d[i + 2], L = (R * .3 + G * .59 + B * .11) / 255;
-      x.fillStyle = `rgb(${R * .42 | 0},${G * .42 | 0},${B * .42 | 0})`; x.fillRect(xx, y, g + 1, g + 1);
-      const rad = g * .5 * Math.min(.86, Math.sqrt(L) * .95); if (rad < .6) continue;
-      x.fillStyle = `rgb(${Math.min(255, R * .7 + 90) | 0},${Math.min(255, G * .7 + 90) | 0},${Math.min(255, B * .7 + 90) | 0})`; x.beginPath(); x.arc(xx + g / 2, y + g / 2, rad, 0, Math.PI * 2); x.fill(); }
-    x.restore();
+  // eli-raster (right half of the pink eli post): a fine black-and-white halftone, ~100 dots across, offset rows;
+  // each dot sized by the average brightness of its cell, so the picture stays readable. lref stretches the tones
+  // (1 = the whole range, smaller = only the darks are spread out, used when it runs on black only)
+  const HTB = (() => { const c = document.createElement('canvas'); return [c, c.getContext('2d', { willReadFrequently: true })]; })();
+  function halftoneBW(dst, src, W, H, a, lref = 1) {
+    const g = Math.max(4, W / (150 - 70 * a)), cols = Math.ceil(W / g) + 2, rows = Math.ceil(H / g) + 2, [hc, hx] = HTB;
+    hc.width = cols; hc.height = rows; hx.imageSmoothingQuality = 'high'; hx.drawImage(src, 0, 0, cols * g, rows * g, 0, 0, cols, rows); const d = hx.getImageData(0, 0, cols, rows).data;
+    dst.fillStyle = '#000'; dst.fillRect(0, 0, W, H); dst.fillStyle = '#f4f4f4';
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const i = (r * cols + c) * 4, L = Math.min(1, (d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11) / 255 / lref), rad = g * .62 * Math.sqrt(L);
+      if (rad < .35) continue; dst.beginPath(); dst.arc(c * g + g / 2 + (r % 2 ? g / 2 : 0), r * g + g / 2, rad, 0, Math.PI * 2); dst.fill(); }
   }
+  function eliKorn(x, W, H, f, a) { const [bc] = HTB2(); bc.width = W; bc.height = H; bc.getContext('2d').drawImage(x.canvas, 0, 0); halftoneBW(x, bc, W, H, a, 1); }
+  let HTBUF = null; const HTB2 = () => HTBUF || (HTBUF = (() => { const c = document.createElement('canvas'); return [c, c.getContext('2d')]; })());
   function bildFx(x, W, H, f, q, a, fx) {
     if (fx.has('eli')) eliKorn(x, W, H, f, a);
     const grab = () => { if (!BILDBUF) BILDBUF = gpuBuf(); const [c, cx] = BILDBUF; if (c.width !== W || c.height !== H) { c.width = W; c.height = H; } else cx.clearRect(0, 0, W, H); cx.drawImage(x.canvas, 0, 0); return c; };
