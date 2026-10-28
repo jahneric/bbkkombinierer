@@ -2919,7 +2919,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     x.globalCompositeOperation = 'source-over'; }
     x9.save(); x9.globalAlpha = .92; x9.filter = `blur(${(.6 * u).toFixed(2)}px)`; x9.drawImage(pl, 0, 0); x9.restore();
     // the new sticker (covers the old one), draggable
-    const st = mdSticker(), stw = sw * .52, sth = stw * st.height / st.width, sx = x0 + sw * .415 + MD.off[0], sy = y0 + sh * .565 + MD.off[1];
+    const st = mdSticker(), stw = sw * .52, sth = stw * st.height / st.width, sx = x0 + sw * .385 + MD.off[0], sy = y0 + sh * .565 + MD.off[1];
     MD.rect = [sx, sy, stw, sth];
     // the lid's scratches over the sticker a little, so it sits behind the plastic
     { const cw2 = c.width, ch2 = c.height, srx = cw2 * .05, sry = ch2 * .2, srw = cw2 * .52, srh = srw * sth / stw;   // dirt + scratches taken from the upper left of the case (not from the old sticker)
