@@ -4086,7 +4086,12 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     $$('[data-md-top]').forEach(b => b.onclick = () => { MD.top = b.dataset.mdTop; $$('[data-md-top]').forEach(q => q.setAttribute('aria-pressed', String(q === b))); $('[data-md=p1]').hidden = MD.top === 'logo'; });
     $$('[data-sony-var]').forEach(b => b.onclick = () => { SONY.var = b.dataset.sonyVar; $$('[data-sony-var]').forEach(q => q.setAttribute('aria-pressed', String(q === b))); $('.sony-md').hidden = SONY.var !== 'md'; $('.sony-cd').hidden = SONY.var === 'md'; });
     $('#md-up').onchange = async e => { const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;
-      try { const url = URL.createObjectURL(file), img = new Image(); img.src = url; await img.decode(); MD.img = img; MD.v++; MD.off = [0, 0]; $('#md-stat').textContent = 'foto geladen. aufdruck wird ersetzt.'; } catch (err) { $('#md-stat').textContent = 'bild nicht lesbar.'; } };
+      try { const url = URL.createObjectURL(file), img = new Image(); img.src = url; await img.decode(); MD.img = img; MD.v++; MD.off = [0, 0];
+        // kept in this browser (not uploaded anywhere): scaled to 1600 px as jpeg in localStorage, restored on the next visit
+        const k = Math.min(1, 1600 / Math.max(img.width, img.height)), [c, x] = mk(); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); x.drawImage(img, 0, 0, c.width, c.height);
+        let kept = false; try { localStorage.setItem('bbk-md-foto', c.toDataURL('image/jpeg', .88)); kept = true; } catch (e2) {}
+        $('#md-stat').textContent = kept ? 'foto geladen und in diesem browser gespeichert.' : 'foto geladen (nicht gespeichert, speicher voll).'; } catch (err) { $('#md-stat').textContent = 'bild nicht lesbar.'; } };
+    try { const saved = localStorage.getItem('bbk-md-foto'); if (saved) { const img = new Image(); img.src = saved; img.decode().then(() => { MD.img = img; MD.v++; $('#md-stat').textContent = 'gespeichertes foto geladen.'; }).catch(() => {}); } } catch (e) {}
     { let drag = null; const pt = e => { const r = mcv.getBoundingClientRect(); return [(e.clientX - r.left) * mcv.width / r.width, (e.clientY - r.top) * mcv.height / r.height]; };
       const on = q => MO.mode === 'sony' && SONY.var === 'md' && MD.rect && q[0] >= MD.rect[0] && q[0] <= MD.rect[0] + MD.rect[2] && q[1] >= MD.rect[1] && q[1] <= MD.rect[1] + MD.rect[3];
       mcv.addEventListener('pointerdown', e => { const q = pt(e); if (!on(q)) return; drag = { q, o: [...MD.off] }; mcv.setPointerCapture(e.pointerId); });
