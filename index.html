@@ -201,6 +201,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-sc button{background:none;border:1px solid #555;color:var(--mute);cursor:pointer;padding:5px 8px}
 .mo-sc .n{grid-column:1/-1;font-size:10px;color:var(--mute);margin:-2px 0 2px}
 .mo-up{display:inline-block}
+.sony-md:not([hidden]),.sony-cd:not([hidden]){display:grid;gap:10px}.sony-md[hidden],.sony-cd[hidden]{display:none}
 .mo-fxbg{display:grid;gap:8px;border-left:2px solid #444;padding-left:10px}
 .mo-fxbg select{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px;font:11px var(--f-min)}
 .mo-art{display:grid;grid-template-columns:auto minmax(0,1fr) auto 40px auto;gap:5px;align-items:center;margin-bottom:6px}
@@ -517,6 +518,20 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <div class="mo-col"><label for="col-con">kontrast <output id="col-con-o"></output><input type="range" id="col-con" min="60" max="220" value="130"></label></div>
       </div></details>
       <details class="mo-sec mo-sony" data-sec="sony" open><summary>save the date</summary><div class="mo-body">
+        <div class="row"><div class="seg" role="group" aria-label="Variante"><button data-sony-var="cd" aria-pressed="true">cd-r</button><button data-sony-var="md" aria-pressed="false">minidisc</button></div></div>
+        <div class="sony-md" hidden>
+          <div class="row"><label class="kb-btn ghost mo-up">foto der minidisc<input type="file" id="md-up" accept="image/*" hidden></label><span class="mo-note" id="md-stat" style="margin:0">foto laden, dann aufdruck und aufkleber ändern. den aufkleber in der vorschau verschieben.</span></div>
+          <div><span class="mo-lbl">aufdruck auf der hülle</span>
+            <div class="row"><div class="seg" role="group" aria-label="Oben links"><button data-md-top="text" aria-pressed="true">schrift</button><button data-md-top="logo" aria-pressed="false">logo</button></div></div>
+            <div class="row"><input data-md="p1" value="BBKK" aria-label="oben links (statt sony)"><input data-md="p2" value="SAVE THE DATE" aria-label="oben rechts (statt insert this end)"></div>
+            <div class="row"><input data-md="l1" value="bb" aria-label="logo unten links, zeile 1"><input data-md="l2" value="kk" aria-label="logo unten links, zeile 2"></div></div>
+          <div><span class="mo-lbl">aufkleber</span>
+            <div class="row"><input data-md="t1" value="BBKK – SAVE THE DATE – OPEN AIR" aria-label="oberste zeile"></div>
+            <div class="row"><input data-md="t2" value="Rave x 1 Nacht" aria-label="zeile links"><input data-md="t3" value="Cat 1 – Open Air" aria-label="zeile rechts, fett"></div>
+            <div class="row"><input data-md="t6" value="Leipzig" aria-label="ort"><input data-md="t4" value="" placeholder="große zahl (sonst tag)" aria-label="große zahl rechts"></div>
+            <div class="row"><input data-md="t5" value="" placeholder="großer code (sonst datum)" aria-label="großer code"></div></div>
+        </div>
+        <div class="sony-cd">
         <p class="mo-note" style="margin:0">die sony cd-r in ihrer hülle auf weiß. statt sony steht euer logo auf der cd, die schrift darauf und auf den aufklebern ist eure.</p>
         <div><span class="mo-lbl">auf der cd</span>
           <div class="row"><div class="seg" role="group" aria-label="Oben auf der CD"><button data-sony-top="logo" aria-pressed="true">logo</button><button data-sony-top="text" aria-pressed="false">text</button></div><input data-sony="topT" value="BBKK" aria-label="text oben auf der cd" hidden></div>
@@ -528,6 +543,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <div><span class="mo-lbl">kleiner aufkleber</span>
           <div class="row"><input data-sony="d1" value="" placeholder="datum (sonst das vom post)" aria-label="datum auf dem kleinen aufkleber"><input data-sony="d2" value="TOTAL FREEDOM" aria-label="text auf dem kleinen aufkleber"></div></div>
         <div><span class="mo-lbl">die cd</span><div class="seg" role="group" aria-label="Bewegung der CD"><button data-sony-move="schwingen" aria-pressed="true">schwingt</button><button data-sony-move="drehen" aria-pressed="false">dreht sich</button><button data-sony-move="steht" aria-pressed="false">steht</button></div></div>
+        </div>
       </div></details>
       <details class="mo-sec mo-bild" data-sec="bild" open><summary>dein bild</summary><div class="mo-body">
         <div class="row"><label class="kb-btn ghost mo-up">bild laden<input type="file" id="bild-up" accept="image/*" hidden></label><span class="mo-note" id="bild-stat" style="margin:0">oder einfach auf die vorschau ziehen.</span></div>
@@ -2759,7 +2775,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   const cdrPhoto = (x, im, r) => { const kx = r / (226 / 500 * im.width), ky = r / (230.75 / 500 * im.height); x.drawImage(im, -251 / 500 * im.width * kx, -253.25 / 500 * im.height * ky, im.width * kx, im.height * ky); };
   // sony-cd: the cd-r photo with its print taken out (filled from the silver around it) and our own set in the slab of
   // the sony print, the case photo with new writing on its two stickers; both on white, the disc in front of the case
-  const SONY = { top: 'logo', topT: 'BBKK', big: 'CD-R', right: '700MB', s1: 'RECORDABLE', s2: 'BBKK', s3: 'CLEAR & DYNAMIC', d1: '', d2: 'TOTAL FREEDOM', move: 'schwingen' };
+  const SONY = { var: 'cd', top: 'logo', topT: 'BBKK', big: 'CD-R', right: '700MB', s1: 'RECORDABLE', s2: 'BBKK', s3: 'CLEAR & DYNAMIC', d1: '', d2: 'TOTAL FREEDOM', move: 'schwingen' };
   const SONYC = { base: null, disc: null, dk: '', cse: null, ck: '' };
   const y2kAny = k => { let im = Y2K_IMG[k]; if (!im) { im = Y2K_IMG[k] = new Image(); im.src = Y2K[k]; } if (im.complete && im.naturalWidth) return im; moWait = true; return null; };
   const SONY_SLAB = { f: "'Besley'", w: 800 }, SONY_IT = { f: "'Besley'", w: 800, s: 'italic' }, DISC_C = [251, 252], DISC_R = 231, DISC_H = 27;
@@ -2816,7 +2832,105 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     grime(76, 66, 11); x.restore();
     if (sonyFonts()) SONYC.ck = key; return SONYC.cse = c;
   }
+  // ---------- save the date · minidisc: the user's own photo of a minidisc case; the print on the case is taken out
+  // (filled from the plastic around it) and set new, a new sticker covers the old one. regions are fractions of a square
+  // product shot like the classic sony md case; the sticker can be dragged in the preview.
+  const MD = { top: 'text', img: null, v: 0, clean: null, cleanV: -1, stk: null, stkK: '', off: [0, 0], rect: null, p1: 'BBKK', p2: 'SAVE THE DATE', l1: 'bb', l2: 'kk', t1: 'BBKK – SAVE THE DATE – OPEN AIR', t2: 'Rave x 1 Nacht', t3: 'Cat 1 – Open Air', t4: '', t5: '', t6: 'Leipzig' };
+  const MD_R = { p1: [.125, .128, .225, .058], p2: [.618, .138, .27, .05], logo: [.108, .745, .165, .18] };
+  function mdInpaint(c, fx, fy, fw, fh) {   // push-pull fill of one rectangle from what is around it, then real grain from below
+    const W = c.width, H = c.height, x = c.getContext('2d', { willReadFrequently: true }), rx = Math.round(fx * W), ry = Math.round(fy * H), rw = Math.round(fw * W), rh = Math.round(fh * H), m = Math.round(Math.max(rw, rh) * .4);
+    const bx = Math.max(0, rx - m), by = Math.max(0, ry - m), bw = Math.min(W, rx + rw + m) - bx, bh = Math.min(H, ry + rh + m) - by, im = x.getImageData(bx, by, bw, bh), d = im.data, n = bw * bh;
+    const hole = new Uint8Array(n); for (let y = 0; y < bh; y++) for (let xx = 0; xx < bw; xx++) { const X = bx + xx, Y = by + y; hole[y * bw + xx] = X >= rx && X < rx + rw && Y >= ry && Y < ry + rh ? 1 : 0; }
+    const below = x.getImageData(bx, by + 2 * bh <= H ? by + bh : Math.max(0, by - bh), bw, bh).data;   // grain from a clean area next to it, never from the print itself
+    for (let ch = 0; ch < 3; ch++) {
+      let lv = [{ w: bw, h: bh, v: Float32Array.from({ length: n }, (_, i) => d[i * 4 + ch]), k: Float32Array.from(hole, h => 1 - h) }];
+      while (lv[lv.length - 1].w > 2 && lv[lv.length - 1].h > 2) { const { w, h, v, k } = lv[lv.length - 1], w2 = Math.ceil(w / 2), h2 = Math.ceil(h / 2), v2 = new Float32Array(w2 * h2), k2 = new Float32Array(w2 * h2);
+        for (let y = 0; y < h2; y++) for (let xx = 0; xx < w2; xx++) { let sv = 0, sk = 0; for (const [a, b] of [[0, 0], [1, 0], [0, 1], [1, 1]]) { const X = Math.min(w - 1, xx * 2 + a), Y = Math.min(h - 1, y * 2 + b), j = Y * w + X; sv += v[j] * k[j]; sk += k[j]; }
+          v2[y * w2 + xx] = sk ? sv / sk : 0; k2[y * w2 + xx] = Math.min(1, sk); }
+        lv.push({ w: w2, h: h2, v: v2, k: k2 }); }
+      for (let l = lv.length - 2; l >= 0; l--) { const { w, h, v, k } = lv[l], up = lv[l + 1];
+        for (let y = 0; y < h; y++) for (let xx = 0; xx < w; xx++) { const fx2 = Math.min(up.w - 1.001, Math.max(0, xx / 2 - .25)), fy2 = Math.min(up.h - 1.001, Math.max(0, y / 2 - .25)), x0 = fx2 | 0, y0 = fy2 | 0, tx3 = fx2 - x0, ty3 = fy2 - y0, U = up.w;
+          const uv = (up.v[y0 * U + x0] * (1 - tx3) + up.v[y0 * U + Math.min(U - 1, x0 + 1)] * tx3) * (1 - ty3) + (up.v[Math.min(up.h - 1, y0 + 1) * U + x0] * (1 - tx3) + up.v[Math.min(up.h - 1, y0 + 1) * U + Math.min(U - 1, x0 + 1)] * tx3) * ty3;
+          const j = y * w + xx; v[j] = v[j] * k[j] + uv * (1 - k[j]); } }
+      const F = lv[0].v; let mean = 0; for (let i = 0; i < n; i++) mean += below[i * 4 + ch]; mean /= n;
+      for (let i = 0; i < n; i++) if (hole[i]) d[i * 4 + ch] = Math.max(0, Math.min(255, F[i] + (below[i * 4 + ch] - mean) * .8));
+    }
+    x.putImageData(im, bx, by);
+  }
+  function mdClean() {
+    if (MD.cleanV === MD.v) return MD.clean;
+    const im = MD.img, k = Math.min(1, 1600 / Math.max(im.width, im.height)), [c, x] = mk(); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); x.drawImage(im, 0, 0, c.width, c.height);
+    Object.values(MD_R).forEach(r => mdInpaint(c, ...r)); MD.clean = c; MD.cleanV = MD.v; return c;
+  }
+  function mdBars(x, bx, by, bw, bh, seed) { let p = bx; for (let i = 0; p < bx + bw; i++) { const w = (1 + Math.floor(sr(seed, i) * 3.2)) * bw / 95; if (i % 2 === 0) x.fillRect(p, by, Math.min(w, bx + bw - p), bh); p += w; } }
+  function mdSticker() {
+    const date = (MO.date || '25.09.26').trim(), big = (MD.t4 || date.split(/[.\s]/)[0] || '25').trim(), code = (MD.t5 || date.replace(/\D/g, '').padEnd(6, '0')).trim(), key = JSON.stringify([MD.t1, MD.t2, MD.t3, MD.t6, big, code, date]);
+    if (MD.stkK === key && MD.stk) return MD.stk;
+    const [c, x] = mk(); c.width = 1240; c.height = 860; const ink = '#151515', COND = { f: "'Archivo'", w: 800, st: 'condensed' }, REG = { f: "'Archivo'", w: 500, st: 'condensed' }, MED = { f: "'Archivo'", w: 600, st: 'condensed' };
+    const txt = (t, F, px, xx, y, al = 'left', maxW = 9999) => { setFont(x, F, px); const w = x.measureText(t).width; if (w > maxW) setFont(x, F, px * maxW / w); x.textAlign = al; x.fillText(t, xx, y); };
+    const paper = (rx, ry, rw, rh, tone, seed) => { x.save(); x.shadowColor = 'rgba(0,0,0,.3)'; x.shadowBlur = 5; x.fillStyle = tone; x.fillRect(rx, ry, rw, rh); x.restore();
+      x.save(); x.beginPath(); x.rect(rx, ry, rw, rh); x.clip();
+      for (let i = 0; i < 7; i++) { const gx = rx + sr(seed, 40 + i) * rw, gy = ry + sr(seed, 50 + i) * rh, gr = rw * (.08 + .25 * sr(seed, 60 + i)), g = x.createRadialGradient(gx, gy, 0, gx, gy, gr);   // stains, yellowing
+        const col = sr(seed, 70 + i) > .5 ? '120,100,60' : '70,70,70'; g.addColorStop(0, `rgba(${col},${.05 + .1 * sr(seed, 80 + i)})`); g.addColorStop(1, `rgba(${col},0)`); x.fillStyle = g; x.fillRect(rx, ry, rw, rh); }
+      const eg = x.createLinearGradient(rx, ry, rx, ry + rh); eg.addColorStop(0, 'rgba(90,80,60,.10)'); eg.addColorStop(.08, 'rgba(90,80,60,0)'); eg.addColorStop(.92, 'rgba(90,80,60,0)'); eg.addColorStop(1, 'rgba(90,80,60,.14)'); x.fillStyle = eg; x.fillRect(rx, ry, rw, rh);
+      for (let i = 0; i < 900; i++) { x.fillStyle = `rgba(30,30,30,${.04 + .14 * sr(seed, i)})`; x.fillRect(rx + sr(seed, i + 500) * rw, ry + sr(seed, i + 900) * rh, 1 + sr(seed, i + 1300) * 2.4, 1 + sr(seed, i + 1700) * 2.4); }
+      x.restore(); };
+    // main sticker
+    paper(0, 0, 1180, 770, '#e5e3dc', 3); x.fillStyle = ink; x.textBaseline = 'alphabetic';
+    txt(MD.t1.toUpperCase(), MED, 44, 590, 62, 'center', 1120); x.fillRect(20, 84, 1140, 3);
+    txt(MD.t2, REG, 46, 30, 150, 'left', 520); txt(MD.t3, COND, 62, 1150, 152, 'right', 600); x.fillRect(20, 172, 1140, 2);
+    txt('Ort:', REG, 32, 30, 224); txt(MD.t6, MED, 34, 300, 224, 'left', 300); txt('Datum:', REG, 32, 640, 224); txt(date, MED, 34, 1150, 224, 'right', 300); x.fillRect(20, 244, 1140, 2);
+    txt('Nr.', REG, 22, 30, 300); txt('Kollektiv:', REG, 34, 860, 300); mdBars(x, 80, 270, 640, 120, 7); txt(code.split('').join(' ').slice(0, 30), REG, 30, 400, 432, 'center', 640);
+    txt(big, COND, 190, 1150, 450, 'right', 380); x.fillRect(20, 470, 1140, 2);
+    txt('BBKK – LEIPZIG / SACHSEN – DE', REG, 26, 760, 740, 'center', 700);
+    // the date sticker over the lower left, the big code next to it
+    x.save(); x.translate(110, 470); paper(0, 0, 330, 300, '#dfddd5', 11); x.fillStyle = ink; txt('Datum/Date', REG, 28, 20, 44); txt(date, MED, 34, 20, 86); txt('Kollektiv', REG, 28, 20, 150); txt('bbkk', MED, 32, 20, 190); x.restore();
+    txt(code.slice(0, 12), COND, 86, 470, 555, 'left', 650);
+    // a small barcode sticker over the right edge
+    x.save(); x.translate(640, 580); paper(0, 0, 590, 270, '#e9e7e1', 19); x.fillStyle = ink; mdBars(x, 26, 22, 420, 140, 23); txt('BBK' + code.slice(0, 6) + '  SD  ' + big.padStart(5, '0'), REG, 24, 26, 200, 'left', 420); txt('2026', REG, 24, 26, 240); txt('RTL  SAVE', REG, 24, 300, 240); txt(big, COND, 54, 560, 248, 'right'); x.restore();
+    x.globalCompositeOperation = 'destination-out'; for (let i = 0; i < 2600; i++) { x.fillStyle = `rgba(0,0,0,${.05 + .2 * sr(31, i)})`; x.fillRect(sr(32, i) * c.width, sr(33, i) * c.height, 1 + sr(34, i) * 2, 1 + sr(35, i) * 2); }
+    x.globalCompositeOperation = 'source-over';
+    MD.stk = c; MD.stkK = key; return c;
+  }
+  let MDLB = null; const MDLOGO = () => MDLB || (MDLB = (() => { const c = document.createElement('canvas'); return [c, c.getContext('2d', { willReadFrequently: true })]; })());
+  let MDDB = null; const MDDIRT = () => MDDB || (MDDB = (() => { const c = document.createElement('canvas'); return [c, c.getContext('2d')]; })());
+  let MDPLB = null; const MDPL = () => MDPLB || (MDPLB = (() => { const c = document.createElement('canvas'); return [c, c.getContext('2d')]; })());
+  function drawMD(W, H, M, f, N) {
+    const x = mx, u = W / 1080; x.fillStyle = '#ffffff'; x.fillRect(0, 0, W, H);
+    if (!MD.img) { tx.fillStyle = '#111'; jtext(tx, 'foto der minidisc laden', W / 2, H / 2, 36 * u, MONO, 'center', f); flush(f); return; }
+    const c = mdClean(), S = Math.min(W - 2 * M * .6, H - 2 * M * .6), sw = S * Math.min(1, c.width / c.height), sh = S * Math.min(1, c.height / c.width), x0 = (W - sw) / 2, y0 = (H - sh) / 2;
+    x.drawImage(c, x0, y0, sw, sh);
+    const R = (r) => [x0 + r[0] * sw, y0 + r[1] * sh, r[2] * sw, r[3] * sh];
+    // new print on the case
+    const [pl, plx] = MDPL(); if (pl.width !== W || pl.height !== H) { pl.width = W; pl.height = H; } else plx.clearRect(0, 0, W, H); const x9 = x; { const x = plx;
+    const prt = (t, F, r, al, sp) => { const [rx, ry, rw, rh] = R(r); if (!t.trim()) return; x.save(); x.letterSpacing = sp * u + 'px'; setFont(x, F, rh * .95); const w = x.measureText(t).width; if (w > rw) setFont(x, F, rh * .95 * rw / w);
+      x.textAlign = al; x.textBaseline = 'alphabetic'; x.fillStyle = '#ececec'; x.shadowColor = 'rgba(0,0,0,.45)'; x.shadowBlur = 2 * u; x.fillText(t, al === 'left' ? rx : rx + rw, ry + rh * .9); x.restore(); };
+    if (MD.top === 'logo') {   // our logo as white print: brightness becomes ink, black parts turn see-through; fills the old sony spot
+      const [rx, ry, rw, rh] = R(MD_R.p1), bw = Math.round(rw * 1.25), bh = Math.round(rh * 2.1), its = lockup(bw, bh).filter(it => !it.cross);
+      if (!its.length) moWait = true; else { const [lc, lx2] = MDLOGO(); lc.width = bw; lc.height = bh; its.forEach(it => lx2.drawImage(it.a.frames[0], it.x, it.y, it.w, it.h));
+        const im = lx2.getImageData(0, 0, bw, bh), d = im.data; for (let i = 0; i < d.length; i += 4) { const al = d[i + 3] * Math.max(d[i], d[i + 1], d[i + 2]) / 255; d[i] = d[i + 1] = d[i + 2] = 244; d[i + 3] = Math.min(255, al * 1.6); } lx2.putImageData(im, 0, 0);
+        const minX = Math.min(...its.map(q => q.x)), minY = Math.min(...its.map(q => q.y)), maxY = Math.max(...its.map(q => q.y + q.h));
+        x.save(); x.shadowColor = 'rgba(0,0,0,.6)'; x.shadowBlur = 2 * u; const lx0 = rx - minX, ly0 = ry + rh * .5 - (minY + maxY) / 2; x.drawImage(lc, lx0, ly0); x.drawImage(lc, lx0, ly0); x.restore(); }
+    } else prt(MD.p1.toUpperCase(), { f: "'Besley'", w: 800 }, MD_R.p1, 'left', 6);
+    prt(MD.p2.toUpperCase() + ' ▲', { f: "'Archivo'", w: 700, st: 'condensed' }, MD_R.p2, 'right', 1);
+    { const [rx, ry, rw, rh] = R(MD_R.logo); x.save(); x.strokeStyle = '#e6e6e6'; x.lineWidth = 3 * u; x.beginPath(); x.roundRect(rx + rw * .06, ry + rh * .05, rw * .88, rh * .9, 6 * u); x.stroke();
+      x.fillStyle = '#e6e6e6'; x.textAlign = 'left'; setFont(x, { f: "'Archivo'", w: 800, st: 'condensed' }, rh * .36); x.fillText(MD.l1, rx + rw * .18, ry + rh * .44); x.fillText(MD.l2, rx + rw * .18, ry + rh * .84); x.restore(); }
+    x.globalCompositeOperation = 'destination-out'; for (let i = 0; i < 5000; i++) { x.fillStyle = `rgba(0,0,0,${.1 + .5 * sr(41, i)})`; x.fillRect(sr(42, i) * W, sr(43, i) * H, (1 + sr(44, i) * 2.5) * u, (1 + sr(45, i) * 2.5) * u); }   // rubbed-off print
+    x.globalCompositeOperation = 'source-over'; }
+    x9.save(); x9.globalAlpha = .92; x9.filter = `blur(${(.6 * u).toFixed(2)}px)`; x9.drawImage(pl, 0, 0); x9.restore();
+    // the new sticker (covers the old one), draggable
+    const st = mdSticker(), stw = sw * .52, sth = stw * st.height / st.width, sx = x0 + sw * .415 + MD.off[0], sy = y0 + sh * .565 + MD.off[1];
+    MD.rect = [sx, sy, stw, sth];
+    // the lid's scratches over the sticker a little, so it sits behind the plastic
+    { const cw2 = c.width, ch2 = c.height, srx = cw2 * .05, sry = ch2 * .2, srw = cw2 * .52, srh = srw * sth / stw;   // dirt + scratches taken from the upper left of the case (not from the old sticker)
+      const [dc, dx2] = MDDIRT(); if (dc.width !== st.width || dc.height !== st.height) { dc.width = st.width; dc.height = st.height; } dx2.globalCompositeOperation = 'source-over'; dx2.globalAlpha = 1; dx2.filter = 'none'; dx2.clearRect(0, 0, dc.width, dc.height); dx2.drawImage(st, 0, 0);
+      dx2.filter = 'grayscale(1)'; dx2.globalCompositeOperation = 'multiply'; dx2.globalAlpha = .16; dx2.drawImage(c, srx, sry, srw, srh, 0, 0, dc.width, dc.height);
+      dx2.globalCompositeOperation = 'screen'; dx2.globalAlpha = .3; dx2.drawImage(c, srx, sry, srw, srh, 0, 0, dc.width, dc.height);
+      dx2.filter = 'none'; dx2.globalAlpha = 1; dx2.globalCompositeOperation = 'destination-in'; dx2.drawImage(st, 0, 0);   // only on the paper
+      x.drawImage(dc, sx, sy, stw, sth); }
+  }
   function drawSony(W, H, M, f, N) {
+    if (SONY.var === 'md') return drawMD(W, H, M, f, N);
     const x = mx, q = (f % N) / N, u = W / 1080, cd = y2kAny('cdr'), hu = y2kAny('huelle');
     x.fillStyle = '#f2f1ed'; x.fillRect(0, 0, W, H); if (!cd || !hu) return;
     const disc = sonyDisc(cd), cse = sonyCase(hu), m = M * .8;
@@ -3968,6 +4082,16 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); BILD.img = c; BILD.v++; BILD.mask = null; BILD.pmask = null; BILD.layV = ''; $('#bild-stat').textContent = 'bild geladen.'; };
     $('#bild-up').onchange = e => { bildLoad(e.target.files[0]); e.target.value = ''; };
     $$('[data-sony]').forEach(el => el.oninput = () => { SONY[el.dataset.sony] = el.value; });
+    $$('[data-md]').forEach(el => el.oninput = () => { MD[el.dataset.md] = el.value; });
+    $$('[data-md-top]').forEach(b => b.onclick = () => { MD.top = b.dataset.mdTop; $$('[data-md-top]').forEach(q => q.setAttribute('aria-pressed', String(q === b))); $('[data-md=p1]').hidden = MD.top === 'logo'; });
+    $$('[data-sony-var]').forEach(b => b.onclick = () => { SONY.var = b.dataset.sonyVar; $$('[data-sony-var]').forEach(q => q.setAttribute('aria-pressed', String(q === b))); $('.sony-md').hidden = SONY.var !== 'md'; $('.sony-cd').hidden = SONY.var === 'md'; });
+    $('#md-up').onchange = async e => { const file = e.target.files && e.target.files[0]; e.target.value = ''; if (!file) return;
+      try { const url = URL.createObjectURL(file), img = new Image(); img.src = url; await img.decode(); MD.img = img; MD.v++; MD.off = [0, 0]; $('#md-stat').textContent = 'foto geladen. aufdruck wird ersetzt.'; } catch (err) { $('#md-stat').textContent = 'bild nicht lesbar.'; } };
+    { let drag = null; const pt = e => { const r = mcv.getBoundingClientRect(); return [(e.clientX - r.left) * mcv.width / r.width, (e.clientY - r.top) * mcv.height / r.height]; };
+      const on = q => MO.mode === 'sony' && SONY.var === 'md' && MD.rect && q[0] >= MD.rect[0] && q[0] <= MD.rect[0] + MD.rect[2] && q[1] >= MD.rect[1] && q[1] <= MD.rect[1] + MD.rect[3];
+      mcv.addEventListener('pointerdown', e => { const q = pt(e); if (!on(q)) return; drag = { q, o: [...MD.off] }; mcv.setPointerCapture(e.pointerId); });
+      mcv.addEventListener('pointermove', e => { const q = pt(e); if (!drag) { if (MO.mode === 'sony' && SONY.var === 'md') mcv.style.cursor = on(q) ? 'grab' : ''; return; } MD.off = [drag.o[0] + q[0] - drag.q[0], drag.o[1] + q[1] - drag.q[1]]; });
+      const end = () => { drag = null; }; mcv.addEventListener('pointerup', end); mcv.addEventListener('pointercancel', end); }
     [['data-sony-top', v => { SONY.top = v; $('[data-sony=topT]').hidden = v !== 'text'; }], ['data-sony-move', v => { SONY.move = v; }]]
       .forEach(([at, fn]) => $$('[' + at + ']').forEach(b => b.onclick = () => { fn(b.getAttribute(at)); $$('[' + at + ']').forEach(q => q.setAttribute('aria-pressed', String(q === b))); }));
     { const box = $('#bild-texts'), fontOpts = cur => [...Object.entries(TFONTS).map(([k, F]) => [k, F.n]), ['edding', 'edding']].map(([k, n]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${esc(n)}</option>`).join('');
