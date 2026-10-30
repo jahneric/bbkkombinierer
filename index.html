@@ -558,6 +558,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
           <div class="mo-cfx" hidden>
             <div class="mo-chips" id="bild-cfx-fx" role="group" aria-label="Effekt auf der Farbe" style="margin-top:6px"></div>
             <label class="mo-cfx-to" hidden style="display:flex;gap:6px;align-items:center">neue farbe <input type="color" id="bild-cfx-to" value="#e4531c" style="width:34px;height:26px;padding:0;border:1px solid #555;background:none"></label>
+            <label class="mo-cfx-rw" hidden for="bild-cfx-rw">rasterbreite <output id="bild-cfx-rw-o"></output><input type="range" id="bild-cfx-rw" min="3" max="24" value="6"></label>
             <label for="bild-cfx-tol">wie genau die farbe <output id="bild-cfx-tol-o"></output><input type="range" id="bild-cfx-tol" min="5" max="100" value="35"></label>
             <label for="bild-cfx-amt">stärke <output id="bild-cfx-amt-o"></output><input type="range" id="bild-cfx-amt" min="5" max="100" value="60"></label></div></div>
         <div><span class="mo-lbl">eigener text</span><div id="bild-texts"></div>
@@ -1919,7 +1920,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   // bild: camera over the loop, depth (people cut out and moved in front of their background), effects that combine,
   // text and logo on top if wanted. every movement comes back to its start, so a post loops without a jump.
-  const BILD = { img: null, v: 0, mask: null, maskV: -1, busy: false, fg: null, bg: null, layV: '', cam: 'atmen', depth: 'auto', fx: ['lichtleck'], fxTouched: false, amt: 60, fit: 'fuellen', text: false, logo: false, texts: [], rects: [], cfx: { col: '', fx: 'koernung', to: '#e4531c', tol: 35, amt: 60 }, ink: 0, pmask: null, pmaskV: -1 };
+  const BILD = { img: null, v: 0, mask: null, maskV: -1, busy: false, fg: null, bg: null, layV: '', cam: 'atmen', depth: 'auto', fx: ['lichtleck'], fxTouched: false, amt: 60, fit: 'fuellen', text: false, logo: false, texts: [], rects: [], cfx: { col: '', fx: 'koernung', to: '#e4531c', tol: 35, rw: 6, amt: 60 }, ink: 0, pmask: null, pmaskV: -1 };
   const BILD_CAM = [['ruhig', 'ruhig'], ['atmen', 'atmen'], ['heran', 'heranfahren'], ['schwenk', 'schwenken']];
   const BILD_FX = [['eli', 'punktraster'], ['zittern', 'zittern'], ['glanz', 'glanz'], ['glitzer', 'glitzer'], ['lichtleck', 'lichtleck'], ['flackern', 'flackern'], ['vhs', 'vhs'], ['glitch', 'glitch'], ['wellen', 'wellen'], ['scan', 'scanlinie'], ['puls', 'puls']];
   // which layer goes in front: a poster's drawing (lots of pure black ink), people, or nothing
@@ -2040,7 +2041,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       for (let i = 0; i < w * h; i++) A[i] = p[i * 4 + 3] > 140 ? 1 : 0;
       const pass = (src, dst, horiz, keep) => { for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) { let v = keep;
         for (let k = -r; k <= r && v === keep; k++) { const xs = horiz ? xx + k : xx, ys = horiz ? yy : yy + k; v = xs < 0 || ys < 0 || xs >= w || ys >= h ? keep : src[ys * w + xs]; } dst[yy * w + xx] = v; } };
+      const O = A.slice();
       pass(A, B, true, 1); pass(B, A, false, 1); pass(A, B, true, 0); pass(B, A, false, 0);
+      for (let n = 0; n < 3; n++) { pass(A, B, true, 0); pass(B, A, false, 0); for (let i = 0; i < w * h; i++) A[i] &= O[i]; }   // grow back into the narrow black beside letters and box edges
       for (let i = 0; i < w * h; i++) p[i * 4 + 3] = A[i] * 255; }
     m.putImageData(d, 0, 0);
     const a = C.amt / 100, dark = (r0 * .3 + g0 * .59 + b0 * .11) < 128, v = Math.floor(f / 2) % 4;
@@ -2049,7 +2052,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         for (let i = 0; i < id.data.length; i += 4) { const n = Math.random(); id.data[i] = id.data[i + 1] = id.data[i + 2] = ink; id.data[i + 3] = n > .5 ? Math.min(255, (n - .5) * 2.2 * 255) : 0; } g.putImageData(id, 0, 0); return c; }));
       const k = Math.max(1, W / 1080 * 1.4); b.save(); b.scale(k, k); b.translate(-sr(v, 1) * 256, -sr(v, 2) * 256); b.fillStyle = b.createPattern(CFXGRAIN[v][dark ? 0 : 1], 'repeat'); b.fillRect(0, 0, W / k + 512, H / k + 512); b.restore(); }
     else if (C.fx === 'raster') {   // white dot screen over the black, like the right strip of the eli post
-      const g = Math.max(3, W / (330 - 170 * a)); b.fillStyle = '#000'; b.fillRect(0, 0, W, H); b.fillStyle = '#fff'; b.beginPath();
+      const g = Math.max(2, C.rw * W / 1080); b.fillStyle = '#000'; b.fillRect(0, 0, W, H); b.fillStyle = '#fff'; b.beginPath();
       for (let yy = g / 2; yy < H; yy += g) for (let xx = g / 2; xx < W; xx += g) { b.moveTo(xx + g * .3, yy); b.arc(xx, yy, g * .3, 0, 7); } b.fill(); }
     else if (C.fx === 'flimmern') { b.fillStyle = dark ? '#fff' : '#000'; b.globalAlpha = .15 + .85 * sr(Math.floor(f / 2), 9); b.fillRect(0, 0, W, H); b.globalAlpha = 1; }
     else if (C.fx === 'schimmer') { const t = (q * 1.5) % 1, cx = -W * .6 + t * W * 2.2, g = b.createLinearGradient(cx - W * .5, -H * .2, cx + W * .5, H * 1.2);
@@ -4147,7 +4150,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         dr.it.x = Math.max(0, Math.min(1, dr.o[0] + (q[0] - dr.q[0]) / mcv.width)); dr.it.y = Math.max(0, Math.min(1, dr.o[1] + (q[1] - dr.q[1]) / mcv.height)); });
       const end = () => { if (dr) { dr = null; mcv.style.cursor = ''; } }; mcv.addEventListener('pointerup', end); mcv.addEventListener('pointercancel', end); }
     { const C = BILD.cfx, cb = $('#bild-cfx-col'), own = $('#bild-cfx-own'), fxc = $('#bild-cfx-fx'), more = $('.mo-cfx');
-      const show = () => { more.hidden = !C.col; $('.mo-cfx-to').hidden = C.fx !== 'umfaerben'; $$('button', fxc).forEach(q => q.setAttribute('aria-pressed', String(q.dataset.k === C.fx))); };
+      const show = () => { more.hidden = !C.col; $('.mo-cfx-to').hidden = C.fx !== 'umfaerben'; $('.mo-cfx-rw').hidden = C.fx !== 'raster'; $$('button', fxc).forEach(q => q.setAttribute('aria-pressed', String(q.dataset.k === C.fx))); };
       const pick = (c, btn) => { C.col = c; $$('button', cb).forEach(q => q.setAttribute('aria-pressed', String(q === btn))); if (c) own.value = c; show(); };
       let picking = false;
       cb.onclick = e => { const btn = e.target.closest('button'); if (!btn) return; if (btn.dataset.c === 'pick') { picking = true; mcv.style.cursor = 'crosshair'; $$('button', cb).forEach(q => q.setAttribute('aria-pressed', String(q === btn))); return; } picking = false; pick(btn.dataset.c, btn); };
@@ -4159,7 +4162,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
       fxc.innerHTML = CFX_FX.map(([k, n]) => `<button type="button" data-k="${k}" aria-pressed="${k === C.fx}">${n}</button>`).join('');
       fxc.onclick = e => { const btn = e.target.closest('button'); if (!btn) return; C.fx = btn.dataset.k; show(); };
       $('#bild-cfx-to').oninput = e => { C.to = e.target.value; };
-      [['tol', '#bild-cfx-tol'], ['amt', '#bild-cfx-amt']].forEach(([k, id]) => { const el = $(id), o = $(id + '-o'); o.textContent = el.value; el.oninput = () => { o.textContent = el.value; C[k] = +el.value; }; }); }
+      [['tol', '#bild-cfx-tol'], ['amt', '#bild-cfx-amt'], ['rw', '#bild-cfx-rw']].forEach(([k, id]) => { const el = $(id), o = $(id + '-o'); o.textContent = el.value; el.oninput = () => { o.textContent = el.value; C[k] = +el.value; }; }); }
     { const cam = $('#bild-cam'), fxb = $('#bild-fx');
       cam.innerHTML = BILD_CAM.map(([k, n]) => `<button type="button" data-k="${k}" aria-pressed="${k === BILD.cam}">${n}</button>`).join('');
       cam.onclick = e => { const b = e.target.closest('button'); if (!b) return; BILD.cam = b.dataset.k; $$('button', cam).forEach(q => q.setAttribute('aria-pressed', String(q === b))); };
