@@ -2080,7 +2080,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // (1 = the whole range, smaller = only the darks are spread out, used when it runs on black only)
   const HTB = (() => { const c = document.createElement('canvas'); return [c, c.getContext('2d', { willReadFrequently: true })]; })();
   function halftoneBW(dst, src, W, H, a, lref = 1) {
-    const g = Math.max(4, W / (150 - 70 * a)), cols = Math.ceil(W / g) + 2, rows = Math.ceil(H / g) + 2, [hc, hx] = HTB;
+    const g = Math.max(2.5, W / (330 - 170 * a)), cols = Math.ceil(W / g) + 2, rows = Math.ceil(H / g) + 2, [hc, hx] = HTB;
     hc.width = cols; hc.height = rows; hx.imageSmoothingQuality = 'high'; hx.drawImage(src, 0, 0, cols * g, rows * g, 0, 0, cols, rows); const d = hx.getImageData(0, 0, cols, rows).data;
     dst.fillStyle = '#000'; dst.fillRect(0, 0, W, H); dst.fillStyle = '#f4f4f4';
     for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const i = (r * cols + c) * 4, L = Math.min(1, (d[i] * .3 + d[i + 1] * .59 + d[i + 2] * .11) / 255 / lref), rad = g * (.17 + .45 * Math.sqrt(L));   // a minimum size: even pure black keeps small dots, so the screen runs through the whole area
