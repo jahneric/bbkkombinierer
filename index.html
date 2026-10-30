@@ -201,7 +201,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
 .mo-sc button{background:none;border:1px solid #555;color:var(--mute);cursor:pointer;padding:5px 8px}
 .mo-sc .n{grid-column:1/-1;font-size:10px;color:var(--mute);margin:-2px 0 2px}
 .mo-up{display:inline-block}
-.sony-md:not([hidden]),.sony-cd:not([hidden]){display:grid;gap:10px}.sony-md[hidden],.sony-cd[hidden]{display:none}
+.sony-md:not([hidden]),.sony-cd:not([hidden]){display:grid;gap:10px}.sony-md[hidden],.sony-cd[hidden],.mo-cfx-rw[hidden]{display:none}
 .mo-fxbg{display:grid;gap:8px;border-left:2px solid #444;padding-left:10px}
 .mo-fxbg select{width:100%;background:#000;color:var(--bone);border:1px solid #555;padding:6px;font:11px var(--f-min)}
 .mo-art{display:grid;grid-template-columns:auto minmax(0,1fr) auto 40px auto;gap:5px;align-items:center;margin-bottom:6px}
@@ -559,6 +559,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
             <div class="mo-chips" id="bild-cfx-fx" role="group" aria-label="Effekt auf der Farbe" style="margin-top:6px"></div>
             <label class="mo-cfx-to" hidden style="display:flex;gap:6px;align-items:center">neue farbe <input type="color" id="bild-cfx-to" value="#e4531c" style="width:34px;height:26px;padding:0;border:1px solid #555;background:none"></label>
             <label class="mo-cfx-rw" hidden for="bild-cfx-rw">rasterbreite <output id="bild-cfx-rw-o"></output><input type="range" id="bild-cfx-rw" min="3" max="24" value="6"></label>
+            <div class="row mo-cfx-rw" hidden style="gap:8px;align-items:center"><button type="button" class="kb-btn ghost" id="bild-cfx-all">alle flächen</button><span class="mo-note" style="margin:0">fläche in der vorschau antippen: raster an / aus</span></div>
             <label for="bild-cfx-tol">wie genau die farbe <output id="bild-cfx-tol-o"></output><input type="range" id="bild-cfx-tol" min="5" max="100" value="35"></label>
             <label for="bild-cfx-amt">stärke <output id="bild-cfx-amt-o"></output><input type="range" id="bild-cfx-amt" min="5" max="100" value="60"></label></div></div>
         <div><span class="mo-lbl">eigener text</span><div id="bild-texts"></div>
@@ -1920,7 +1921,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   }
   // bild: camera over the loop, depth (people cut out and moved in front of their background), effects that combine,
   // text and logo on top if wanted. every movement comes back to its start, so a post loops without a jump.
-  const BILD = { img: null, v: 0, mask: null, maskV: -1, busy: false, fg: null, bg: null, layV: '', cam: 'atmen', depth: 'auto', fx: ['lichtleck'], fxTouched: false, amt: 60, fit: 'fuellen', text: false, logo: false, texts: [], rects: [], cfx: { col: '', fx: 'koernung', to: '#e4531c', tol: 35, rw: 6, amt: 60 }, ink: 0, pmask: null, pmaskV: -1 };
+  const BILD = { img: null, v: 0, mask: null, maskV: -1, busy: false, fg: null, bg: null, layV: '', cam: 'atmen', depth: 'auto', fx: ['lichtleck'], fxTouched: false, amt: 60, fit: 'fuellen', text: false, logo: false, texts: [], rects: [], cfx: { col: '', fx: 'koernung', to: '#e4531c', tol: 35, rw: 6, off: [], amt: 60 }, ink: 0, pmask: null, pmaskV: -1 };
   const BILD_CAM = [['ruhig', 'ruhig'], ['atmen', 'atmen'], ['heran', 'heranfahren'], ['schwenk', 'schwenken']];
   const BILD_FX = [['eli', 'punktraster'], ['zittern', 'zittern'], ['glanz', 'glanz'], ['glitzer', 'glitzer'], ['lichtleck', 'lichtleck'], ['flackern', 'flackern'], ['vhs', 'vhs'], ['glitch', 'glitch'], ['wellen', 'wellen'], ['scan', 'scanlinie'], ['puls', 'puls']];
   // which layer goes in front: a poster's drawing (lots of pure black ink), people, or nothing
@@ -2023,8 +2024,9 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // effect on one colour: the frame so far is read at half size, every pixel near the colour becomes part of a mask,
   // the effect is drawn into a buffer and cut to that mask, so it follows the drawing even while it boils
   const CFX_FX = [['raster', 'punktraster'], ['koernung', 'körnung'], ['flimmern', 'flimmern'], ['schimmer', 'regenbogen'], ['umfaerben', 'umfärben']];
-  let CFXBUF = null, CFXGRAIN = null;
+  let CFXBUF = null, CFXGRAIN = null, CFXLAB = null;
   const cfxRgb = c => { const n = parseInt(c.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255]; };
+  function cfxArea(u, v) { const L = CFXLAB; if (!L) return null; const i = Math.min(L.h - 1, Math.max(0, Math.floor(v * L.h))) * L.w + Math.min(L.w - 1, Math.max(0, Math.floor(u * L.w))); return L.M[i] ? L.lab[i] : null; }
   function bildColorFx(x, W, H, f, q, clip) {
     const C = BILD.cfx; if (!C.col) return;
     if (!CFXBUF) CFXBUF = [gpuBuf(), gpuBuf(), (() => { const c = document.createElement('canvas'); return [c, c.getContext('2d', { willReadFrequently: true })]; })()];
@@ -2036,15 +2038,18 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     const byLum = (r0 * .3 + g0 * .59 + b0 * .11) < 60, Lmax = 18 + C.tol * 1.3;
     for (let i = 0; i < p.length; i += 4) { const dr = p[i] - r0, dg = p[i + 1] - g0, db = p[i + 2] - b0, dist = byLum ? Math.max(0, p[i] * .3 + p[i + 1] * .59 + p[i + 2] * .11 - (r0 * .3 + g0 * .59 + b0 * .11)) * (T / Lmax) : Math.sqrt(dr * dr + dg * dg + db * db);
       p[i] = p[i + 1] = p[i + 2] = 255; p[i + 3] = Math.max(0, Math.min(255, (T + soft - dist) / (2 * soft) * 255)); }
-    if (C.fx === 'raster') {   // only the big areas: hard mask, opened (shrink, then grow back) so lines, outlines and small bits drop out
-      const r = Math.max(2, Math.round(w / 1080 * 9)), A = new Uint8Array(w * h), B = new Uint8Array(w * h);
-      for (let i = 0; i < w * h; i++) A[i] = p[i * 4 + 3] > 140 ? 1 : 0;
-      const pass = (src, dst, horiz, keep) => { for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) { let v = keep;
+    if (C.fx === 'raster') {   // all of the black gets the raster, split into areas (big areas found by opening, every black pixel joins the nearest); clicked areas stay plain
+      const r = Math.max(2, Math.round(w / 1080 * 9)), n = w * h, A = new Uint8Array(n), B = new Uint8Array(n);
+      for (let i = 0; i < n; i++) A[i] = p[i * 4 + 3] > 140 ? 1 : 0;
+      const M = A.slice(), pass = (src, dst, horiz, keep) => { for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) { let v = keep;
         for (let k = -r; k <= r && v === keep; k++) { const xs = horiz ? xx + k : xx, ys = horiz ? yy : yy + k; v = xs < 0 || ys < 0 || xs >= w || ys >= h ? keep : src[ys * w + xs]; } dst[yy * w + xx] = v; } };
-      const O = A.slice();
       pass(A, B, true, 1); pass(B, A, false, 1); pass(A, B, true, 0); pass(B, A, false, 0);
-      for (let n = 0; n < 3; n++) { pass(A, B, true, 0); pass(B, A, false, 0); for (let i = 0; i < w * h; i++) A[i] &= O[i]; }   // grow back into the narrow black beside letters and box edges
-      for (let i = 0; i < w * h; i++) p[i * 4 + 3] = A[i] * 255; }
+      const lab = new Int32Array(n), Q = new Int32Array(n), nb = (i, fn) => { const xx = i % w; if (xx > 0) fn(i - 1); if (xx < w - 1) fn(i + 1); if (i >= w) fn(i - w); if (i < n - w) fn(i + w); };
+      let nl = 0; for (let i = 0; i < n; i++) if (A[i] && !lab[i]) { nl++; let sp = 0; Q[sp++] = i; lab[i] = nl; while (sp) nb(Q[--sp], j => { if (A[j] && !lab[j]) { lab[j] = nl; Q[sp++] = j; } }); }
+      let qh = 0, qt = 0; for (let i = 0; i < n; i++) if (lab[i]) Q[qt++] = i;
+      while (qh < qt) { const i = Q[qh++]; nb(i, j => { if (M[j] && !lab[j]) { lab[j] = lab[i]; Q[qt++] = j; } }); }
+      CFXLAB = { M, lab, w, h }; const off = new Set(C.off.map(([u, v]) => cfxArea(u, v)).filter(k => k !== null));
+      for (let i = 0; i < n; i++) p[i * 4 + 3] = M[i] && !off.has(lab[i]) ? 255 : 0; }
     m.putImageData(d, 0, 0);
     const a = C.amt / 100, dark = (r0 * .3 + g0 * .59 + b0 * .11) < 128, v = Math.floor(f / 2) % 4;
     if (C.fx === 'koernung') {   // light grain on dark colours, dark grain on light ones, a new one every other frame
@@ -4150,15 +4155,20 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         dr.it.x = Math.max(0, Math.min(1, dr.o[0] + (q[0] - dr.q[0]) / mcv.width)); dr.it.y = Math.max(0, Math.min(1, dr.o[1] + (q[1] - dr.q[1]) / mcv.height)); });
       const end = () => { if (dr) { dr = null; mcv.style.cursor = ''; } }; mcv.addEventListener('pointerup', end); mcv.addEventListener('pointercancel', end); }
     { const C = BILD.cfx, cb = $('#bild-cfx-col'), own = $('#bild-cfx-own'), fxc = $('#bild-cfx-fx'), more = $('.mo-cfx');
-      const show = () => { more.hidden = !C.col; $('.mo-cfx-to').hidden = C.fx !== 'umfaerben'; $('.mo-cfx-rw').hidden = C.fx !== 'raster'; $$('button', fxc).forEach(q => q.setAttribute('aria-pressed', String(q.dataset.k === C.fx))); };
+      const show = () => { more.hidden = !C.col; $('.mo-cfx-to').hidden = C.fx !== 'umfaerben'; $$('.mo-cfx-rw').forEach(q => q.hidden = C.fx !== 'raster'); $$('button', fxc).forEach(q => q.setAttribute('aria-pressed', String(q.dataset.k === C.fx))); };
       const pick = (c, btn) => { C.col = c; $$('button', cb).forEach(q => q.setAttribute('aria-pressed', String(q === btn))); if (c) own.value = c; show(); };
-      let picking = false;
+      let picking = false, pickT = 0;
       cb.onclick = e => { const btn = e.target.closest('button'); if (!btn) return; if (btn.dataset.c === 'pick') { picking = true; mcv.style.cursor = 'crosshair'; $$('button', cb).forEach(q => q.setAttribute('aria-pressed', String(q === btn))); return; } picking = false; pick(btn.dataset.c, btn); };
       own.oninput = () => pick(own.value, null);
       // picking: the next click in the preview takes the colour under the pointer
-      mcv.addEventListener('pointerdown', e => { if (!picking || MO.mode !== 'bild') return; e.stopImmediatePropagation(); picking = false; mcv.style.cursor = '';
+      mcv.addEventListener('pointerdown', e => { if (!picking || MO.mode !== 'bild') return; e.stopImmediatePropagation(); picking = false; pickT = performance.now(); mcv.style.cursor = '';
         const r = mcv.getBoundingClientRect(), px = mcv.getContext('2d').getImageData(Math.round((e.clientX - r.left) * mcv.width / r.width), Math.round((e.clientY - r.top) * mcv.height / r.height), 1, 1).data;
         pick('#' + [px[0], px[1], px[2]].map(n => n.toString(16).padStart(2, '0')).join(''), null); }, true);
+      // raster: a click on a black area switches its raster off or on again
+      mcv.addEventListener('click', e => { if (picking || performance.now() - pickT < 600 || MO.mode !== 'bild' || C.fx !== 'raster' || !C.col || mcv.style.cursor === 'grab') return;
+        const r = mcv.getBoundingClientRect(), u = (e.clientX - r.left) / r.width, v = (e.clientY - r.top) / r.height, k = cfxArea(u, v); if (k === null) return;
+        const had = C.off.filter(([a, b]) => cfxArea(a, b) === k); C.off = had.length ? C.off.filter(q => !had.includes(q)) : [...C.off, [u, v]]; });
+      $('#bild-cfx-all').onclick = () => { C.off = []; };
       fxc.innerHTML = CFX_FX.map(([k, n]) => `<button type="button" data-k="${k}" aria-pressed="${k === C.fx}">${n}</button>`).join('');
       fxc.onclick = e => { const btn = e.target.closest('button'); if (!btn) return; C.fx = btn.dataset.k; show(); };
       $('#bild-cfx-to').oninput = e => { C.to = e.target.value; };
