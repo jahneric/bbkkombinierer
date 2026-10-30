@@ -574,6 +574,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
         <div class="row"><div class="seg" role="group" aria-label="Hintergrund"><button data-mo-bg="0" aria-pressed="true">dunkel</button><button data-mo-bg="1" aria-pressed="false">hell</button></div>
           <div class="seg" role="group" aria-label="Körnung"><button data-mo-grain="0" aria-pressed="false">glatt</button><button data-mo-grain="1" aria-pressed="true">körnig</button></div></div>
         <div class="row"><div class="seg" role="group" aria-label="Papier"><button data-mo-paper="1" aria-pressed="true">vergilbt</button><button data-mo-paper="0" aria-pressed="false">rein</button></div></div>
+        <div class="row"><div class="seg" role="group" aria-label="Punktraster"><button data-mo-raster="aus" aria-pressed="false">ohne raster</button><button data-mo-raster="streifen" aria-pressed="true">raster rechts</button><button data-mo-raster="ganz" aria-pressed="false">raster ganz</button></div></div>
         <div class="row colctl"></div>
         <div class="mo-post"><label for="mo-font">schrift für den titel<select id="mo-font"></select></label></div>
       <div class="mo-post"><label for="mo-tw">breite der titelschrift <output id="mo-tw-o"></output><input type="range" id="mo-tw" min="50" max="250" value="100"></label></div>
@@ -1387,7 +1388,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   // ---------- bewegt: flip-book logos + event posts, recorded as video ----------
   // every logo is rasterised from its svg in 4 "drawings" (different boil seeds), cycled like a flip book.
   // everything is a pure function of the frame index f, so a recording of N frames loops seamlessly.
-  const MO = { mode: 'logo', fmt: 'post', m: 'r4-kopfwelle', w: 'r2-guss', fx: 'ruhig', lay: 'plakat', boil: 4, amt: 55, fps: 8, size: 72,
+  const MO = { mode: 'logo', fmt: 'post', m: 'r4-kopfwelle', w: 'r2-guss', fx: 'ruhig', lay: 'plakat', boil: 4, amt: 55, fps: 8, size: 72, raster: 'streifen',
     dark: true, grain: true, paper: true, len: 6, tw: 100, back: 'kontur', bga: 45, wash: 45, look: 'kopierer', pfx: 'sauber', pstr: 60, arr: 'logo', still: false, btext: 'bbk', p: '-', pmode: 'kollabo', font: 'archivo', title: EVENTS[0].t, date: EVENTS[0].d, info: EVENTS[0].l, extra: 'leipzig' };
   const FMT = { post: [1080, 1350], story: [1080, 1920] };
   // own colour pair, shared by logo-labor, kombinierer and bewegt (and the png downloads)
@@ -1520,8 +1521,10 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     if (line) out.push(line); return out; };
   function flush(f) {   // text layer -> main, with toner holes
     if (MO.grain && MO.look === 'kopierer') { tx.globalCompositeOperation = 'destination-out'; tx.drawImage(NOISE.holes[f % 4], 0, 0); tx.globalCompositeOperation = 'source-over'; }
+    if (!RASTER_DONE) { RASTER_DONE = true; if (MO.raster !== 'aus' && MO.mode !== 'logo') punktRaster(mx.canvas.width, mx.canvas.height); }   // raster under the text, like the eli post
     mx.drawImage(tcv, 0, 0); tx.clearRect(0, 0, tcv.width, tcv.height);
   }
+  let RASTER_DONE = false;
 
   // logo block: mark over wordmark, fitted into a box, then the effect moves the whole group
   // LM overrides the logo content for one scene: 'schriftzug' | 'zeichen' | 'kollabo' | 'partner' (null = settings)
@@ -3334,12 +3337,21 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
     toLayer(la, lax, drawA); toLayer(lb, lbx, () => { HANDOFF = { w, rot }; drawContent(0, B.N, B.k); HANDOFF = null; });
     mx.globalAlpha = e; mx.drawImage(lb, 0, 0); mx.globalAlpha = 1 - e; mx.drawImage(la, 0, 0); mx.globalAlpha = 1;
   }
+  // punktraster like the right strip of the eli post: white dots sized by brightness over the darkened picture
+  function punktRaster(W, H) {
+    const x0 = MO.raster === 'ganz' ? 0 : Math.round(W * .74), w = W - x0, g = W / 110, cols = Math.ceil(w / g), rows = Math.ceil(H / g), [hc, hx] = HTB;
+    hc.width = cols; hc.height = rows; hx.imageSmoothingQuality = 'high'; hx.drawImage(mx.canvas, x0, 0, w, H, 0, 0, w / g, H / g); const d = hx.getImageData(0, 0, cols, rows).data;
+    mx.save(); mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; mx.fillStyle = 'rgba(0,0,0,.3)'; mx.fillRect(x0, 0, w, H); mx.fillStyle = '#f4f4f4';
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) { const i = (r * cols + c) * 4, L = (.299 * d[i] + .587 * d[i + 1] + .114 * d[i + 2]) / 255;
+      mx.beginPath(); mx.arc(x0 + c * g + g / 2, r * g + g / 2, g * (.1 + .27 * Math.sqrt(L)), 0, 7); mx.fill(); }
+    mx.restore(); }
   function drawMotion(F) {
-    setSize(); flash = false; moWait = false; PHOTO_FRAME = false; SCREEN_GRAIN = false;
+    setSize(); flash = false; moWait = false; PHOTO_FRAME = false; SCREEN_GRAIN = false; RASTER_DONE = false;
     const W = CV.width, H = CV.height, N = frameCount(), f = F;
     mx = CVX; mx.globalCompositeOperation = 'source-over'; mx.globalAlpha = 1; if (CLEAN()) cleanBase(F, N); else { mx.fillStyle = '#000'; mx.fillRect(0, 0, W, H); }
     drawBack(F, N);
     if (MO.mode === 'reel') reelFrame(F); else drawContent(F, N, MO.mode === 'logo' ? 'logo' : MO.mode === 'collage' ? 'collage' : MO.mode === 'bild' ? 'bild' : MO.mode === 'sony' ? 'sony' : MO.mode === 'lineup' ? PHOTO.view : MO.lay);
+    if (!RASTER_DONE && MO.raster !== 'aus' && MO.mode !== 'logo') punktRaster(W, H); RASTER_DONE = true;
     if (MO.look === 'stamp' && !PHOTO_FRAME) {   // stempel: the light-on-dark frame becomes stamp ink on paper (texture changes with the flip-book)
       if (dcv.width !== W || dcv.height !== H) { dcv.width = W; dcv.height = H; } dcx.clearRect(0, 0, W, H); dcx.drawImage(CV, 0, 0);
       mx.save(); mx.globalCompositeOperation = 'copy'; mx.filter = MO.grain ? `url(#stamp${MO.boil ? f % 4 : 0})` : 'url(#stampS)'; mx.drawImage(dcv, 0, 0); mx.restore();
@@ -3373,6 +3385,7 @@ body:not(.duo-on) .colctl .cf{opacity:.45}
   seg('data-mo-bg', v => { MO.dark = v === '0'; });
   seg('data-mo-grain', v => { MO.grain = v === '1'; });
   seg('data-mo-paper', v => { MO.paper = v === '1'; });
+  seg('data-mo-raster', v => { MO.raster = v; });
   seg('data-mo-look', v => { MO.look = v; });
   seg('data-mo-blend', v => { PHOTO.blend = v; });
   seg('data-mo-view', v => { PHOTO.view = v; });
