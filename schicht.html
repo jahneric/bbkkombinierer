@@ -66,6 +66,30 @@ p{max-width:62ch;margin:0 0 12px}
 .cell.mine{background:var(--bone);color:var(--ink);border-color:var(--bone)}
 .cell.mine .n{color:#555}
 .cell.busy{opacity:.45}
+.cell.sugg{border:1px dashed var(--bone);background:repeating-linear-gradient(135deg,#0a0a0a 0 6px,#161614 6px 12px)}
+.cell .n em{font-style:normal;color:var(--bone)}
+.grid .t small{display:block;font-size:10px;opacity:.7}
+/* recommended blocks: the shifts of one block sit tight, a gap and a bracket separate the blocks */
+.grid.grouped{row-gap:2px}
+.grid .gs{margin-top:12px}
+.grid .t.g{border-right:2px solid var(--line);padding-right:7px}
+.grid .t.gf{border-top:2px solid var(--line)}
+.grid .t.gl{border-bottom:2px solid var(--line)}
+.grid .t .gh{display:block;font-weight:600;font-size:9px;line-height:1.25;color:var(--bone);margin-bottom:4px}
+.cell.g.godd:not(.mine){background-color:#121210}
+.cell.g:not(.gf){border-top-style:dotted}
+.cell.g:not(.gl){border-bottom-style:dotted}
+/* shift length + recommendation: a segment per shift, the first one is the minimum, the recommended amount ends in a tick */
+.shiftinfo{color:var(--bone);margin:4px 0 6px}
+.recbox{max-width:420px}
+.meter{display:flex;gap:3px}
+.meter i{flex:1;height:14px;border:1px solid var(--line);background:linear-gradient(90deg,var(--soon) var(--f),transparent var(--f))}
+.meter i.min{border-color:var(--mute)}
+.meter i.rec{border-color:var(--bone);border-width:1px 2px 1px 1px}
+.meter i.extra{border-style:dashed}
+.meter.done i{background:linear-gradient(90deg,var(--ok) var(--f),transparent var(--f))}
+.meter-l{display:flex;justify-content:space-between;font-size:10px;color:var(--mute);margin:3px 0 4px}
+.under{color:var(--soon);font-size:11px}
 .cell:disabled{cursor:default}
 .mine-list .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--ash)}
 .chip{background:none;border:1px solid var(--line);padding:2px 8px;font-size:11px}
@@ -117,7 +141,8 @@ let OWN = {}; try { OWN = JSON.parse(localStorage[LSO] || '{}'); } catch {}   //
 const saveOwn = () => { try { localStorage[LSO] = JSON.stringify(OWN); } catch {} };
 
 /* ---------- state ----------
-   cfg  {title, date, start:'20:00'|'', end:'03:00'|'', names:true, info, areas:[{id, n, need}], hidden:[entry ids]}
+   cfg  {title, date, start:'20:00'|'', end:'03:00'|'', shift: minutes per shift, rec: recommended minutes per person (0 = none),
+         names:true, info, areas:[{id, n, need}], hidden:[entry ids]}
    entry {id, a: area id, n: name, sl: [slot starts in minutes from midnight of the date; past midnight they go on, 1500 = 01:00]}
    one entry per person and area; a slot is half an hour. */
 const S = { cfg: null, items: new Map(), raw: new Map(), gone: new Map(), ready: false, name: localStorage[LSN] || '' };
@@ -128,12 +153,20 @@ const toMin = s => { const m = /^(\d{1,2}):(\d{2})$/.exec(s || ''); return m ? +
 const clock = m => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 function slots() { const c = S.cfg, a = toMin(c?.start), b = toMin(c?.end); if (a == null || b == null) return [];
   const e = b <= a ? b + 1440 : b, out = []; for (let m = a - (a % 30); m < e; m += 30) out.push(m); return out; }
+// a shift is one or more half hours; the grid shows whole shifts and a tap takes or frees all of them
+const SHIFTS = [30, 60, 120, 180, 240];
+const shiftLen = () => SHIFTS.includes(+S.cfg?.shift) ? +S.cfg.shift : 30;
+function blocks() { const ss = slots(), k = shiftLen() / 30, out = []; for (let i = 0; i < ss.length; i += k) out.push(ss.slice(i, i + k)); return out; }
+const hrs = m => m < 60 ? m + ' min' : (m / 60).toLocaleString('de-DE') + ' std';
+const ownMin = () => { const ss = new Set(slots()); return entries().filter(mine).reduce((s, e) => s + e.sl.filter(m => ss.has(m)).length * 30, 0); };
 const ranges = sl => { const s = [...sl].sort((a, b) => a - b), out = []; for (const m of s) { const l = out.at(-1); if (l && l[1] === m) l[1] = m + 30; else out.push([m, m + 30]); } return out; };
 const rangeText = sl => ranges(sl).map(([a, b]) => clock(a) + '–' + clock(b)).join(', ');
 const dateText = d => { if (!d) return ''; const x = new Date(d + 'T12:00'); return isNaN(x) ? d : x.toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' }); };
 const entries = () => [...S.items.values()].filter(e => e.t === 's' && !(S.cfg?.hidden || []).includes(e.id));
 const areaOf = id => (S.cfg?.areas || []).find(a => a.id === id);
 const mine = e => !!OWN[e.id];
+// the orga can correct a name; it holds until the person changes their name themselves
+const nm = e => { const r = S.cfg?.rn?.[e.id]; return r && r.from === e.n ? r.n : e.n; };
 
 /* ---------- crypto ----------
    the plan key is long and random, so one hash is enough to turn it into the storage id and the AES key.
@@ -208,17 +241,18 @@ addEventListener('offline', () => sync.set('offline'));
 let cfgT;
 function saveCfg(lazy) { touch(S.cfg); clearTimeout(cfgT); const go = () => sync.write('cfg', P.o, N_CFG); if (lazy) cfgT = setTimeout(go, 800); else go(); render(); }
 async function createPlan() {
-  S.cfg = { title: P.t || 'neuer abend', date: P.d || '', start: '', end: '', names: true, info: '', hidden: [], areas: DEF_AREAS.map(([n, need]) => ({ id: uid(), n, need })) };
+  S.cfg = { title: P.t || 'neuer abend', date: P.d || '', start: '', end: '', shift: 120, rec: 240, names: true, info: '', hidden: [], areas: DEF_AREAS.map(([n, need]) => ({ id: uid(), n, need })) };
   await sync.write('cfg', P.o, N_CFG);
 }
-// a tap on a half hour of an area: in or out. nobody can be in two places at once, so a slot taken elsewhere is refused
+// a tap on a shift of an area: in or out. nobody can be in two places at once, so a shift overlapping one elsewhere is refused
 function toggle(aid, m) {
   if (!S.name.trim()) { toast('trag oben zuerst deinen namen ein.'); $('#me')?.focus(); return; }
-  const own = entries().filter(mine), other = own.find(e => e.a !== aid && e.sl.includes(m));
-  if (other) { toast(`um ${clock(m)} bist du schon bei ${areaOf(other.a)?.n || 'einem anderen bereich'}.`); return; }
+  const b = blocks().find(x => x[0] === m) || [m];
+  const own = entries().filter(mine), other = own.find(e => e.a !== aid && e.sl.some(s => b.includes(s)));
+  if (other) { toast(`um ${clock(other.sl.find(s => b.includes(s)))} bist du schon bei ${areaOf(other.a)?.n || 'einem anderen bereich'}.`); return; }
   let e = own.find(x => x.a === aid);
   if (!e) { e = { id: uid(), t: 's', a: aid, n: S.name.trim(), sl: [] }; OWN[e.id] = rnd(24); saveOwn(); S.items.set(e.id, e); }
-  e.sl = e.sl.includes(m) ? e.sl.filter(x => x !== m) : [...e.sl, m].sort((a, b) => a - b); touch(e);
+  e.sl = e.sl.some(s => b.includes(s)) ? e.sl.filter(x => !b.includes(x)) : [...new Set([...e.sl, ...b])].sort((x, y) => x - y); touch(e);
   if (!e.sl.length) { S.items.delete(e.id); S.gone.set(e.id, Date.now()); }
   sync.write(e.id, OWN[e.id], N_ENTRY); render();
 }
@@ -230,50 +264,82 @@ function rename(name) { S.name = name; try { localStorage[LSN] = name; } catch {
 let toastT;
 function toast(t) { const n = $('#toast'); n.textContent = t; n.style.display = 'block'; clearTimeout(toastT); toastT = setTimeout(() => { n.style.display = 'none'; }, 3200); }
 function gridHTML() {
-  const c = S.cfg, ss = slots(), as = c.areas || [], es = entries(), showNames = c.names || ORGA;
+  const c = S.cfg, bs = blocks(), as = c.areas || [], es = entries(), showNames = c.names || ORGA;
   if (!as.length) return `<div class="empty"><p>${ORGA ? 'leg oben in den einstellungen bereiche an (z. b. bar, einlass).' : 'hier sind noch keine bereiche eingetragen.'}</p></div>`;
-  if (!ss.length) return `<div class="empty"><p>${ORGA ? 'trag oben beginn und ende ein, dann erscheinen die halben stunden zum eintragen.' : 'die zeiten für den abend stehen noch nicht fest. schau später nochmal rein, der link bleibt gleich.'}</p></div>`;
-  const ownAt = m => es.find(e => mine(e) && e.sl.includes(m));
-  let h = `<div class="grid" style="grid-template-columns:3.4em repeat(${as.length},minmax(92px,1fr))"><div></div>`;
+  if (!bs.length) return `<div class="empty"><p>${ORGA ? 'trag oben beginn und ende ein, dann erscheinen die schichten zum eintragen.' : 'die zeiten für den abend stehen noch nicht fest. schau später nochmal rein, der link bleibt gleich.'}</p></div>`;
+  const hit = (e, b) => e.sl.some(s => b.includes(s)), ownAt = b => es.find(e => mine(e) && hit(e, b));
+  const meIn = (aid, b) => !!b && es.some(e => mine(e) && e.a === aid && hit(e, b));
+  // below the recommendation, the free shifts right next to one of yours in the same area are marked as the natural next step
+  const rec = +c.rec || 0, len = shiftLen(), short = rec && ownMin() > 0 && ownMin() < rec;
+  // when the recommendation is a whole number of shifts, the tiles are bundled into recommended blocks:
+  // close together, framed per area, a bracket with the block's time in the time column, and a gap to the next block
+  const k = rec > len && rec % len === 0 ? rec / len : 0, grp = i => Math.floor(i / k), inGrp = i => bs.filter((_, j) => grp(j) === grp(i));
+  let h = `<div class="grid${k ? ' grouped' : ''}" style="grid-template-columns:${k ? 5.2 : 3.4}em repeat(${as.length},minmax(92px,1fr))"><div></div>`;
   h += as.map(a => `<div class="h">${esc(a.n)}<small>${a.need ? a.need + ' pro schicht' : ''}</small></div>`).join('');
-  for (const m of ss) {
-    h += `<div class="t">${clock(m)}</div>`;
+  bs.forEach((b, i) => {
+    const m = b[0], end = b.at(-1) + 30, gb = k ? inGrp(i) : null;
+    const g = k ? ` g${i % k === 0 ? ' gf' : ''}${i % k === k - 1 || i === bs.length - 1 ? ' gl' : ''}${i % k === 0 && i ? ' gs' : ''}${grp(i) % 2 ? ' godd' : ''}` : '';
+    h += `<div class="t${g}">${k && i % k === 0 ? `<b class="gh">${hrs(gb.length * len)}<br>am stück</b>` : ''}${clock(m)}${b.length > 1 || k ? `<small>–${clock(end)}</small>` : ''}</div>`;
     for (const a of as) {
-      const here = es.filter(e => e.a === a.id && e.sl.includes(m)), n = here.length, me = here.some(mine), need = +a.need || 0, elsewhere = !me && ownAt(m);
-      const cls = me ? 'mine' : need && n === 0 ? 'gap' : need && n < need ? 'low' : need ? 'full' : '';
-      const who = showNames ? here.map(e => `<span class="p">${esc(e.n)}</span>`).join('') : (me ? `<span class="p">${esc(S.name)}</span>` : '');
-      h += `<button class="cell ${cls}${elsewhere ? ' busy' : ''}" data-a="${a.id}" data-m="${m}" aria-pressed="${me}" aria-label="${esc(a.n)} ${clock(m)}–${clock(m + 30)}, ${n}${need ? ' von ' + need : ''}">
-        <span class="n">${n}${need ? '/' + need : ''}</span>${who}</button>`;
+      const here = es.filter(e => e.a === a.id && hit(e, b)), n = here.length, me = here.some(mine), need = +a.need || 0, elsewhere = !me && ownAt(b);
+      const sugg = short && !me && !elsewhere && (k ? gb.some(x => meIn(a.id, x)) : meIn(a.id, bs[i - 1]) || meIn(a.id, bs[i + 1]));
+      const cls = me ? 'mine' : sugg ? 'sugg' : need && n === 0 ? 'gap' : need && n < need ? 'low' : need ? 'full' : '';
+      const who = showNames ? here.map(e => `<span class="p">${esc(nm(e))}</span>`).join('') : (me ? `<span class="p">${esc(S.name)}</span>` : '');
+      h += `<button class="cell ${cls}${elsewhere ? ' busy' : ''}${g}" data-a="${a.id}" data-m="${m}" aria-pressed="${me}" aria-label="${esc(a.n)} ${clock(m)}–${clock(end)}, ${n}${need ? ' von ' + need : ''}${sugg ? ', empfohlen' : ''}">
+        <span class="n">${n}${need ? '/' + need : ''}${k ? ` · ${hrs(b.length * 30)}` : ''}${sugg ? ' <em>+ empfohlen</em>' : ''}</span>${who}</button>`;
     }
-  }
+  });
   return h + '</div>';
+}
+// how long a shift is, what is recommended, and a bar of your own shifts against it
+function recHTML() {
+  const c = S.cfg, len = shiftLen(), rec = +c.rec || 0;
+  const info = `<p class="shiftinfo">eine schicht: <b>${hrs(len)}</b>${rec ? ` · empfohlen: <b>${hrs(rec)}</b>${rec > len ? ` (${Math.ceil(rec / len)} schichten am stück)` : ''}` : ''}</p>`;
+  if (!rec || !slots().length) return info;
+  const have = ownMin(), n = Math.max(Math.ceil(rec / len), Math.ceil(have / len));
+  const seg = Array.from({ length: n }, (_, i) => { const f = Math.max(0, Math.min(1, (have - i * len) / len));
+    return `<i class="${i === 0 ? 'min' : ''}${(i + 1) * len >= rec && i * len < rec ? ' rec' : ''}${i * len >= rec ? ' extra' : ''}" style="--f:${f * 100}%"></i>`; }).join('');
+  const txt = !have ? `trag dich für mindestens eine schicht ein, am besten für ${hrs(rec)}.`
+    : have < rec ? `du hast ${hrs(have)}. noch ${hrs(rec - have)} bis zur empfehlung, die gestrichelt markierten felder passen direkt dazu.`
+    : `✓ ${hrs(have)}, danke! die empfehlung hast du.`;
+  return info + `<div class="recbox" aria-hidden="true"><div class="meter${have >= rec ? ' done' : ''}">${seg}</div>
+    <div class="meter-l" style="width:${Math.min(1, Math.ceil(rec / len) / n) * 100}%"><span>1 schicht</span><span>empfohlen ${hrs(rec)}</span></div></div><p class="mute">${txt}</p>`;
 }
 function mineHTML() {
   const own = entries().filter(mine); if (!own.length) return '';
   return `<h2 class="lab-h">deine schichten</h2><div class="mine-list">${own.map(e => `<div class="row"><b>${esc(areaOf(e.a)?.n || '?')}</b><span>${rangeText(e.sl)}</span>
-    <button class="chip bad" data-drop="${e.id}">austragen</button></div>`).join('')}</div>`;
+    <button class="chip bad" data-drop="${e.id}">austragen</button></div>`).join('')}</div>
+    <p class="mute" style="margin-top:8px">vertippt? ändere oben einfach deinen namen, deine schichten ziehen mit (geht auf diesem gerät).</p>`;
 }
 function orgaHTML() {
   const c = S.cfg, ss = new Set(slots()), es = entries();
   const outside = es.filter(e => e.sl.some(m => !ss.has(m)) || !areaOf(e.a));
-  const people = [...new Set(es.map(e => e.n))].sort((a, b) => a.localeCompare(b, 'de'));
+  const people = [...new Set(es.map(nm))].sort((a, b) => a.localeCompare(b, 'de'));
+  const len = shiftLen(), rec = +c.rec || 0, tot = {};
+  for (const e of es) tot[nm(e)] = (tot[nm(e)] || 0) + e.sl.filter(m => ss.has(m)).length * 30;
+  const under = people.filter(p => rec && tot[p] < rec).length;
+  const recOpts = [0]; for (let v = len; v <= 480; v += Math.max(len, 60)) recOpts.push(v); if (rec && !recOpts.includes(rec)) recOpts.push(rec);
   return `<details class="set"${!c.start || !c.end || !(c.areas || []).length ? ' open' : ''}><summary>einstellungen (nur orga)</summary>
     <h2 class="lab-h">abend</h2>
     <div class="line"><input id="c-title" value="${esc(c.title)}" aria-label="name des abends"><input type="date" id="c-date" value="${esc(c.date)}" aria-label="datum"></div>
     <div class="line"><label>beginn <input type="time" id="c-start" value="${esc(c.start)}" step="1800"></label><label>ende <input type="time" id="c-end" value="${esc(c.end)}" step="1800"></label>
       <span class="mute">ende vor beginn heißt: nach mitternacht. leer lassen, solange es nicht feststeht.</span></div>
     <textarea id="c-info" placeholder="infos für alle, die sich eintragen (treffpunkt, ansprechperson, was mitbringen …)" aria-label="infos">${esc(c.info)}</textarea>
-    <h2 class="lab-h">bereiche · leute pro halbe stunde</h2>
-    <div class="areas">${(c.areas || []).map(a => `<div class="line"><input id="an-${a.id}" data-an="${a.id}" value="${esc(a.n)}" aria-label="bereich"><input type="number" min="0" max="20" id="aneed-${a.id}" data-aneed="${a.id}" value="${+a.need || 0}" aria-label="leute pro halbe stunde"><button class="btn bad" data-adel="${a.id}">entfernen</button></div>`).join('')}</div>
-    <div class="line"><button class="btn" id="a-add">+ bereich</button></div>
+    <h2 class="lab-h">schichten</h2>
+    <div class="line"><label>eine schicht dauert <select id="c-shift">${SHIFTS.map(v => `<option value="${v}"${v === len ? ' selected' : ''}>${hrs(v)}</option>`).join('')}</select></label>
+      <label>empfehlung pro person <select id="c-rec">${recOpts.map(v => `<option value="${v}"${v === rec ? ' selected' : ''}>${v ? hrs(v) : 'keine'}</option>`).join('')}</select></label></div>
+    <p class="mute">helfende tippen ganze schichten an. die empfehlung sehen sie als balken über dem plan, und freie schichten direkt neben ihrer eigenen werden als „empfohlen“ markiert, bis sie sie erreicht haben.</p>
+    <h2 class="lab-h">bereiche · leute pro schicht</h2>
+    <div class="areas">${(c.areas || []).map(a => `<div class="line"><input id="an-${a.id}" data-an="${a.id}" value="${esc(a.n)}" aria-label="name des bereichs"><input type="number" min="0" max="20" id="aneed-${a.id}" data-aneed="${a.id}" value="${+a.need || 0}" aria-label="leute pro schicht"><button class="btn bad" data-adel="${a.id}">entfernen</button></div>`).join('')}</div>
+    <div class="line"><button class="btn" id="a-add">+ bereich</button><span class="mute">namen einfach ins feld tippen.</span></div>
     <h2 class="lab-h">sichtbarkeit</h2>
     <div class="line"><label><input type="checkbox" id="c-names"${c.names ? ' checked' : ''}> namen der anderen für alle sichtbar</label></div>
     <h2 class="lab-h">link für helfende</h2>
     <p class="mute">wer diesen link hat, sieht nur diesen plan und kann sich eintragen und wieder austragen. zeiten und bereiche ändern geht nur über euren orga-link aus treffen.</p>
     <div class="line"><button class="btn main" id="l-copy">helfer-link kopieren</button></div>
   </details>
-  ${people.length ? `<h2 class="lab-h">wer wann · ${people.length} leute</h2><div class="mine-list">${es.sort((a, b) => a.n.localeCompare(b.n, 'de')).map(e => `<div class="row"><b>${esc(e.n)}</b><span>${esc(areaOf(e.a)?.n || 'gelöschter bereich')}</span><span>${rangeText(e.sl)}</span>
-    <button class="chip bad" data-hide="${e.id}">austragen</button></div>`).join('')}</div>
+  ${people.length ? `<h2 class="lab-h">wer wann · ${people.length} leute${under ? ` · ${under} unter der empfehlung` : ''}</h2><div class="mine-list">${es.sort((a, b) => nm(a).localeCompare(nm(b), 'de')).map(e => `<div class="row"><b>${esc(nm(e))}</b><span>${esc(areaOf(e.a)?.n || 'gelöschter bereich')}</span><span>${rangeText(e.sl)}</span>${rec && tot[nm(e)] < rec ? `<span class="under">${hrs(tot[nm(e)])} von ${hrs(rec)}</span>` : ''}
+    <button class="chip" data-ren="${e.id}">name ändern</button><button class="chip bad" data-hide="${e.id}">austragen</button></div>`).join('')}</div>
     <div class="line" style="margin-top:10px"><button class="btn" id="l-text">liste als text kopieren</button></div>` : ''}
   ${outside.length ? `<p class="mute" style="margin-top:12px">⚠ ${outside.length} eintrag/einträge liegen ganz oder teilweise außerhalb der zeiten oder in einem gelöschten bereich. sie bleiben gespeichert und tauchen wieder auf, wenn die zeiten passen.</p>` : ''}`;
 }
@@ -288,8 +354,9 @@ function render() {
     ${ORGA ? orgaHTML() : ''}
     <h2 class="lab-h">eintragen</h2>
     <div class="line"><input id="me" value="${esc(S.name)}" placeholder="dein name" autocomplete="name" aria-label="dein name"></div>
-    <p class="mute">tipp die halben stunden an, in denen du kannst, nochmal tippen nimmt sie wieder raus. du kannst mehrere bereiche übernehmen, nur nicht zur selben zeit.</p>
-    <div class="legend"><span><i style="border:1px dashed var(--warn)"></i>niemand da</span><span><i style="border-color:var(--soon)"></i>fehlt noch wer</span><span><i style="border-color:#4f6b52"></i>voll</span><span><i style="background:var(--bone);border-color:var(--bone)"></i>du</span></div>
+    <p class="mute">tipp die schichten an, in denen du kannst, nochmal tippen nimmt sie wieder raus. du kannst mehrere bereiche übernehmen, nur nicht zur selben zeit.</p>
+    ${recHTML()}
+    <div class="legend"><span><i style="border:1px dashed var(--warn)"></i>niemand da</span><span><i style="border-color:var(--soon)"></i>fehlt noch wer</span><span><i style="border-color:#4f6b52"></i>voll</span><span><i style="background:var(--bone);border-color:var(--bone)"></i>du</span>${+c.rec ? '<span><i style="border:1px dashed var(--bone);background:repeating-linear-gradient(135deg,#0a0a0a 0 3px,#222 3px 6px)"></i>empfohlen dazu</span>' : ''}</div>
     ${gridHTML()}
     ${mineHTML()}`;
   if (focus) { const el = document.getElementById(focus); if (el) { el.focus(); try { if (pos != null) el.setSelectionRange(pos, pos); } catch {} } }
@@ -301,12 +368,13 @@ main.addEventListener('click', async ev => {
   if (t.dataset.drop && confirm('aus diesem bereich ganz austragen?')) return dropOwn(t.dataset.drop);
   if (!ORGA) return;
   const c = S.cfg;
-  if (t.dataset.hide) { const e = S.items.get(t.dataset.hide); if (e && confirm(`${e.n} aus ${areaOf(e.a)?.n || 'dem bereich'} austragen?`)) { c.hidden = [...(c.hidden || []), e.id]; saveCfg(); } return; }
+  if (t.dataset.hide) { const e = S.items.get(t.dataset.hide); if (e && confirm(`${nm(e)} aus ${areaOf(e.a)?.n || 'dem bereich'} austragen?`)) { c.hidden = [...(c.hidden || []), e.id]; saveCfg(); } return; }
+  if (t.dataset.ren) { const e = S.items.get(t.dataset.ren), v = e && prompt(`neuer name für ${nm(e)}:`, nm(e)); if (v && v.trim()) { c.rn = { ...(c.rn || {}) }; for (const x of entries().filter(x => nm(x) === nm(e))) c.rn[x.id] = { n: v.trim(), from: x.n }; saveCfg(); } return; }
   if (t.dataset.adel) { const a = areaOf(t.dataset.adel); if (a && confirm(`bereich „${a.n}“ entfernen? eingetragene leute bleiben gespeichert, werden aber nicht mehr angezeigt.`)) { c.areas = c.areas.filter(x => x !== a); saveCfg(); } return; }
   switch (t.id) {
     case 'a-add': c.areas = [...(c.areas || []), { id: uid(), n: 'neuer bereich', need: 1 }]; saveCfg(); break;
     case 'l-copy': { const link = location.origin + location.pathname + '#k=' + encodeURIComponent(P.k); try { await navigator.clipboard.writeText(link); toast('helfer-link kopiert'); } catch { prompt('helfer-link:', link); } break; }
-    case 'l-text': { const txt = `${c.title} · ${dateText(c.date)}\n` + (c.areas || []).map(a => `\n${a.n}\n` + entries().filter(e => e.a === a.id).map(e => `  ${rangeText(e.sl)}  ${e.n}`).join('\n')).join('\n');
+    case 'l-text': { const txt = `${c.title} · ${dateText(c.date)}\n` + (c.areas || []).map(a => `\n${a.n}\n` + entries().filter(e => e.a === a.id).map(e => `  ${rangeText(e.sl)}  ${nm(e)}`).join('\n')).join('\n');
       try { await navigator.clipboard.writeText(txt); toast('liste kopiert'); } catch { prompt('liste:', txt); } break; }
   }
 });
@@ -316,10 +384,11 @@ main.addEventListener('input', ev => {
   if (!ORGA || !c) return;
   if (t.id === 'c-title') c.title = t.value; else if (t.id === 'c-date') c.date = t.value; else if (t.id === 'c-info') c.info = t.value;
   else if (t.id === 'c-start') c.start = t.value; else if (t.id === 'c-end') c.end = t.value; else if (t.id === 'c-names') c.names = t.checked;
+  else if (t.id === 'c-shift') c.shift = +t.value; else if (t.id === 'c-rec') c.rec = +t.value;
   else if (t.dataset.an) areaOf(t.dataset.an).n = t.value; else if (t.dataset.aneed) areaOf(t.dataset.aneed).need = Math.max(0, Math.min(20, +t.value || 0));
   else return;
   touch(c); clearTimeout(cfgT); cfgT = setTimeout(() => sync.write('cfg', P.o, N_CFG), 800);
-  if (['c-start', 'c-end', 'c-names', 'c-date'].includes(t.id) || t.dataset.aneed) render();
+  if (['c-start', 'c-end', 'c-names', 'c-date', 'c-shift', 'c-rec'].includes(t.id) || t.dataset.aneed) render();
 });
 // typing in a text field of the orga settings should not lose the cursor to a re-render from the server
 main.addEventListener('change', ev => { if (ev.target.dataset.an || ev.target.id === 'c-title' || ev.target.id === 'c-info') render(); });
